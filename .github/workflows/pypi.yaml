@@ -1,0 +1,24 @@
+name: PyPI
+
+on:
+  push:
+    tags:
+      # run whenever a version tag is pushed, e.g. v1.1.0
+      - "v*.*.*"
+    paths-ignore:
+      # don't run when docs are pushed
+      - '**.md'
+      - 'docs/**'
+      - 'docsrc/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish GH release
+        uses: softprops/action-gh-release@v1
+      - name: Build using poetry and publish to PyPi
+        uses: JRubics/poetry-publish@v1.8
+        with:
+          pypi_token: ${{ secrets.PYPI_TOKEN }}

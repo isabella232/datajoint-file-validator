@@ -1,0 +1,45 @@
+name: Tox
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'docsrc/**'
+
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'docsrc/**'
+
+jobs:
+  test:
+    name: Run unit tests in tox
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Python dependencies
+        run: python -m pip install -q poetry tox
+      - name: Run all tox tests
+        if: github.event_name != 'pull_request'
+        run: tox --
+      - name: Run tox tests (fast only)
+        if: github.event_name == 'pull_request'
+        run: tox -- '-k not slow'
