@@ -1,28 +1,32 @@
 import typer
+from typing_extensions import Annotated
+from rich import print as rprint
 from . import app
 
 
 @app.callback()
 def callback():
     """
-    Awesome Portal Gun
+    Welcome to datajoint-file-validator!
     """
 
 
 @app.command()
-def shoot():
+def open_file(path: str):
     """
-    Shoot the portal gun
+    Open a file at PATH in the default app.
     """
-    typer.echo("Shooting portal gun")
+    rprint(f":left_speech_bubble:  Opening file {path}")
+    typer.launch(path, locate=True)
 
 
 @app.command()
-def load():
+def read_file(path: Annotated[typer.FileText, typer.Option()]):
     """
-    Load the portal gun
+    Reads lines from a file at PATH.
     """
-    typer.echo("Loading portal gun")
+    for line in path:
+        print(f"Config line: {path}")
 
 
 @app.command()
