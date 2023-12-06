@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+import pytz
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union
@@ -14,6 +16,7 @@ class FileMetadata:
     abs_path: str
     size: int
     type: str
+    last_modified: str
     mtime_ns: int
     ctime_ns: int
     atime_ns: int
@@ -22,6 +25,11 @@ class FileMetadata:
     def __post_init__(self):
         # self.id = f'{self.phrase}_{self.word_type.name.lower()}'
         pass
+
+    @staticmethod
+    def to_iso_8601(time_ns: int):
+        time_ = datetime.fromtimestamp(time_ns / 1e9)
+        return time_.replace(tzinfo=pytz.UTC).isoformat()
 
     @classmethod
     def from_path(cls, path: Path) -> "FileMetadata":
@@ -32,6 +40,7 @@ class FileMetadata:
             abs_path=str(path),
             size=path.stat().st_size,
             type="file" if path.is_file() else "directory",
+            last_modified=cls.to_iso_8601(path.stat().st_mtime_ns),
             mtime_ns=path.stat().st_mtime_ns,
             ctime_ns=path.stat().st_ctime_ns,
             atime_ns=path.stat().st_atime_ns,
