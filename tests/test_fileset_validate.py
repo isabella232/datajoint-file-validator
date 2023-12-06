@@ -13,8 +13,8 @@ import datajoint_file_validator as djfval
     ),
 )
 def test_validate_built_in_filesets(manifest_path, fileset_path):
-    snapshot = djfval.snapshot(fileset_path)
-    result = djfval.validate(
+    snapshot = djfval.snapshot.snapshot(fileset_path)
+    result = djfval.validate.validate_snapshot(
         snapshot=snapshot, manifest=manifest_path, verbose=True, raise_err=False
     )
     assert result["status"]
