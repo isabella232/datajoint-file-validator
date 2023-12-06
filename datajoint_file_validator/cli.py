@@ -14,6 +14,7 @@ def callback():
     Welcome to datajoint-file-validator!
     """
 
+
 @app.command()
 def show_table():
     table = Table("Name", "Item")

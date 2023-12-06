@@ -1,1 +1,1 @@
-from .snapshot import snapshot, Snapshot
+from .snapshot import snapshot, Snapshot, FileMetadata
