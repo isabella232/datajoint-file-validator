@@ -4,6 +4,9 @@ version = "0.0.1"
 description = "A tool to validate DataJoint files and filesets"
 authors = ["Ethan Ho <***REMOVED***>"]
 license = "MIT"
+include = [
+    { path = "manifests", format = ["sdist", "wheel"] }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.8"

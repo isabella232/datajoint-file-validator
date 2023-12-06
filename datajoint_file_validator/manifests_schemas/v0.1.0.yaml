@@ -1,0 +1,81 @@
+id:
+  type: string
+  required: true
+name:
+  type: string
+  required: true
+version:
+  type: string
+  required: true
+description:
+  type: string
+  required: true
+author:
+  type: dict
+  schema:
+    name:
+      type: string
+      required: true
+    email:
+      type: string
+      required: true
+  required: true
+rules:
+  type: dict
+  schema:
+    num_files_constraint:
+      type: dict
+      schema:
+        query:
+          type: string
+          required: true
+        count_min:
+          type: integer
+          required: true
+        count_max:
+          type: integer
+          required: true
+      required: true
+    num_files_per_subdir:
+      type: dict
+      schema:
+        description:
+          type: string
+          required: true
+        query:
+          type: string
+          required: true
+        rules:
+          type: list
+          schema:
+            type: dict
+            schema:
+              name:
+                type: string
+                required: true
+              query:
+                type: string
+                required: true
+              count_min:
+                type: integer
+                required: true
+              count_max:
+                type: integer
+                required: true
+          required: true
+      required: true
+    file_type_in_subdir:
+      type: dict
+      schema:
+        description:
+          type: string
+          required: true
+        query:
+          type: dict
+          schema:
+            eval:
+              type: string
+              required: true
+          required: true
+      required: true
+  required: true
