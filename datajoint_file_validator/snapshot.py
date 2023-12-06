@@ -11,6 +11,7 @@ ENABLE_PATH_HANDLE = True
 @dataclass
 class FileMetadata:
     """Metadata for a file."""
+
     name: str
     path: str
     abs_path: str
@@ -62,10 +63,10 @@ class FileMetadata:
 # Define type aliases
 S3URI = str
 PathLike = Union[str, Path, S3URI]
-Snapshot = List[FileMetadata]
+Snapshot = List[Dict[str, Any]]
 
 
-def snapshot_posix(path: str) -> Snapshot:
+def _snapshot_to_cls(path: str) -> List[FileMetadata]:
     """Generate a snapshot of a file or directory at local `path`."""
     root = Path(path)
     if root.is_file():
@@ -78,4 +79,5 @@ def snapshot_posix(path: str) -> Snapshot:
 
 
 def snapshot(path: str) -> Snapshot:
-    return snapshot_posix(path)
+    files = _snapshot_to_cls(path)
+    return [f.asdict() for f in files]

@@ -11,10 +11,8 @@ import datajoint_file_validator as djfval
         "tests/data/filesets/fileset0/2021-10-01_poses.csv",
     ),
 )
-def test_can_snapshot(fileset_path):
-    snapshot = djfval.snapshot(fileset_path)
-    pp(snapshot)
-    # breakpoint()
+def test_can_snapshot_to_cls(fileset_path):
+    snapshot = djfval._snapshot_to_cls(fileset_path)
     assert isinstance(snapshot, list)
     for item in snapshot:
         assert isinstance(item, djfval.FileMetadata)
