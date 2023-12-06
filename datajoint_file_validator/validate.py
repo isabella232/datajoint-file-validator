@@ -1,11 +1,10 @@
 import yaml
+import cerberus
 from typing import Dict
-from . import Snapshot, snapshot
-
-ValidationResult = Dict
+from . import Snapshot, snapshot, ValidationResult
 
 
-def validate(
+def validate_snapshot(
     snapshot: Snapshot, manifest: Manifest, verbose=False, raise_err=False
 ) -> ValidationResult:
     """
@@ -16,7 +15,7 @@ def validate(
     snapshot : Snapshot
             A snapshot dictionary.
     manifest : Manifest
-            Path to a manifest file.
+            Contents of a manifest file.
     verbose : bool
             Print verbose output.
     raise_err : bool
@@ -27,14 +26,12 @@ def validate(
     result : dict
             A dictionary with the validation result.
     """
-    with open(manifest, "r") as f:
-        manifest = yaml.safe_load(f)
-    result = validate_snapshot(snapshot, manifest, verbose=verbose)
-    if verbose:
-        print("Validation result:")
-        print(result)
-    if raise_err and not result["status"]:
-        raise ValueError("Validation failed.")
+    # Convert manifest to Cerberus schema
+    raise NotImplementedError()
+    # Validate snapshot against schema using Cerberus
+    v = cerberus.Validator(schema)
+    v.validate(snapshot)
+    result = ValidationResult.from_validator(v)
     return result
 
 
