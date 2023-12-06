@@ -9,24 +9,29 @@ ENABLE_PATH_HANDLE = True
 @dataclass
 class FileMetadata:
     """Metadata for a file."""
-
     name: str
-    rel_path: str
+    path: str
     abs_path: str
     size: int
+    type: str
     mtime_ns: int
     ctime_ns: int
     atime_ns: int
-    _path: field(default=None, repr=False)  # type: Optional[Path]
+    _path: Optional[Path] = field(default=None, repr=False)
+
+    def __post_init__(self):
+        # self.id = f'{self.phrase}_{self.word_type.name.lower()}'
+        pass
 
     @classmethod
     def from_path(cls, path: Path) -> "FileMetadata":
         """Return a FileMetadata object from a Path object."""
         return cls(
             name=path.name,
-            rel_path=str(path.relative_to(path.parent)),
+            path=str(path.relative_to(path.parent)),
             abs_path=str(path),
             size=path.stat().st_size,
+            type="file" if path.is_file() else "directory",
             mtime_ns=path.stat().st_mtime_ns,
             ctime_ns=path.stat().st_ctime_ns,
             atime_ns=path.stat().st_atime_ns,
@@ -34,7 +39,7 @@ class FileMetadata:
         )
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(path={self.rel_path!r})"
+        return f"{self.__class__.__name__}(path={self.path!r})"
 
     @staticmethod
     def dict_factory(x):
