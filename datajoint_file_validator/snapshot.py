@@ -15,6 +15,7 @@ class FileMetadata:
     name: str
     path: str
     abs_path: str
+    rel_path: str
     size: int
     type: str
     last_modified: str
@@ -37,7 +38,8 @@ class FileMetadata:
         """Return a FileMetadata object from a Path object."""
         return cls(
             name=path.name,
-            path=str(path.relative_to(path.parent)),
+            rel_path=str(path.relative_to(path.parent)),
+            path=str(path),
             abs_path=str(path),
             size=path.stat().st_size,
             type="file" if path.is_file() else "directory",

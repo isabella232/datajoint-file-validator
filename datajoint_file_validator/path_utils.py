@@ -42,9 +42,10 @@ def find_matching_paths_generator(paths, pattern):
     Adapted from
     https://stackoverflow.com/questions/27726545/python-glob-but-against-a-list-of-strings-rather-than-the-filesystem
     """
-    if os.altsep:  # normalise
-        pattern = pattern.replace(os.altsep, os.sep)
-    pattern = pattern.split(os.sep)
+    og_pattern = pattern
+    # if os.altsep:  # normalise
+    #     pattern = pattern.replace(os.altsep, os.sep)
+    pattern = os.path.normpath(pattern).split(os.sep)
 
     # build a trie out of path elements; efficiently search on prefixes
     path_trie = {}
@@ -82,7 +83,7 @@ def find_matching_paths_generator(paths, pattern):
                 d[n] for d in current_level for n in _viewkeys(d) & set(matched_names)
             ]
 
-    return (os.sep.join(p) for p in product(*matching) if _in_trie(path_trie, p))
+    return (os.path.normpath(os.sep.join(p)) for p in product(*matching) if _in_trie(path_trie, p))
 
 
 def find_matching_paths(paths, pattern) -> List:
