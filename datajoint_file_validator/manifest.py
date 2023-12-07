@@ -4,13 +4,8 @@ import yaml
 from .snapshot import PathLike
 from .query import Query, GlobQuery
 from .yaml import read_yaml
-
-
-@dataclass
-class Constraint:
-    """A single constraint that evaluates True or False for a fileset."""
-
-    operator: str
+from .constraint import Constraint, CONSTRAINT_MAP
+from .error import DJFileValidatorError
 
 
 @dataclass
@@ -29,21 +24,32 @@ class Rule:
         return GlobQuery(path=raw)
 
     @staticmethod
-    def compile_constraint(raw: Any) -> "Constraint":
-        raise NotImplementedError()
+    def compile_constraint(name: str, rule: Any) -> "Constraint":
+        if name not in CONSTRAINT_MAP:
+            raise DJFileValidatorError(f"Unknown constraint: {name}")
+        try:
+            return CONSTRAINT_MAP[name](rule)
+        except DJFileValidatorError as e:
+            raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
 
     @classmethod
     def from_dict(cls, d: Dict, check_syntax=False) -> "Rule":
         """Load a rule from a dictionary."""
         if check_syntax:
-            assert self.check_valid(d)
-
-        self_ = cls(
-            id=d.pop("id"),
-            description=d.pop("description"),
-            query=self.compile_query(d.pop("query")),
-            constraints=[self.compile_constraint(d[name]) for name in rest],
-        )
+            assert cls.check_valid(d)
+        id = d.pop("id")
+        try:
+            self_ = cls(
+                id=id,
+                description=d.pop("description"),
+                query=cls.compile_query(d.pop("query")),
+                constraints=[
+                    cls.compile_constraint(name, constraint)
+                    for name, constraint in d.items()
+                ],
+            )
+        except DJFileValidatorError as e:
+            raise DJFileValidatorError(f"Error parsing rule '{id}': {e}")
         return self_
 
 
@@ -59,6 +65,7 @@ class Manifest:
     version: str
     description: str
     rules: List[Rule] = field(default_factory=list)
+    uri: Optional[str] = None
 
     @staticmethod
     def check_valid(d: Dict) -> bool:
@@ -73,16 +80,14 @@ class Manifest:
     @classmethod
     def from_dict(cls, d: Dict, check_syntax=False) -> "Manifest":
         """Load a manifest from a dictionary."""
-        # TODO: preprocess
-
         if check_syntax:
-            assert self.check_valid(d)
-
+            assert cls.check_valid(d)
         self_ = cls(
+            # TODO: hash by default
             id=d["id"],
+            uri=d.get("uri"),
             version=d["version"],
             description=d["description"],
-            rules=[Rule(check_syntax=check_syntax, **r) for r in d["rules"]],
-            query=Query.from_dict(d["query"]),
+            rules=[Rule.from_dict(rule, check_syntax=check_syntax) for rule in d["rules"]],
         )
         return self_

@@ -1,4 +1,4 @@
-id: https://raw.githubusercontent.com/datajoint/datajoint-file-validator/main/manifests/demo_dlc_v0.1
+uri: https://raw.githubusercontent.com/datajoint/datajoint-file-validator/main/manifests/demo_dlc_v0.1
 id: demo_dlc
 version: 0.1.0
 description: DeepLabCut demo fileset type
