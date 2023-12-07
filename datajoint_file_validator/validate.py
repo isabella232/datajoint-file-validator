@@ -28,7 +28,13 @@ def validate_snapshot(
     result : dict
             A dictionary with the validation result.
     """
-    # Convert manifest to Cerberus schema
+    # Parse the query from manifest
+
+
+    # Query the snapshot, returning another snapshot
+    filtered_snapshot = snapshot.query(manifest.query)
+
+    # Convert each rule in the manifest to Cerberus schema
     raise NotImplementedError()
     # Validate snapshot against schema using Cerberus
     v = cerberus.Validator(schema)

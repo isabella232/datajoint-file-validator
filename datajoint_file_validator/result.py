@@ -6,6 +6,7 @@ import cerberus
 @dataclass
 class ValidationResult:
     status: bool
+    # TODO
     errors: Any
 
     @classmethod

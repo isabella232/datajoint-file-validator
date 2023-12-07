@@ -1,8 +1,9 @@
-from dataclasses import dataclass
-from typing import Dict, List, Any
+from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional
+import yaml
 from .snapshot import PathLike
-
-Manifest = Any
+from .query import Query, GlobQuery
+from .yaml import read_yaml
 
 
 @dataclass
@@ -14,9 +15,9 @@ class Constraint:
 @dataclass
 class Rule:
     """A single rule for a fileset."""
-    name: str
-    description: str
-    root: PathLike
+    id: Optional[str]
+    description: Optional[str]
+    # root: PathLike
     constraints: List[Constraint]
 
 
@@ -25,7 +26,15 @@ class Rule:
 class Manifest:
     """Manifest for a fileset, defining a fileset type."""
 
-    name: str
+    id: str
     version: str
     description: str
     rules: List[Rule]
+    query: Query = field(default_factory=GlobQuery)
+
+    @classmethod
+    def from_yaml(cls, path: PathLike) -> "Manifest":
+        """Load a manifest from a YAML file."""
+        # self_ = cls.from_dict(read_yaml(path))
+        self_ = cls.from_dict({})
+        return self_
