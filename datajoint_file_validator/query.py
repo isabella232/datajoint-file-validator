@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from .snapshot import PathLike
 
+DEFAULT_QUERY = "/**"
 
 @dataclass
 class Query:

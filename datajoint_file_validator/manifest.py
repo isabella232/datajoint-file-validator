@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 import yaml
 from .snapshot import PathLike
-from .query import Query, GlobQuery
+from .query import Query, GlobQuery, DEFAULT_QUERY
 from .yaml import read_yaml
 from .constraint import Constraint, CONSTRAINT_MAP
 from .error import DJFileValidatorError
@@ -41,8 +41,8 @@ class Rule:
         try:
             self_ = cls(
                 id=id,
-                description=d.pop("description"),
-                query=cls.compile_query(d.pop("query")),
+                description=d.pop("description", None),
+                query=cls.compile_query(d.pop("query", DEFAULT_QUERY)),
                 constraints=[
                     cls.compile_constraint(name, constraint)
                     for name, constraint in d.items()

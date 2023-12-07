@@ -15,10 +15,7 @@ rules:
   - id: "Count .mp4 files"
     description: "Check that there are at least 4 .mp4 files and their total size is at least 2.0K"
     query: "/**/*.mp4"
-    # This rule has two constraints, which both must be satisfied for the rule
-    # to pass.
     count_min: 4
-    total_size_min: 2.0K
 
   # More complex rules below
   - id: "Only .mp4 and .csv at top level"
@@ -36,7 +33,3 @@ rules:
           n_mp4 = len([r for r in results if r['extension'] == 'mp4'])
           n_csv = len([r for r in results if r['extension'] == 'csv'])
           return n_mp4 == n_csv
-  - id: "Size constraints"
-    description: "Check that the size of all files are within a certain range"
-    total_size_min: 2.0K
-    total_size_max: 10000
