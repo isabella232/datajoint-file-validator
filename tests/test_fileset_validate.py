@@ -10,6 +10,7 @@ import datajoint_file_validator as djfval
 def test_parse_manifest_from_yaml(manifest_path):
     assert isinstance(manifest_path, str)
     mani = djfval.manifest.Manifest.from_yaml(manifest_path)
+    assert isinstance(mani, djfval.manifest.Manifest)
 
 
 @pytest.mark.parametrize(
@@ -21,14 +22,14 @@ def test_parse_manifest_from_yaml(manifest_path):
         ),
     ),
 )
-def test_validate_built_in_filesets(manifest_path, fileset_path):
-    snapshot = djfval.snapshot.snapshot(fileset_path)
+def test_validate_snapshot(manifest_path, fileset_path):
+    snapshot = djfval.snapshot.create_snapshot(fileset_path)
 
     # Check snapshot
     assert snapshot
 
     # Check validation
     result = djfval.validate.validate_snapshot(
-        snapshot=snapshot, manifest=manifest_path, verbose=True, raise_err=False
+        snapshot=snapshot, manifest_path=manifest_path, verbose=True, raise_err=False
     )
     assert result["status"]

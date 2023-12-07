@@ -10,18 +10,18 @@ rules:
     description: "Check that there are at least 6 files anywhere in the fileset"
     # This is the default query, which returns every file, even if it is in
     # a subdirectory.
-    query: "/**"
+    query: "**"
     count_min: 6
   - id: "Count .mp4 files"
     description: "Check that there are at least 4 .mp4 files and their total size is at least 2.0K"
-    query: "/**/*.mp4"
+    query: "**/*.mp4"
     count_min: 4
 
   # More complex rules below
   - id: "Only .mp4 and .csv at top level"
     # This query returns only files at the top level, and will not consider
     # files in subdirectories.
-    query: "/*"
+    query: "*"
     # Note that this regex will not match subdirectores.
     regex: ".*\\.mp4$|.*\\.csv$"
   - id: "Every video file must have a corresponding csv file"

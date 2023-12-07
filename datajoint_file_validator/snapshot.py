@@ -78,6 +78,6 @@ def _snapshot_to_cls(path: str) -> List[FileMetadata]:
     return files
 
 
-def snapshot(path: str) -> Snapshot:
+def create_snapshot(path: str) -> Snapshot:
     files = _snapshot_to_cls(path)
     return [f.asdict() for f in files]
