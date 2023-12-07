@@ -6,10 +6,11 @@ import datajoint_file_validator as djfval
 @pytest.mark.parametrize(
     "manifest_path",
     (
-        "datajoint_file_validator/manifests/demo_dlc_v0.1.demo_dlc_v0.1.yaml",
+        "datajoint_file_validator/manifests/demo_dlc_v0.1.yaml",
     ),
 )
 def test_parse_manifest_from_yaml(manifest_path):
+    assert isinstance(manifest_path, str)
     mani = djfval.manifest.Manifest.from_yaml(manifest_path)
 
 
@@ -17,7 +18,7 @@ def test_parse_manifest_from_yaml(manifest_path):
     "manifest_path,fileset_path",
     (
         (
-            "datajoint_file_validator/manifests/demo_dlc_v0.1.demo_dlc_v0.1.yaml",
+            "datajoint_file_validator/manifests/demo_dlc_v0.1.yaml",
             "tests/data/filesets/fileset0",
         ),
     ),
