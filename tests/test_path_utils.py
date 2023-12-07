@@ -47,6 +47,32 @@ def filename0_paths(filename0_snapshot):
     return set([os.path.normpath(file["path"]) for file in filename0_snapshot])
 
 
+@pytest.fixture
+def example0_paths():
+    return ['./',
+ './2021-10-02',
+ './2021-10-02/subject1_frame1.png',
+ './2021-10-02/subject1_frame2.png',
+ './2021-10-02/obs.md',
+ './2021-10-02/subject1_frame3.png',
+ './2021-10-02/subject1_frame7.png',
+ './2021-10-02/subject1_frame0.png',
+ './2021-10-02/foo',
+ './2021-10-02/foo/bar.txt',
+ './2021-10-02/subject1_frame4.png',
+ './2021-10-02/subject1_frame6.png',
+ './2021-10-02/subject1_frame5.png',
+ './obs.md',
+ './2021-10-01',
+ './2021-10-01/subject1_frame1.png',
+ './2021-10-01/subject1_frame2.png',
+ './2021-10-01/obs.txt',
+ './2021-10-01/subject1_frame3.png',
+ './2021-10-01/subject1_frame0.png',
+ './2021-10-01/subject1_frame4.png',
+ './2021-10-01/subject1_frame5.png',
+ './README.txt']
+
 class TestFindMatchingPaths:
 
     def test_same_after_star_star(self, filename0_paths):
