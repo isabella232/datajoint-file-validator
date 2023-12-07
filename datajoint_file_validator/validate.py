@@ -61,4 +61,6 @@ def validate_path(
             A dictionary with the validation result.
     """
     snapshot = create_snapshot(path)
-    return validate_snapshot(snapshot, manifest_path, verbose=verbose, raise_err=raise_err)
+    return validate_snapshot(
+        snapshot, manifest_path, verbose=verbose, raise_err=raise_err
+    )

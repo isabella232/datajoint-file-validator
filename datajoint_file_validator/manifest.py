@@ -88,6 +88,8 @@ class Manifest:
             uri=d.get("uri"),
             version=d["version"],
             description=d["description"],
-            rules=[Rule.from_dict(rule, check_syntax=check_syntax) for rule in d["rules"]],
+            rules=[
+                Rule.from_dict(rule, check_syntax=check_syntax) for rule in d["rules"]
+            ],
         )
         return self_

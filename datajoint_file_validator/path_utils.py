@@ -7,10 +7,11 @@ from .snapshot import FileMetadata, Snapshot
 
 
 # Cross-Python dictionary views on the keys
-if hasattr(dict, 'viewkeys'):
+if hasattr(dict, "viewkeys"):
     # Python 2
     def _viewkeys(d):
         return d.viewkeys()
+
 else:
     # Python 3
     def _viewkeys(d):
@@ -70,15 +71,18 @@ def find_matching_paths_generator(paths, pattern):
             current_level = [d[subpattern] for d in current_level if subpattern in d]
         else:
             # match all next levels in the trie that match the pattern
-            matched_names = fnmatch.filter({k for d in current_level for k in d}, subpattern)
+            matched_names = fnmatch.filter(
+                {k for d in current_level for k in d}, subpattern
+            )
             if not matched_names:
                 # nothing found
                 return []
             matching.append(matched_names)
-            current_level = [d[n] for d in current_level for n in _viewkeys(d) & set(matched_names)]
+            current_level = [
+                d[n] for d in current_level for n in _viewkeys(d) & set(matched_names)
+            ]
 
-    return (os.sep.join(p) for p in product(*matching)
-            if _in_trie(path_trie, p))
+    return (os.sep.join(p) for p in product(*matching) if _in_trie(path_trie, p))
 
 
 def find_matching_paths(paths, pattern) -> List:
@@ -98,8 +102,4 @@ def find_matching_files(snapshot: Snapshot, pattern: str):
     paths = [file["path"] for file in snapshot]
     path_matches = find_matching_paths_generator(paths, pattern)
     path_matches = [os.path.normpath(path) for path in path_matches]
-    return [
-        file for file in snapshot
-        if os.path.normpath(file["path"]) in path_matches
-    ]
-
+    return [file for file in snapshot if os.path.normpath(file["path"]) in path_matches]

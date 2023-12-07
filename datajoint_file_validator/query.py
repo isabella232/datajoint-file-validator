@@ -19,6 +19,7 @@ class Query:
 @dataclass
 class GlobQuery(Query):
     """A query that filters based on path. Includes support for glob wildcards."""
+
     path: str = DEFAULT_QUERY
 
     def filter(self, snapshot: Snapshot) -> Snapshot:

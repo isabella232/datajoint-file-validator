@@ -1,7 +1,2 @@
-
-
 class DJFileValidatorError(Exception):
-	pass
-
-
-
+    pass

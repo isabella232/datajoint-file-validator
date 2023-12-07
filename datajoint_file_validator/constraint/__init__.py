@@ -8,12 +8,14 @@ Schema = Any
 @dataclass
 class Constraint:
     """A single constraint that evaluates True or False for a fileset."""
+
     pass
 
 
 @dataclass
 class CountMinConstraint(Constraint):
     """Constraint for `count_min`."""
+
     val: int
 
     def to_schema(self) -> Schema:
@@ -25,6 +27,7 @@ class CountMinConstraint(Constraint):
 @dataclass
 class CountMinConstraint(Constraint):
     """Constraint for `count_min`."""
+
     val: int
 
     def to_schema(self) -> Schema:
@@ -36,6 +39,7 @@ class CountMinConstraint(Constraint):
 @dataclass
 class RegexConstraint(Constraint):
     """Constraint for `regex`."""
+
     val: str
 
     def to_schema(self) -> Schema:
@@ -47,6 +51,7 @@ class RegexConstraint(Constraint):
 @dataclass
 class RegexConstraint(Constraint):
     """Constraint for `regex`."""
+
     val: str
 
     def to_schema(self) -> Schema:
@@ -58,6 +63,7 @@ class RegexConstraint(Constraint):
 @dataclass
 class EvalConstraint(Constraint):
     """Constraint for `eval`."""
+
     val: str
 
     def to_schema(self) -> Schema:
