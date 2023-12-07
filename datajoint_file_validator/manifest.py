@@ -9,13 +9,15 @@ from .yaml import read_yaml
 @dataclass
 class Constraint:
     """A single constraint that evaluates True or False for a fileset."""
+
     operator: str
 
 
 @dataclass
 class Rule:
     """A single rule for a fileset."""
-    id: Optional[str] # TODO: hash by default
+
+    id: Optional[str]  # TODO: hash by default
     description: Optional[str]
     # root: PathLike
     constraints: List[Constraint] = field(default_factory=list)

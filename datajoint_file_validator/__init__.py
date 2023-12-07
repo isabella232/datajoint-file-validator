@@ -1,3 +1,1 @@
-from . import (
-    snapshot, validate, manifest, result
-)
+from . import snapshot, validate, manifest, result
