@@ -1,20 +1,13 @@
 import pytest
-import datajoint_file_validator as djfval
+from datajoint_file_validator.path_utils import find_matching_files, find_matching_paths
 
 
-@pytest.mark.parametrize(
-    "snapshot,expected",
-    (
-        (
-            {
-                # foo
-            },
-            [],
-        ),
-    ),
-)
-def test_find_matching_filepaths(snapshot, expected):
-    snapshot = {
-        # foo
-    }
-    djfval.query.find_matching_filepaths(snapshot, "foo")
+class TestFindMatchingPaths:
+
+    def test_same_after_star_star(self, filename0_paths):
+        paths = filename0_paths
+        assert paths == find_matching_paths(paths, "**")
+
+    def test_find_matching_paths(self, filename0_paths):
+        paths = filename0_paths
+        assert paths == find_matching_paths(paths, "./**")

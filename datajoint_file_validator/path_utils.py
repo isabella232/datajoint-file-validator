@@ -95,7 +95,7 @@ def find_matching_paths(paths, pattern) -> List:
     pattern: str
         Pattern to match.
     """
-    return list(find_matching_paths_generator(paths, pattern))
+    return set(find_matching_paths_generator(paths, pattern))
 
 
 def find_matching_files(snapshot: Snapshot, pattern: str):
