@@ -7,7 +7,6 @@ from .result import ValidationResult
 from .query import DEFAULT_QUERY
 
 
-
 def validate_snapshot(
     snapshot: Snapshot, manifest_path: PathLike, verbose=False, raise_err=False
 ) -> ValidationResult:

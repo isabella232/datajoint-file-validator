@@ -32,7 +32,9 @@ class Rule:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
         if self.query.path == DEFAULT_QUERY and config.debug:
             assert filtered_snapshot == snapshot
-        results = list(map(lambda constraint: constraint.validate(snapshot), self.constraints))
+        results = list(
+            map(lambda constraint: constraint.validate(snapshot), self.constraints)
+        )
         return {
             constraint.name: result
             for constraint, result in zip(self.constraints, results)
@@ -49,7 +51,7 @@ class Rule:
             raise DJFileValidatorError(f"Unknown constraint: {name}")
         try:
             constraint = CONSTRAINT_MAP[name](rule)
-            constraint._name= name
+            constraint._name = name
             return constraint
         except DJFileValidatorError as e:
             raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
