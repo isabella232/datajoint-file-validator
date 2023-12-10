@@ -3,6 +3,7 @@ from typing_extensions import Annotated
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
+from .validate import validate
 
 console = Console()
 app = typer.Typer()
@@ -48,3 +49,22 @@ def main(name: str, lastname: str = "", formal: bool = False):
         rprint(f"Good day Ms. {name} {lastname}.")
     else:
         rprint(f"Hello {name} {lastname}")
+
+
+@app.command()
+def validate(
+    target: Annotated[str, typer.Argument(..., exists=True)],
+    manifest: Annotated[typer.FileText, typer.Argument(..., exists=True)],
+    raise_err: bool = False,
+):
+    """
+    Validate a target against a manifest.
+    """
+    success, report = validate(
+        target, manifest, verbose=False, raise_err=raise_err
+    )
+    if success:
+        rprint(":heavy_check_mark: Validation successful!")
+    else:
+        rprint(":x: Validation failed!")
+        rprint(table_from_report(report))

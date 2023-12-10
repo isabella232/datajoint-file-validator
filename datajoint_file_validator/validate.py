@@ -5,7 +5,9 @@ from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
 from .query import DEFAULT_QUERY
-from rich import print
+from rich import print as rprint
+from rich.console import Console
+from rich.table import Table
 
 ErrorReport = List[Dict[str, Any]]
 
@@ -45,8 +47,26 @@ def validate(target: Union[Snapshot, PathLike], manifest: Union[PathLike, Manife
     return validate_snapshot(target, mani, verbose=verbose, raise_err=raise_err)
 
 
+def table_from_report(report: ErrorReport) -> Table:
+    """
+    Format a validation report as a rich table.
+    """
+    columns = [
+        "rule",
+        "rule_description",
+        "constraint_id",
+        "constraint_value",
+        "errors",
+    ]
+    table = Table(*columns)
+    for item in report:
+        as_tup = tuple(str(item[col]) for col in columns)
+        table.add_row(*as_tup)
+    return table
+
+
 def validate_snapshot(
-    snapshot: Snapshot, manifest: Manifest, verbose=False, raise_err=False
+    snapshot: Snapshot, manifest: Manifest, verbose=False, raise_err=False, format="table"
 ) -> Tuple[bool, ErrorReport]:
     """
     Validate a snapshot against a manifest.
@@ -88,10 +108,15 @@ def validate_snapshot(
                 }
             )
     if verbose and not success:
-        print("Validation failed with the following errors:")
-        print("--------------------------------------------")
-        print(yaml.dump(error_report))
-        print("--------------------------------------------")
+        rprint("Validation failed with the following errors:")
+        if format == "table":
+            table = table_from_report(error_report)
+            console = Console()
+            console.print(table)
+        elif format == "yaml":
+            rprint(yaml.dump(error_report))
+        else:
+            raise ValuError(f"Unsupported format: {format}")
     if raise_err and not success:
         raise DJFileValidatorError("Validation failed.")
 
