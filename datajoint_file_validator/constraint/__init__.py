@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterable
+from cerberus import Validator
 from ..config import config
 from ..snapshot import Snapshot
 from ..result import ValidationResult
@@ -53,11 +54,32 @@ class CountMaxConstraint(Constraint):
 class SchemaConvertibleConstraint(Constraint):
 
     def to_schema(self) -> Schema:
-        """Convert this constraint to a Cerberus schema."""
+        """
+        Convert this constraint to a Cerberus schema that each file in
+        the Snapshot will be validated against.
+        """
         raise NotImplementedError("Subclass of SchemaConvertibleConstraint must implement to_schema() method.")
+
+    @staticmethod
+    def _validate_file(schema: Schema, file: dict) -> Validator:
+        v = Validator(allow_unknown=True)
+        v.validate(file, schema)
+        return v
 
     def validate(self, snapshot: Snapshot) -> ValidationResult:
         """Validate a snapshot against a single constraint."""
+        schema: Schema = self.to_schema()
+        assert isinstance(schema, dict)
+        v = Validator(allow_unknown=True)
+        validators: Iterable[Validator] = list(map(lambda file: self._validate_file(schema, file), snapshot))
+        return ValidationResult(
+            status=all(validators),
+            message=None if all(validators) else {
+                file["path"]: validator.errors
+                for file, validator in zip(snapshot, validators)
+            },
+            context=dict(snapshot=snapshot, constraint=self)
+        )
         breakpoint()
         raise NotImplementedError()
 
@@ -68,9 +90,19 @@ class RegexConstraint(SchemaConvertibleConstraint):
     val: str
 
     def to_schema(self) -> Schema:
-        """Convert this constraint to a Cerberus schema."""
-        raise NotImplementedError()
-        return {"regex": self.val}
+        """
+        Convert this constraint to a Cerberus schema that each file in
+        the Snapshot will be validated against.
+        """
+        return {
+            "path": {
+                "type": "string",
+                "required": True,
+                "regex": self.val
+            }
+        }
+
+
 
 
 @dataclass

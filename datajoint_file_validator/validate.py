@@ -32,6 +32,7 @@ def validate_snapshot(
     """
     manifest = Manifest.from_yaml(manifest_path)
     results = list(map(lambda rule: rule.validate(snapshot), manifest.rules))
+    breakpoint()
     return results
 
 
