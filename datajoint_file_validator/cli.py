@@ -15,7 +15,6 @@ def callback():
     """
 
 
-@app.command()
 def show_table():
     table = Table("Name", "Item")
     table.add_row("Rick", "Portal Gun")
@@ -23,7 +22,6 @@ def show_table():
     console.print(table)
 
 
-@app.command()
 def open_file(path: str):
     """
     Open a file at PATH in the default app.
@@ -32,7 +30,6 @@ def open_file(path: str):
     typer.launch(path, locate=True)
 
 
-@app.command()
 def read_file(path: Annotated[typer.FileText, typer.Option()]):
     """
     Reads lines from a file at PATH.
@@ -41,7 +38,6 @@ def read_file(path: Annotated[typer.FileText, typer.Option()]):
         rprint(f"Config line: {path}")
 
 
-@app.command()
 def main(name: str, lastname: str = "", formal: bool = False):
     """
     Say hi to NAME, optionally with a --lastname.

@@ -18,15 +18,8 @@ class Rule:
 
     id: Optional[str]  # TODO: hash by default
     description: Optional[str]
-    # root: PathLike
     constraints: List[Constraint] = field(default_factory=list)
     query: Query = field(default_factory=GlobQuery)
-
-    @staticmethod
-    def validate_constraint(file: FileMetadata, constraint: Constraint) -> bool:
-        """Validate a single constraint."""
-        print(f"Validating constraint {constraint} on file {file}")
-        return constraint.validate(file)
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
@@ -46,11 +39,11 @@ class Rule:
         return GlobQuery(path=raw)
 
     @staticmethod
-    def compile_constraint(name: str, rule: Any) -> "Constraint":
+    def compile_constraint(name: str, val: Any) -> "Constraint":
         if name not in CONSTRAINT_MAP:
             raise DJFileValidatorError(f"Unknown constraint: {name}")
         try:
-            constraint = CONSTRAINT_MAP[name](rule)
+            constraint = CONSTRAINT_MAP[name](val)
             constraint._name = name
             return constraint
         except DJFileValidatorError as e:
@@ -68,8 +61,8 @@ class Rule:
                 description=d.pop("description", None),
                 query=cls.compile_query(d.pop("query", DEFAULT_QUERY)),
                 constraints=[
-                    cls.compile_constraint(name, constraint)
-                    for name, constraint in d.items()
+                    cls.compile_constraint(name, val)
+                    for name, val in d.items()
                 ],
             )
         except DJFileValidatorError as e:
@@ -97,9 +90,9 @@ class Manifest:
         raise NotImplementedError()
 
     @classmethod
-    def from_yaml(cls, path: PathLike) -> "Manifest":
+    def from_yaml(cls, path: PathLike, **kw) -> "Manifest":
         """Load a manifest from a YAML file."""
-        return cls.from_dict(read_yaml(path))
+        return cls.from_dict(read_yaml(path), **kw)
 
     @classmethod
     def from_dict(cls, d: Dict, check_syntax=False) -> "Manifest":

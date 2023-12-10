@@ -10,8 +10,43 @@ from rich import print
 ErrorReport = List[Dict[str, Any]]
 
 
+def validate(target: Union[Snapshot, PathLike], manifest: Union[PathLike, Manifest], verbose=False, raise_err=False) -> Tuple[bool, ErrorReport]:
+    """
+    Validate a target against a manifest.
+
+    Parameters
+    ----------
+    target : PathLike | Snapshot
+        A path to a file or directory, or an instance of a Snapshot object.
+    manifest : PathLike | Manifest
+        Path to a manifest file, or an instance of a Manifest object.
+    verbose : bool
+        Print verbose output.
+    raise_err : bool
+        Raise an error if validation fails.
+
+    Returns
+    -------
+    result : dict
+        A dictionary with the validation result.
+    """
+    # Infer how to fetch manifest
+    if isinstance(manifest, Manifest):
+        mani = manifest
+    elif isinstance(manifest, str):
+        mani = Manifest.from_yaml(manifest)
+    else:
+        raise ValueError("manifest must be a path or Manifest object.")
+
+    # Infer how to create snapshot
+    if isinstance(target, str):
+        target = create_snapshot(target)
+
+    return validate_snapshot(target, mani, verbose=verbose, raise_err=raise_err)
+
+
 def validate_snapshot(
-    snapshot: Snapshot, manifest_path: PathLike, verbose=False, raise_err=False
+    snapshot: Snapshot, manifest: Manifest, verbose=False, raise_err=False
 ) -> Tuple[bool, ErrorReport]:
     """
     Validate a snapshot against a manifest.
@@ -32,7 +67,6 @@ def validate_snapshot(
     result : dict
         A dictionary with the validation result.
     """
-    manifest = Manifest.from_yaml(manifest_path)
     results: List[Dict[str, ValidationResult]] = list(
         map(lambda rule: rule.validate(snapshot), manifest.rules)
     )
@@ -63,30 +97,3 @@ def validate_snapshot(
 
     return success, error_report
 
-
-def validate_path(
-    path: PathLike, manifest_path: PathLike, verbose=False, raise_err=False
-) -> ValidationResult:
-    """
-    Validate a path against a manifest.
-
-    Parameters
-    ----------
-    path : PathLike
-        A path to a file or directory.
-    manifest_path : PathLike
-        Path to a manifest file.
-    verbose : bool
-        Print verbose output.
-    raise_err : bool
-        Raise an error if validation fails.
-
-    Returns
-    -------
-    result : ValidationResult
-            A dictionary with the validation result.
-    """
-    snapshot = create_snapshot(path)
-    return validate_snapshot(
-        snapshot, manifest_path, verbose=verbose, raise_err=raise_err
-    )
