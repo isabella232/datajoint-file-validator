@@ -1,2 +1,2 @@
-from . import snapshot, validate, manifest, result
-from .validate import validate_snapshot, validate
+from . import snapshot, main, manifest, result
+from .main import validate_snapshot, validate

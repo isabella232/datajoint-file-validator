@@ -3,7 +3,7 @@ from typing_extensions import Annotated
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
-from .validate import validate
+from . import main
 
 console = Console()
 app = typer.Typer()
@@ -39,7 +39,7 @@ def read_file(path: Annotated[typer.FileText, typer.Option()]):
         rprint(f"Config line: {path}")
 
 
-def main(name: str, lastname: str = "", formal: bool = False):
+def _main(name: str, lastname: str = "", formal: bool = False):
     """
     Say hi to NAME, optionally with a --lastname.
 
@@ -54,13 +54,13 @@ def main(name: str, lastname: str = "", formal: bool = False):
 @app.command()
 def validate(
     target: Annotated[str, typer.Argument(..., exists=True)],
-    manifest: Annotated[typer.FileText, typer.Argument(..., exists=True)],
+    manifest: Annotated[str, typer.Argument(..., exists=True)],
     raise_err: bool = False,
 ):
     """
     Validate a target against a manifest.
     """
-    success, report = validate(
+    success, report = main.validate(
         target, manifest, verbose=False, raise_err=raise_err
     )
     if success:
