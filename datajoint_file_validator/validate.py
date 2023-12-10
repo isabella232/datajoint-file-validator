@@ -4,11 +4,8 @@ from typing import Dict
 from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
+from .query import DEFAULT_QUERY
 
-
-def validate_rule(rule: Rule, snapshot: Snapshot):
-    fs: Snapshot = rule.query.filter(snapshot)
-    breakpoint()
 
 
 def validate_snapshot(
@@ -34,7 +31,7 @@ def validate_snapshot(
         A dictionary with the validation result.
     """
     manifest = Manifest.from_yaml(manifest_path)
-    results = list(map(lambda rule: validate_rule(rule, snapshot), manifest.rules))
+    results = list(map(lambda rule: rule.validate(snapshot), manifest.rules))
     return results
 
 

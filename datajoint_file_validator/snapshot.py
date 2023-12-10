@@ -10,10 +10,14 @@ ENABLE_PATH_HANDLE = True
 
 @dataclass
 class FileMetadata:
-    """Metadata for a file."""
+    """
+    Metadata for a file.
+
+    TODO: use wcmatch.Path instead to glob from starting directory
+    """
 
     name: str
-    path: str
+    path: str = field(init=False)
     abs_path: str
     rel_path: str
     size: int
@@ -25,8 +29,7 @@ class FileMetadata:
     _path: Optional[Path] = field(default=None, repr=False)
 
     def __post_init__(self):
-        # self.id = f'{self.phrase}_{self.word_type.name.lower()}'
-        pass
+        self.path = self.rel_path
 
     @staticmethod
     def to_iso_8601(time_ns: int):
@@ -39,7 +42,6 @@ class FileMetadata:
         return cls(
             name=path.name,
             rel_path=str(path.relative_to(path.parent)),
-            path=str(path),
             abs_path=str(path),
             size=path.stat().st_size,
             type="file" if path.is_file() else "directory",

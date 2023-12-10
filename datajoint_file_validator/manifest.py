@@ -1,11 +1,15 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
+import itertools
 import yaml
-from .snapshot import PathLike
+from .snapshot import PathLike, FileMetadata
 from .query import Query, GlobQuery, DEFAULT_QUERY
 from .yaml import read_yaml
 from .constraint import Constraint, CONSTRAINT_MAP
 from .error import DJFileValidatorError
+from .result import ValidationResult
+from .snapshot import Snapshot
+from .config import config
 
 
 @dataclass
@@ -19,6 +23,22 @@ class Rule:
     query: Query = field(default_factory=GlobQuery)
 
     @staticmethod
+    def validate_constraint(file: FileMetadata, constraint: Constraint) -> bool:
+        """Validate a single constraint."""
+        print(f"Validating constraint {constraint} on file {file}")
+        return constraint.validate(file)
+
+    def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
+        filtered_snapshot: Snapshot = self.query.filter(snapshot)
+        if self.query.path == DEFAULT_QUERY and config.debug:
+            assert filtered_snapshot == snapshot
+        results = list(map(lambda constraint: constraint.validate(snapshot), self.constraints))
+        return {
+            constraint.name: result
+            for constraint, result in zip(self.constraints, results)
+        }
+
+    @staticmethod
     def compile_query(raw: Any) -> "Query":
         assert isinstance(raw, str)
         return GlobQuery(path=raw)
@@ -28,7 +48,9 @@ class Rule:
         if name not in CONSTRAINT_MAP:
             raise DJFileValidatorError(f"Unknown constraint: {name}")
         try:
-            return CONSTRAINT_MAP[name](rule)
+            constraint = CONSTRAINT_MAP[name](rule)
+            constraint._name= name
+            return constraint
         except DJFileValidatorError as e:
             raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
 

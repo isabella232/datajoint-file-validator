@@ -6,3 +6,7 @@ class Config:
     """Config class for the application"""
 
     allow_eval: bool = True
+    debug: bool = True
+
+
+config = Config()
