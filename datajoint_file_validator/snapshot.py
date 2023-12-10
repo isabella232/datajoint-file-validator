@@ -20,6 +20,7 @@ class FileMetadata:
     path: str = field(init=False)
     abs_path: str
     rel_path: str
+    extension: str
     size: int
     type: str
     last_modified: str
@@ -46,6 +47,7 @@ class FileMetadata:
             size=path.stat().st_size,
             type="file" if path.is_file() else "directory",
             last_modified=cls.to_iso_8601(path.stat().st_mtime_ns),
+            extension=path.suffix,
             mtime_ns=path.stat().st_mtime_ns,
             ctime_ns=path.stat().st_ctime_ns,
             atime_ns=path.stat().st_atime_ns,

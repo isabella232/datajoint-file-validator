@@ -1,9 +1,11 @@
+import re
 from dataclasses import dataclass
-from typing import Any, Iterable
+from typing import Any, Iterable, Callable, Tuple
 from cerberus import Validator
 from ..config import config
 from ..snapshot import Snapshot
 from ..result import ValidationResult
+from ..error import DJFileValidatorError
 
 Schema = Any
 
@@ -78,8 +80,6 @@ class SchemaConvertibleConstraint(Constraint):
     def validate(self, snapshot: Snapshot) -> ValidationResult:
         """Validate a snapshot against a single constraint."""
         schema: Schema = self.to_schema()
-        assert isinstance(schema, dict)
-        v = Validator(allow_unknown=True)
         validators: Iterable[Validator] = list(
             map(lambda file: self._validate_file(schema, file), snapshot)
         )
@@ -93,8 +93,6 @@ class SchemaConvertibleConstraint(Constraint):
             },
             context=dict(snapshot=snapshot, constraint=self),
         )
-        breakpoint()
-        raise NotImplementedError()
 
 
 @dataclass
@@ -117,14 +115,48 @@ class EvalConstraint(Constraint):
 
     val: str
 
+    @staticmethod
+    def _eval_function(definition: str) -> Tuple[Callable, str]:
+        # Import function definition into locals
+        try:
+            exec(definition)
+        except Exception as e:
+            raise e
+
+        # Parse the function name from the definition
+        match = re.search(r"def (\w+)", definition)
+        if match:
+            function_name = match.group(1)
+        else:
+            raise ValueError(f"Could not parse function name from {definition}")
+        assert function_name in locals()
+        return locals()[function_name], function_name
+
     def validate(self, snapshot: Snapshot) -> ValidationResult:
         if not config.allow_eval:
             raise DJFileValidatorError(
                 "Eval constraint is not allowed. "
                 "Set `Config.allow_eval = True` to allow."
             )
-        raise NotImplementedError()
-        return {"custom": self.val}
+        try:
+            function, function_name = self._eval_function(self.val)
+        except Exception as e:
+            raise DJFileValidatorError(
+                f"Error parsing function in `{self.name}` constraint: {type(e).__name__}: {e}"
+            )
+        try:
+            status = function(snapshot)
+        except Exception as e:
+            raise DJFileValidatorError(
+                f"Error validating function `{function_name}` in `{self.name}` constraint: {type(e).__name__}: {e}"
+            )
+        return ValidationResult(
+            status=status,
+            message=None
+            if status
+            else f"constraint `{self.name}` failed: {function_name}(snapshot) returned False",
+            context=dict(snapshot=snapshot, constraint=self),
+        )
 
 
 CONSTRAINT_MAP = {

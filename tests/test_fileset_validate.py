@@ -29,7 +29,7 @@ def test_validate_snapshot(manifest_path, fileset_path):
     assert snapshot
 
     # Check validation
-    result = djfval.validate.validate_snapshot(
+    success, report = djfval.validate.validate_snapshot(
         snapshot=snapshot, manifest_path=manifest_path, verbose=True, raise_err=False
     )
-    assert result["status"]
+    assert success

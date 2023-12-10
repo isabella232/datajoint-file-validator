@@ -1,15 +1,17 @@
 import yaml
 import cerberus
-from typing import Dict
+from typing import Dict, Any, Tuple
 from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
 from .query import DEFAULT_QUERY
 
+ErrorReport = Any
+
 
 def validate_snapshot(
     snapshot: Snapshot, manifest_path: PathLike, verbose=False, raise_err=False
-) -> ValidationResult:
+) -> Tuple[bool, ErrorReport]:
     """
     Validate a snapshot against a manifest.
 
@@ -30,9 +32,32 @@ def validate_snapshot(
         A dictionary with the validation result.
     """
     manifest = Manifest.from_yaml(manifest_path)
-    results = list(map(lambda rule: rule.validate(snapshot), manifest.rules))
-    breakpoint()
-    return results
+    results: List[Dict[str, ValidationResult]] = list(
+        map(lambda rule: rule.validate(snapshot), manifest.rules)
+    )
+    success = all(map(lambda result: all(result.values()), results))
+
+    error_report = []
+    for rule, result in zip(manifest.rules, results):
+        for constraint, valresult in result.items():
+            if valresult.status:
+                continue
+            error_report.append(
+                {
+                    "rule": rule.id,
+                    "rule_description": rule.description,
+                    "constraint": constraint,
+                    "errors": valresult.message,
+                }
+            )
+    if verbose and not success:
+        print("Validation failed with the following errors:")
+        print("--------------------------------------------")
+        print(yaml.dump(error_report))
+        print("--------------------------------------------")
+    if raise_err and not success:
+        raise DJFileValidatorError("Validation failed.")
+    return success, error_report
 
 
 def validate_path(
