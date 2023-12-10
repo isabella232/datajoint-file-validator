@@ -24,12 +24,11 @@ def test_parse_manifest_from_yaml(manifest_path):
 )
 def test_validate_snapshot(manifest_path, fileset_path):
     snapshot = djfval.snapshot.create_snapshot(fileset_path)
-
-    # Check snapshot
     assert snapshot
-
-    # Check validation
     success, report = djfval.validate.validate_snapshot(
         snapshot=snapshot, manifest_path=manifest_path, verbose=True, raise_err=False
     )
-    assert success
+    failed_constraints = [item["constraint_id"] for item in report]
+    assert not success
+    assert isinstance(report, list)
+    assert failed_constraints == ["count_min"]

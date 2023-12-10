@@ -28,5 +28,4 @@ class GlobQuery(Query):
 
     def _filter_generator(self, snapshot: Snapshot):
         """Filter a Snapshot based on this query. Returns a generator."""
-        # find_matching_paths_generator(snapshot, self.path)
         return find_matching_files(snapshot, self.path)

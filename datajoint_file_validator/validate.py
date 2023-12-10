@@ -1,12 +1,13 @@
 import yaml
 import cerberus
-from typing import Dict, Any, Tuple
+from typing import List, Dict, Any, Optional, Union, Tuple
 from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
 from .query import DEFAULT_QUERY
+from rich import print
 
-ErrorReport = Any
+ErrorReport = List[Dict[str, Any]]
 
 
 def validate_snapshot(
@@ -37,6 +38,7 @@ def validate_snapshot(
     )
     success = all(map(lambda result: all(result.values()), results))
 
+    # Generate error report
     error_report = []
     for rule, result in zip(manifest.rules, results):
         for constraint, valresult in result.items():
@@ -46,7 +48,8 @@ def validate_snapshot(
                 {
                     "rule": rule.id,
                     "rule_description": rule.description,
-                    "constraint": constraint,
+                    "constraint_id": constraint,
+                    "constraint_value": valresult.context["constraint"].val,
                     "errors": valresult.message,
                 }
             )
@@ -57,6 +60,7 @@ def validate_snapshot(
         print("--------------------------------------------")
     if raise_err and not success:
         raise DJFileValidatorError("Validation failed.")
+
     return success, error_report
 
 

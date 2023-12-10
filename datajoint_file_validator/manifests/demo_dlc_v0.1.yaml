@@ -13,7 +13,7 @@ rules:
     query: "**"
     count_min: 6
   - id: "Count .mp4 files"
-    description: "Check that there are at least 4 .mp4 files and their total size is at least 2.0K"
+    description: "Check that there are at least 4 .mp4 files"
     query: "**/*.mp4"
     count_min: 4
 

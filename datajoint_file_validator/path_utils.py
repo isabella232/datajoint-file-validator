@@ -3,10 +3,10 @@ import os.path
 from .snapshot import FileMetadata, Snapshot
 from wcmatch import glob
 
+GLOB_FLAGS = (glob.GLOBSTAR | glob.MARK | glob.FOLLOW | glob.MATCHBASE)
 
-def find_matching_paths(
-    filenames, patterns, flags=(glob.GLOBSTAR | glob.K | glob.X), **kw
-):
+
+def find_matching_paths(filenames, patterns, flags=GLOB_FLAGS, **kw):
     return glob.globfilter(filenames, patterns, flags=flags, **kw)
 
 

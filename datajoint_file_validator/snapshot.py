@@ -2,7 +2,8 @@ import os
 from datetime import datetime
 import pytz
 from dataclasses import dataclass, field, asdict
-from pathlib import Path
+from wcmatch import pathlib
+from wcmatch.pathlib import Path
 from typing import List, Dict, Any, Optional, Union
 
 ENABLE_PATH_HANDLE = True
@@ -12,8 +13,6 @@ ENABLE_PATH_HANDLE = True
 class FileMetadata:
     """
     Metadata for a file.
-
-    TODO: use wcmatch.Path instead to glob from starting directory
     """
 
     name: str
@@ -55,7 +54,7 @@ class FileMetadata:
         )
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(path={self.path!r})"
+        return f"{self.__class__.__name__}(path={self.path!r}, type={self.type!r})"
 
     @staticmethod
     def dict_factory(x):
@@ -72,13 +71,15 @@ PathLike = Union[str, Path, S3URI]
 Snapshot = List[Dict[str, Any]]
 
 
-def _snapshot_to_cls(path: str) -> List[FileMetadata]:
+def _snapshot_to_cls(
+    path: str, flags=(pathlib.GLOBSTAR | pathlib.SPLIT | pathlib.FOLLOW)
+) -> List[FileMetadata]:
     """Generate a snapshot of a file or directory at local `path`."""
     root = Path(path)
     if root.is_file():
         files = [FileMetadata.from_path(root)]
     elif root.is_dir():
-        files = [FileMetadata.from_path(p) for p in root.glob("**/*")]
+        files = [FileMetadata.from_path(p) for p in root.glob("**", flags=flags)]
     else:
         raise ValueError(f"path {path} is not a file or directory")
     return files

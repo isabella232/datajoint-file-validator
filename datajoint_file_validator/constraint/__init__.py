@@ -161,6 +161,7 @@ class EvalConstraint(Constraint):
 
 CONSTRAINT_MAP = {
     "count_min": CountMinConstraint,
+    "count_max": CountMaxConstraint,
     "regex": RegexConstraint,
     "eval": EvalConstraint,
 }
