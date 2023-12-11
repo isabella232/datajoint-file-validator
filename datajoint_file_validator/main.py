@@ -58,7 +58,14 @@ def table_from_report(report: ErrorReport) -> Table:
         "constraint_value",
         "errors",
     ]
-    table = Table(*columns)
+    col_names = [
+        "Rule ID",
+        "Rule Description",
+        "Constraint ID",
+        "Constraint Value",
+        "Errors",
+    ]
+    table = Table(*col_names)
     for item in report:
         as_tup = tuple(str(item[col]) for col in columns)
         table.add_row(*as_tup)

@@ -1,5 +1,7 @@
 import typer
+from enum import Enum
 from typing_extensions import Annotated
+import yaml
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
@@ -51,11 +53,18 @@ def _main(name: str, lastname: str = "", formal: bool = False):
         rprint(f"Hello {name} {lastname}")
 
 
+class DisplayFormat(str, Enum):
+    table = "table"
+    yaml = "yaml"
+    plain = "plain"
+
+
 @app.command()
 def validate(
     target: Annotated[str, typer.Argument(..., exists=True)],
     manifest: Annotated[str, typer.Argument(..., exists=True)],
     raise_err: bool = False,
+    format: DisplayFormat = DisplayFormat.table,
 ):
     """
     Validate a target against a manifest.
@@ -65,6 +74,16 @@ def validate(
     )
     if success:
         rprint(":heavy_check_mark: Validation successful!")
-    else:
-        rprint(":x: Validation failed!")
-        rprint(table_from_report(report))
+        return
+
+    rprint(f":x: Validation failed with {len(report)} errors!")
+    if format == DisplayFormat.table:
+        table = main.table_from_report(report)
+        console = Console()
+        console.print(table)
+    elif format == DisplayFormat.yaml:
+        rprint()
+        rprint(yaml.dump(report))
+    elif format == DisplayFormat.plain:
+        rprint(report)
+    raise typer.Exit(code=1)

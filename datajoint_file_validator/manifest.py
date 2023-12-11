@@ -16,10 +16,20 @@ from .config import config
 class Rule:
     """A single rule for a fileset."""
 
-    id: Optional[str]  # TODO: hash by default
+    id: Optional[str]
     description: Optional[str]
     constraints: List[Constraint] = field(default_factory=list)
     query: Query = field(default_factory=GlobQuery)
+
+    def __post_init__(self):
+        if not self.id:
+            self.id = self._generate_id()
+
+    def _generate_id(self) -> str:
+        return hash(self)
+
+    def __hash__(self):
+        return hash((self.query, sorted(self.constraints)))
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
@@ -54,7 +64,7 @@ class Rule:
         """Load a rule from a dictionary."""
         if check_syntax:
             assert cls.check_valid(d)
-        id = d.pop("id")
+        id = d.pop("id", None)
         try:
             self_ = cls(
                 id=id,
