@@ -4,9 +4,20 @@ This repository contains a Python package that validates file sets for DataJoint
 
 ## Installation
 
+### Install Locally
+
 ```bash
 pip install datajoint_file_validator@git+https://github.com/ethho/datajoint-file-validator.git
 ```
+
+### Dev Container
+
+This repository includes a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) configuration for [Visual Studio Code](https://code.visualstudio.com/). To use it, either:
+
+1. Install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension in VS Code and open the repository in a container.
+2. Open the devcontainer in GitHub Codespaces:
+
+![Launch devcontainer in GitHub Codespace instance](docs/img/codespace_launch.png)
 
 ## Quick Start
 
