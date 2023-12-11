@@ -1,16 +1,16 @@
-id: https://raw.githubusercontent.com/datajoint/datajoint-file-validator/main/manifests/demo_bob_lab_frames_v0.1
-name: bob_lab_frames
+uri: https://raw.githubusercontent.com/datajoint/datajoint-file-validator/main/manifests/demo_bob_lab_frames_v0.1
+id: bob_lab_frames
 version: 0.1.0
 description: Example of a fileset type for a Bob Lab fileset
 author:
   name: Ethan Ho
   email: ***REMOVED***
 rules:
-  - name: num_files_constraint
+  - id: num_files_constraint
     description: Check that there are between 1 and 5 files in the directory
     count_min: 1
     count_max: 5
-  - name: num_files_per_subdir
+  - id: num_files_per_subdir
     description: >
       Check that each subdirectory has between 1 and 100 files
       and that subdirectories only contain .mp4 files.
@@ -18,16 +18,16 @@ rules:
       path: "/*"
       type: directory
     rules:
-      - name: count_per_subdir
+      - id: count_per_subdir
         # Here, the query ("/**") is relative to the sub-directory
         # instead of the root.
         query: "/"
         count_min: 1
         count_max: 100
-      - name: check_file_type
+      - id: check_file_type
         # query: "/**" is implicit here
         regex: "^.*\\.mp4$"
-  - name: file_type_in_subdir
+  - id: file_type_in_subdir
     description: Check that each subdirectory has exactly one obs.md file
     query:
       # Instead of path, regex, or type, we can write a custom query function

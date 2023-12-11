@@ -1,33 +1,30 @@
-id: https://raw.githubusercontent.com/datajoint/datajoint-file-validator/main/manifests/demo_dlc_v0.1
-name: demo_dlc
+uri: https://raw.githubusercontent.com/datajoint/datajoint-file-validator/main/manifests/demo_dlc_v0.1
+id: demo_dlc
 version: 0.1.0
 description: DeepLabCut demo fileset type
 author:
-  name: Ethan Ho
+  id: Ethan Ho
   email: ***REMOVED***
 rules:
-  - name: "Min total files"
+  - id: "Min total files"
     description: "Check that there are at least 6 files anywhere in the fileset"
     # This is the default query, which returns every file, even if it is in
     # a subdirectory.
-    query: "/**"
+    query: "**"
     count_min: 6
-  - name: "Count .mp4 files"
-    description: "Check that there are at least 4 .mp4 files and their total size is at least 2.0K"
-    query: "/**/*.mp4"
-    # This rule has two constraints, which both must be satisfied for the rule
-    # to pass.
-    count_min: 4
-    total_size_min: 2.0K
+  - id: "Count .mp4 files"
+    description: "Check that there are at least 2 .mp4 files"
+    query: "**/*.mp4"
+    count_min: 2
 
   # More complex rules below
-  - name: "Only .mp4 and .csv at top level"
+  - id: "Only .mp4 and .csv at top level"
     # This query returns only files at the top level, and will not consider
     # files in subdirectories.
-    query: "/*"
+    query: "*"
     # Note that this regex will not match subdirectores.
     regex: ".*\\.mp4$|.*\\.csv$"
-  - name: "Every video file must have a corresponding csv file"
+  - id: "Every video file must have a corresponding csv file"
     description: "Check that every video file has a corresponding csv file"
     # query: "/**" is implicit here
     # Instead of other constraints, we can use eval to write a custom constraint function.
@@ -36,7 +33,3 @@ rules:
           n_mp4 = len([r for r in results if r['extension'] == 'mp4'])
           n_csv = len([r for r in results if r['extension'] == 'csv'])
           return n_mp4 == n_csv
-  - name: "Size constraints"
-    description: "Check that the size of all files are within a certain range"
-    total_size_min: 2.0K
-    total_size_max: 10000

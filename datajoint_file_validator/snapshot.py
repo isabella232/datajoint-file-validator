@@ -2,7 +2,8 @@ import os
 from datetime import datetime
 import pytz
 from dataclasses import dataclass, field, asdict
-from pathlib import Path
+from wcmatch import pathlib
+from wcmatch.pathlib import Path
 from typing import List, Dict, Any, Optional, Union
 
 ENABLE_PATH_HANDLE = True
@@ -10,11 +11,15 @@ ENABLE_PATH_HANDLE = True
 
 @dataclass
 class FileMetadata:
-    """Metadata for a file."""
+    """
+    Metadata for a file.
+    """
 
     name: str
-    path: str
+    path: str = field(init=False)
     abs_path: str
+    rel_path: str
+    extension: str
     size: int
     type: str
     last_modified: str
@@ -24,8 +29,7 @@ class FileMetadata:
     _path: Optional[Path] = field(default=None, repr=False)
 
     def __post_init__(self):
-        # self.id = f'{self.phrase}_{self.word_type.name.lower()}'
-        pass
+        self.path = self.rel_path
 
     @staticmethod
     def to_iso_8601(time_ns: int):
@@ -33,15 +37,16 @@ class FileMetadata:
         return time_.replace(tzinfo=pytz.UTC).isoformat()
 
     @classmethod
-    def from_path(cls, path: Path) -> "FileMetadata":
+    def from_path(cls, path: Path, root: Path) -> "FileMetadata":
         """Return a FileMetadata object from a Path object."""
         return cls(
             name=path.name,
-            path=str(path.relative_to(path.parent)),
+            rel_path=str(path.relative_to(root)),
             abs_path=str(path),
             size=path.stat().st_size,
             type="file" if path.is_file() else "directory",
             last_modified=cls.to_iso_8601(path.stat().st_mtime_ns),
+            extension=path.suffix,
             mtime_ns=path.stat().st_mtime_ns,
             ctime_ns=path.stat().st_ctime_ns,
             atime_ns=path.stat().st_atime_ns,
@@ -49,7 +54,7 @@ class FileMetadata:
         )
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(path={self.path!r})"
+        return f"{self.__class__.__name__}(path={self.path!r}, type={self.type!r})"
 
     @staticmethod
     def dict_factory(x):
@@ -66,18 +71,20 @@ PathLike = Union[str, Path, S3URI]
 Snapshot = List[Dict[str, Any]]
 
 
-def _snapshot_to_cls(path: str) -> List[FileMetadata]:
+def _snapshot_to_cls(
+    path: str, flags=(pathlib.GLOBSTAR | pathlib.SPLIT | pathlib.FOLLOW)
+) -> List[FileMetadata]:
     """Generate a snapshot of a file or directory at local `path`."""
     root = Path(path)
     if root.is_file():
         files = [FileMetadata.from_path(root)]
     elif root.is_dir():
-        files = [FileMetadata.from_path(p) for p in root.glob("**/*")]
+        files = [FileMetadata.from_path(p, root) for p in root.glob("**", flags=flags)]
     else:
         raise ValueError(f"path {path} is not a file or directory")
     return files
 
 
-def snapshot(path: str) -> Snapshot:
+def create_snapshot(path: str) -> Snapshot:
     files = _snapshot_to_cls(path)
     return [f.asdict() for f in files]
