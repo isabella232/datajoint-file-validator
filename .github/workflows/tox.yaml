@@ -32,8 +32,4 @@ jobs:
           pipx install tox
           pipx install poetry
       - name: Run all tox tests
-        if: github.event_name != 'pull_request'
         run: tox --
-      - name: Run tox tests (fast only)
-        if: github.event_name == 'pull_request'
-        run: tox -- '-k not slow'
