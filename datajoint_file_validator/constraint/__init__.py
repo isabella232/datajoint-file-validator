@@ -10,7 +10,7 @@ from ..error import DJFileValidatorError
 Schema = Any
 
 
-@dataclass
+@dataclass(frozen=True)
 class Constraint:
     """A single constraint that evaluates True or False for a fileset."""
 
@@ -26,7 +26,7 @@ class Constraint:
         return _name if _name else self.__class__.__name__
 
 
-@dataclass
+@dataclass(frozen=True)
 class CountMinConstraint(Constraint):
     """Constraint for `count_min`."""
 
@@ -43,7 +43,7 @@ class CountMinConstraint(Constraint):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class CountMaxConstraint(Constraint):
     """Constraint for `count_max`."""
 
@@ -60,7 +60,7 @@ class CountMaxConstraint(Constraint):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemaConvertibleConstraint(Constraint):
     def to_schema(self) -> Schema:
         """
@@ -95,7 +95,7 @@ class SchemaConvertibleConstraint(Constraint):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class RegexConstraint(SchemaConvertibleConstraint):
     """Constraint for `regex`."""
 
@@ -109,7 +109,7 @@ class RegexConstraint(SchemaConvertibleConstraint):
         return {"path": {"type": "string", "required": True, "regex": self.val}}
 
 
-@dataclass
+@dataclass(frozen=True)
 class EvalConstraint(Constraint):
     """Constraint for `eval`."""
 
@@ -165,3 +165,6 @@ CONSTRAINT_MAP = {
     "regex": RegexConstraint,
     "eval": EvalConstraint,
 }
+
+for name, cls in CONSTRAINT_MAP.items():
+    cls._name = name

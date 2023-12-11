@@ -7,7 +7,7 @@ from .path_utils import find_matching_files
 DEFAULT_QUERY = "**"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Query:
     """An object representing a query against a snapshot."""
 
@@ -16,7 +16,7 @@ class Query:
         raise NotImplementedError("Subclass of Query must implement filter() method.")
 
 
-@dataclass
+@dataclass(frozen=True)
 class GlobQuery(Query):
     """A query that filters based on path. Includes support for glob wildcards."""
 

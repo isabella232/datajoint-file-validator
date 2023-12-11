@@ -5,6 +5,7 @@ from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
 from .query import Query, GlobQuery, DEFAULT_QUERY
 from .config import config
+from .error import DJFileValidatorError
 
 
 @dataclass
@@ -18,13 +19,13 @@ class Rule:
 
     def __post_init__(self):
         if not self.id:
-            self.id = self._generate_id()
+            self.id = f"rule_{self._generate_id()}"
 
     def _generate_id(self) -> str:
         return hash(self)
 
     def __hash__(self):
-        return hash((self.query, sorted(self.constraints)))
+        return hash((self.query, tuple(self.constraints)))
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
@@ -48,9 +49,7 @@ class Rule:
         if name not in CONSTRAINT_MAP:
             raise DJFileValidatorError(f"Unknown constraint: {name}")
         try:
-            constraint = CONSTRAINT_MAP[name](val)
-            constraint._name = name
-            return constraint
+            return CONSTRAINT_MAP[name](val)
         except DJFileValidatorError as e:
             raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
 
@@ -66,8 +65,7 @@ class Rule:
                 description=d.pop("description", None),
                 query=cls.compile_query(d.pop("query", DEFAULT_QUERY)),
                 constraints=[
-                    cls.compile_constraint(name, val)
-                    for name, val in d.items()
+                    cls.compile_constraint(name, val) for name, val in d.items()
                 ],
             )
         except DJFileValidatorError as e:

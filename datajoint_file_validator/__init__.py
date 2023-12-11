@@ -1,2 +1,5 @@
 from . import snapshot, main, manifest, result
+from .snapshot import Snapshot
+from .manifest import Manifest
+from .result import ValidationResult
 from .main import validate_snapshot, validate

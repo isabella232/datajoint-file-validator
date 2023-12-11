@@ -12,7 +12,12 @@ from rich.table import Table
 ErrorReport = List[Dict[str, Any]]
 
 
-def validate(target: Union[Snapshot, PathLike], manifest: Union[PathLike, Manifest], verbose=False, raise_err=False) -> Tuple[bool, ErrorReport]:
+def validate(
+    target: Union[Snapshot, PathLike],
+    manifest: Union[PathLike, Manifest],
+    verbose=False,
+    raise_err=False,
+) -> Tuple[bool, ErrorReport]:
     """
     Validate a target against a manifest.
 
@@ -73,7 +78,11 @@ def table_from_report(report: ErrorReport) -> Table:
 
 
 def validate_snapshot(
-    snapshot: Snapshot, manifest: Manifest, verbose=False, raise_err=False, format="table"
+    snapshot: Snapshot,
+    manifest: Manifest,
+    verbose=False,
+    raise_err=False,
+    format="table",
 ) -> Tuple[bool, ErrorReport]:
     """
     Validate a snapshot against a manifest.
@@ -128,4 +137,3 @@ def validate_snapshot(
         raise DJFileValidatorError("Validation failed.")
 
     return success, error_report
-
