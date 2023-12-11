@@ -70,7 +70,7 @@ def table_from_report(report: ErrorReport) -> Table:
         "Constraint Value",
         "Errors",
     ]
-    table = Table(*col_names)
+    table = Table(*col_names, show_lines=True)
     for item in report:
         as_tup = tuple(str(item[col]) for col in columns)
         table.add_row(*as_tup)

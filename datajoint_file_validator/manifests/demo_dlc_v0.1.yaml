@@ -13,9 +13,9 @@ rules:
     query: "**"
     count_min: 6
   - id: "Count .mp4 files"
-    description: "Check that there are at least 4 .mp4 files"
+    description: "Check that there are at least 2 .mp4 files"
     query: "**/*.mp4"
-    count_min: 4
+    count_min: 2
 
   # More complex rules below
   - id: "Only .mp4 and .csv at top level"

@@ -37,11 +37,11 @@ class FileMetadata:
         return time_.replace(tzinfo=pytz.UTC).isoformat()
 
     @classmethod
-    def from_path(cls, path: Path) -> "FileMetadata":
+    def from_path(cls, path: Path, root: Path) -> "FileMetadata":
         """Return a FileMetadata object from a Path object."""
         return cls(
             name=path.name,
-            rel_path=str(path.relative_to(path.parent)),
+            rel_path=str(path.relative_to(root)),
             abs_path=str(path),
             size=path.stat().st_size,
             type="file" if path.is_file() else "directory",
@@ -79,7 +79,7 @@ def _snapshot_to_cls(
     if root.is_file():
         files = [FileMetadata.from_path(root)]
     elif root.is_dir():
-        files = [FileMetadata.from_path(p) for p in root.glob("**", flags=flags)]
+        files = [FileMetadata.from_path(p, root) for p in root.glob("**", flags=flags)]
     else:
         raise ValueError(f"path {path} is not a file or directory")
     return files

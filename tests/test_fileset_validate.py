@@ -38,14 +38,20 @@ def test_validate_fileset1():
                     "description": "Check count min max",
                     "query": "**",
                     "count_min": 20,
-                    "count_max": 200,
                 },
                 {
-                    # "id": "eval1",
-                    "count_min": 20,
-                    "count_max": 200,
+                    # id automatically generated from hash of constraints
+                    "count_max": 3,
                 },
-            ]
+                {
+                    "id": "max_txt_files",
+                    "query": "*.txt",
+                    "count_max": 5,
+                },
+                {
+                    "eval": "def test_custom(snapshot):\n    return False",
+                },
+            ],
         }
     )
     success, report = djfval.validate(
@@ -55,6 +61,8 @@ def test_validate_fileset1():
         raise_err=False,
     )
     failed_constraints = [item["constraint_id"] for item in report]
+    failed_rules = [item["rule"] for item in report]
     assert not success
     assert isinstance(report, list)
-    assert failed_constraints == ["count_min"]
+    assert "count_max" in failed_constraints
+    assert "max_txt_files" not in failed_rules

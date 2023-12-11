@@ -43,12 +43,12 @@ def test_example0_paths(example0_paths):
     assert not set(find_matching_paths(example0_paths, "./**"))
     assert not set(find_matching_paths(example0_paths, "./*"))
 
-    assert set(find_matching_paths(example0_paths, "**.md")) == {
+    assert set(find_matching_paths(example0_paths, "**/*.md")) == {
         "obs.md",
         "2021-10-02/obs.md",
     }
     assert not set(find_matching_paths(example0_paths, "./**.md"))
-    assert set(find_matching_paths(example0_paths, "**.txt")) == {
+    assert set(find_matching_paths(example0_paths, "**/*.txt")) == {
         "2021-10-01/obs.txt",
         "2021-10-02/foo/bar.txt",
         "README.txt",

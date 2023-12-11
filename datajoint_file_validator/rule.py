@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import hashlib
 from typing import Dict, List, Any, Optional
 from .constraint import Constraint, CONSTRAINT_MAP
 from .result import ValidationResult
@@ -19,10 +20,10 @@ class Rule:
 
     def __post_init__(self):
         if not self.id:
-            self.id = f"rule_{self._generate_id()}"
+            self.id = self._generate_id()
 
     def _generate_id(self) -> str:
-        return hash(self)
+        return hashlib.sha1(hex(hash(self)).encode("utf-8")).hexdigest()[:7]
 
     def __hash__(self):
         return hash((self.query, tuple(self.constraints)))
