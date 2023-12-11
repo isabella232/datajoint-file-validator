@@ -17,6 +17,7 @@ def validate(
     manifest: Union[PathLike, Manifest],
     verbose=False,
     raise_err=False,
+    format='table',
 ) -> Tuple[bool, ErrorReport]:
     """
     Validate a target against a manifest.
@@ -49,7 +50,7 @@ def validate(
     if isinstance(target, str):
         target = create_snapshot(target)
 
-    return validate_snapshot(target, mani, verbose=verbose, raise_err=raise_err)
+    return validate_snapshot(target, mani, verbose=verbose, raise_err=raise_err, format=format)
 
 
 def table_from_report(report: ErrorReport) -> Table:
@@ -131,8 +132,10 @@ def validate_snapshot(
             console.print(table)
         elif format == "yaml":
             rprint(yaml.dump(error_report))
+        elif format == "plain":
+            rprint(error_report)
         else:
-            raise ValuError(f"Unsupported format: {format}")
+            raise ValueError(f"Unsupported format: {format}")
     if raise_err and not success:
         raise DJFileValidatorError("Validation failed.")
 
