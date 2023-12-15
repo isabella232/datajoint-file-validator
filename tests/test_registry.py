@@ -41,3 +41,9 @@ def test_find_from_current_dir(tmpdir, monkeypatch, example_manifest):
     monkeypatch.chdir(og_cwd)
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest(path)
+
+
+def test_find_from_site_pkg(example_manifest):
+    with pytest.raises(FileNotFoundError):
+        resolved = registry.find_manifest('my_nonexistent_manifest')
+    resolved = registry.find_manifest('demo_dlc_v0.1')
