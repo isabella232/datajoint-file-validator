@@ -1,3 +1,4 @@
+import os
 import pytest
 from pathlib import Path
 from yaml import safe_dump
@@ -14,7 +15,7 @@ def example_manifest() -> Manifest:
     )
 
 
-def test_find_in_current_path(tmpdir, example_manifest):
+def test_find_from_exact_path(tmpdir, example_manifest):
     path = Path(tmpdir / 'my_manifest.yaml')
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest(path)
@@ -22,5 +23,21 @@ def test_find_in_current_path(tmpdir, example_manifest):
     # Add the manifest file
     example_manifest.to_yaml(path)
     resolved = registry.find_manifest(path)
-    assert resolved == path
+    assert str(resolved) == str(path)
 
+
+def test_find_from_current_dir(tmpdir, monkeypatch, example_manifest):
+    og_cwd = os.getcwd()
+    monkeypatch.chdir(tmpdir)
+    path = 'my_manifest.yaml'
+    with pytest.raises(FileNotFoundError):
+        resolved = registry.find_manifest(path)
+
+    # Add the manifest file
+    example_manifest.to_yaml(path)
+    resolved = registry.find_manifest(path)
+    assert str(resolved) == str(path)
+
+    monkeypatch.chdir(og_cwd)
+    with pytest.raises(FileNotFoundError):
+        resolved = registry.find_manifest(path)
