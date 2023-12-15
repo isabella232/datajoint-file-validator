@@ -18,8 +18,8 @@ class Manifest:
     """
 
     id: str
-    version: str
-    description: str
+    version: Optional[str] = None
+    description: Optional[str] = None
     rules: List[Rule] = field(default_factory=list)
     uri: Optional[str] = None
 
