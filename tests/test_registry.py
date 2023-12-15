@@ -22,5 +22,5 @@ def test_find_in_current_path(tmpdir, example_manifest):
     # Add the manifest file
     example_manifest.to_yaml(path)
     resolved = registry.find_manifest(path)
-    assert resolved == str(path)
+    assert resolved == path
 

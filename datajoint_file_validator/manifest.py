@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Any, Optional
 import yaml
 from .yaml import read_yaml
@@ -49,3 +49,10 @@ class Manifest:
             ],
         )
         return self_
+
+    def to_dict(self):
+        return asdict(self)
+
+    def to_yaml(self, path: PathLike):
+        with open(path, 'w') as f:
+            yaml.safe_dump(self.to_dict(), f)
