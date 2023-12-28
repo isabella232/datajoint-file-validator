@@ -8,15 +8,15 @@ from datajoint_file_validator import registry, Manifest
 @pytest.fixture
 def example_manifest() -> Manifest:
     return Manifest(
-        id='example_manifest',
-        version='0.0.1',
-        description='An minimal manifest for testing.',
+        id="example_manifest",
+        version="0.0.1",
+        description="An minimal manifest for testing.",
         rules=[],
     )
 
 
 def test_find_from_exact_path(tmpdir, example_manifest):
-    path = Path(tmpdir / 'my_manifest.yaml')
+    path = Path(tmpdir / "my_manifest.yaml")
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest(path)
 
@@ -29,7 +29,7 @@ def test_find_from_exact_path(tmpdir, example_manifest):
 def test_find_from_current_dir(tmpdir, monkeypatch, example_manifest):
     og_cwd = os.getcwd()
     monkeypatch.chdir(tmpdir)
-    path = 'my_manifest.yaml'
+    path = "my_manifest.yaml"
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest(path)
 
@@ -45,27 +45,27 @@ def test_find_from_current_dir(tmpdir, monkeypatch, example_manifest):
 
 def test_find_from_site_pkg():
     with pytest.raises(FileNotFoundError):
-        resolved = registry.find_manifest('my_nonexistent_manifest')
+        resolved = registry.find_manifest("my_nonexistent_manifest")
     with pytest.raises(FileNotFoundError):
-        resolved = registry.find_manifest('my_nonexistent_manifest.yaml')
-    resolved = registry.find_manifest('demo_rnaseq_v0.1')
-    resolved = registry.find_manifest('demo_rnaseq_v0.1.yaml')
+        resolved = registry.find_manifest("my_nonexistent_manifest.yaml")
+    resolved = registry.find_manifest("demo_rnaseq_v0.1")
+    resolved = registry.find_manifest("demo_rnaseq_v0.1.yaml")
 
 
 def test_find_from_site_pkg_symlink():
     """
     Symlink in the manifest directory should resolve correctly.
     """
-    resolved = registry.find_manifest('demo_rnaseq')
-    assert resolved.resolve().name == 'demo_rnaseq_v0.1.yaml'
+    resolved = registry.find_manifest("demo_rnaseq")
+    assert resolved.resolve().name == "demo_rnaseq_v0.1.yaml"
 
 
 def test_find_in_subdir_from_site_pkg_symlink():
     """
     Symlink in a subdir within the manifest directory should resolve correctly.
     """
-    resolved = registry.find_manifest('demo_dlc')
-    assert resolved.name == 'default.yaml'
-    assert resolved.resolve().name == 'v0.1.yaml'
+    resolved = registry.find_manifest("demo_dlc")
+    assert resolved.name == "default.yaml"
+    assert resolved.resolve().name == "v0.1.yaml"
     with pytest.raises(FileNotFoundError):
-        resolved = registry.find_manifest('demo_dlc.yaml')
+        resolved = registry.find_manifest("demo_dlc.yaml")

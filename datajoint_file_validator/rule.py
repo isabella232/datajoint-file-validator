@@ -33,7 +33,10 @@ class Rule:
         if self.query.path == DEFAULT_QUERY and config.debug:
             assert filtered_snapshot == snapshot
         results = list(
-            map(lambda constraint: constraint.validate(filtered_snapshot), self.constraints)
+            map(
+                lambda constraint: constraint.validate(filtered_snapshot),
+                self.constraints,
+            )
         )
         return {
             constraint.name: result

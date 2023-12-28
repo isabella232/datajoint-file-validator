@@ -17,7 +17,7 @@ def validate(
     manifest: Union[PathLike, Manifest],
     verbose=False,
     raise_err=False,
-    format='table',
+    format="table",
 ) -> Tuple[bool, ErrorReport]:
     """
     Validate a target against a manifest.
@@ -50,7 +50,9 @@ def validate(
     if isinstance(target, str):
         target = create_snapshot(target)
 
-    return validate_snapshot(target, mani, verbose=verbose, raise_err=raise_err, format=format)
+    return validate_snapshot(
+        target, mani, verbose=verbose, raise_err=raise_err, format=format
+    )
 
 
 def table_from_report(report: ErrorReport) -> Table:

@@ -54,5 +54,5 @@ class Manifest:
         return asdict(self)
 
     def to_yaml(self, path: PathLike):
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             yaml.safe_dump(self.to_dict(), f)
