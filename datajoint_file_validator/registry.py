@@ -61,7 +61,7 @@ def find_manifest(query: str) -> Path:
     logger.debug(f"Trying paths: {pf(try_paths)}")
 
     for path in try_paths:
-        if path.exists():
+        if path.is_file():
             logger.debug(f"Found manifest file: {path}")
             return path
         else:

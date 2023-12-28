@@ -43,7 +43,7 @@ def test_find_from_current_dir(tmpdir, monkeypatch, example_manifest):
         resolved = registry.find_manifest(path)
 
 
-def test_find_from_site_pkg(example_manifest):
+def test_find_from_site_pkg():
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest('my_nonexistent_manifest')
     with pytest.raises(FileNotFoundError):
@@ -52,9 +52,20 @@ def test_find_from_site_pkg(example_manifest):
     resolved = registry.find_manifest('demo_rnaseq_v0.1.yaml')
 
 
-def test_find_from_site_pkg_symlink(example_manifest):
+def test_find_from_site_pkg_symlink():
     """
     Symlink in the manifest directory should resolve correctly.
     """
     resolved = registry.find_manifest('demo_rnaseq')
     assert resolved.resolve().name == 'demo_rnaseq_v0.1.yaml'
+
+
+def test_find_in_subdir_from_site_pkg_symlink():
+    """
+    Symlink in a subdir within the manifest directory should resolve correctly.
+    """
+    resolved = registry.find_manifest('demo_dlc')
+    assert resolved.name == 'default.yaml'
+    assert resolved.resolve().name == 'v0.1.yaml'
+    with pytest.raises(FileNotFoundError):
+        resolved = registry.find_manifest('demo_dlc.yaml')
