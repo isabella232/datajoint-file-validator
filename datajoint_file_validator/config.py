@@ -7,6 +7,8 @@ class Config:
 
     allow_eval: bool = True
     debug: bool = True
+    enable_path_handle: bool = True
+    default_query: str = "**"
 
 
 config = Config()

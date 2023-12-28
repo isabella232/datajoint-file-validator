@@ -5,8 +5,7 @@ from dataclasses import dataclass, field, asdict
 from wcmatch import pathlib
 from wcmatch.pathlib import Path
 from typing import List, Dict, Any, Optional, Union
-
-ENABLE_PATH_HANDLE = True
+from .config import config
 
 
 @dataclass
@@ -50,19 +49,19 @@ class FileMetadata:
             mtime_ns=path.stat().st_mtime_ns,
             ctime_ns=path.stat().st_ctime_ns,
             atime_ns=path.stat().st_atime_ns,
-            _path=path if ENABLE_PATH_HANDLE else None,
+            _path=path if config.enable_path_handle else None,
         )
 
     def __repr__(self):
         return f"{self.__class__.__name__}(path={self.path!r}, type={self.type!r})"
 
     @staticmethod
-    def dict_factory(x):
+    def _dict_factory(x):
         exclude_fields = ("_path",)
         return {k: v for (k, v) in x if ((v is not None) and (k not in exclude_fields))}
 
     def asdict(self):
-        return asdict(self, dict_factory=self.dict_factory)
+        return asdict(self, dict_factory=self._dict_factory)
 
 
 # Define type aliases
@@ -86,5 +85,9 @@ def _snapshot_to_cls(
 
 
 def create_snapshot(path: str) -> Snapshot:
+    """
+    Generate a snapshot of a file or directory at local `path`.
+    Converts the list of dataclasses to a Snapshot.
+    """
     files = _snapshot_to_cls(path)
     return [f.asdict() for f in files]

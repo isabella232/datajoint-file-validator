@@ -17,6 +17,7 @@ def callback():
     """
     Welcome to datajoint-file-validator!
     """
+    pass
 
 
 def show_table():

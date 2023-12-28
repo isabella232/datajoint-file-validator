@@ -4,7 +4,7 @@ from typing import Dict, List, Any, Optional
 from .constraint import Constraint, CONSTRAINT_MAP
 from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
-from .query import Query, GlobQuery, DEFAULT_QUERY
+from .query import Query, GlobQuery
 from .config import config
 from .error import DJFileValidatorError
 
@@ -30,7 +30,7 @@ class Rule:
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
-        if self.query.path == DEFAULT_QUERY and config.debug:
+        if self.query.path == config.default_query and config.debug:
             assert filtered_snapshot == snapshot
         results = list(
             map(
@@ -67,7 +67,7 @@ class Rule:
             self_ = cls(
                 id=id,
                 description=d.pop("description", None),
-                query=cls.compile_query(d.pop("query", DEFAULT_QUERY)),
+                query=cls.compile_query(d.pop("query", config.default_query)),
                 constraints=[
                     cls.compile_constraint(name, val) for name, val in d.items()
                 ],

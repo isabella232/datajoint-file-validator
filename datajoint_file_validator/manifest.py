@@ -25,7 +25,7 @@ class Manifest:
 
     @staticmethod
     def check_valid(d: Dict) -> bool:
-        """User Cerberus to check if manifest has valid syntax."""
+        """Use Cerberus to check if manifest has valid syntax."""
         raise NotImplementedError()
 
     @classmethod

@@ -1,11 +1,9 @@
 import sys
 import yaml
-import cerberus
 from typing import List, Dict, Any, Optional, Union, Tuple
 from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
-from .query import DEFAULT_QUERY
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
@@ -15,7 +13,7 @@ ErrorReport = List[Dict[str, Any]]
 
 def validate(
     target: Union[Snapshot, PathLike],
-    manifest: Union[PathLike, Manifest],
+    manifest: Union[Manifest, PathLike],
     verbose=False,
     raise_err=False,
     format="table",

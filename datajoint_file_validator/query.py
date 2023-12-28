@@ -1,10 +1,10 @@
 import os
+from typing import Generator
 from dataclasses import dataclass
 from pathlib import PurePath
 from .snapshot import Snapshot, PathLike
 from .path_utils import find_matching_files
-
-DEFAULT_QUERY = "**"
+from .config import config
 
 
 @dataclass(frozen=True)
@@ -20,12 +20,12 @@ class Query:
 class GlobQuery(Query):
     """A query that filters based on path. Includes support for glob wildcards."""
 
-    path: str = DEFAULT_QUERY
+    path: str = config.default_query
 
     def filter(self, snapshot: Snapshot) -> Snapshot:
         """Filter a Snapshot based on this query."""
         return list(self._filter_generator(snapshot))
 
-    def _filter_generator(self, snapshot: Snapshot):
+    def _filter_generator(self, snapshot: Snapshot) -> Generator:
         """Filter a Snapshot based on this query. Returns a generator."""
         return find_matching_files(snapshot, self.path)
