@@ -27,8 +27,8 @@ Validate a fileset against an existing manifest:
 from datajoint_file_validator import validate
 
 my_dataset_path = 'tests/data/filesets/fileset0'
-manifest_path = 'datajoint_file_validator/manifests/demo_dlc_v0.1.yaml'
-success, report = validate(my_dataset_path, manifest_path, verbose=True, format='plain')
+manifest_path = 'datajoint_file_validator/manifests/demo_dlc/v0.1.yaml'
+success, report = validate(my_dataset_path, manifest_path, verbose=True, format='json')
 # Validation failed with the following errors:
 # [
 #     {
@@ -47,7 +47,7 @@ print(success)
 Alternatively, validate using the included command line interface:
 
 ```console
-$ datajoint-file-validator validate tests/data/filesets/fileset0 datajoint_file_validator/manifests/demo_dlc_v0.1.yaml
+$ datajoint-file-validator validate tests/data/filesets/fileset0 datajoint_file_validator/manifests/demo_dlc/v0.1.yaml
 ❌ Validation failed with 1 errors!
 ┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓
 ┃                ┃ Rule           ┃               ┃ Constraint    ┃                ┃

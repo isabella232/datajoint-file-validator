@@ -1,3 +1,4 @@
+import sys
 import yaml
 import cerberus
 from typing import List, Dict, Any, Optional, Union, Tuple
@@ -32,6 +33,8 @@ def validate(
         Print verbose output.
     raise_err : bool
         Raise an error if validation fails.
+    format : str
+        Format for error report. One of "table", "yaml", or "json".
 
     Returns
     -------
@@ -100,6 +103,8 @@ def validate_snapshot(
         Print verbose output.
     raise_err : bool
         Raise an error if validation fails.
+    format : str
+        Format for error report. One of "table", "yaml", or "json".
 
     Returns
     -------
@@ -127,14 +132,14 @@ def validate_snapshot(
                 }
             )
     if verbose and not success:
-        rprint("Validation failed with the following errors:")
+        rprint("Validation failed with the following errors:", file=sys.stderr)
         if format == "table":
             table = table_from_report(error_report)
             console = Console()
             console.print(table)
         elif format == "yaml":
             rprint(yaml.dump(error_report))
-        elif format == "plain":
+        elif format == "json":
             rprint(error_report)
         else:
             raise ValueError(f"Unsupported format: {format}")
