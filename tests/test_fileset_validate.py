@@ -20,7 +20,7 @@ def test_parse_manifest_from_yaml(manifest_path):
 def test_validate_fileset0():
     success, report = djfval.validate(
         "tests/data/filesets/fileset0",
-        "datajoint_file_validator/manifests/demo_dlc_v0.1.yaml",
+        "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
         verbose=True,
         raise_err=False,
     )
