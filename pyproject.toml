@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "datajoint-file-validator"
-version = "0.0.1"
+version = "0.1.0"
 description = "A tool to validate DataJoint files and filesets"
 authors = ["Ethan Ho <***REMOVED***>"]
 license = "MIT"
