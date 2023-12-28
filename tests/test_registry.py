@@ -47,3 +47,11 @@ def test_find_from_site_pkg(example_manifest):
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest('my_nonexistent_manifest')
     resolved = registry.find_manifest('demo_dlc_v0.1')
+
+
+def test_find_from_site_pkg_symlink(example_manifest):
+    """
+    Symlink in the manifest directory should resolve correctly.
+    """
+    resolved = registry.find_manifest('demo_dlc')
+    assert resolved.resolve().name == 'demo_dlc_v0.1.yaml'
