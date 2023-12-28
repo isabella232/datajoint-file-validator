@@ -26,10 +26,10 @@ rules:
     regex: ".*\\.mp4$|.*\\.csv$"
   - id: "Every video file must have a corresponding csv file"
     description: "Check that every video file has a corresponding csv file"
-    # query: "/**" is implicit here
+    # query: "**" is implicit here
     # Instead of other constraints, we can use eval to write a custom constraint function.
     eval: |
       def check_one_to_one(results: list[dict]) -> bool:
-          n_mp4 = len([r for r in results if r['extension'] == 'mp4'])
-          n_csv = len([r for r in results if r['extension'] == 'csv'])
+          n_mp4 = len([r for r in results if r['extension'] == '.mp4'])
+          n_csv = len([r for r in results if r['extension'] == '.csv'])
           return n_mp4 == n_csv
