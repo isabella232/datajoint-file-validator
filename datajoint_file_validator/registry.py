@@ -23,7 +23,7 @@ def _get_try_paths(query: Union[str, Path], try_extensions: Tuple = ('.yaml',)) 
     for module_loc in MODULE_HOMES:
         yield (Path(module_loc) / Path('manifests') / Path(query))
     # If query has no extension, try adding .yaml
-    if not query.suffix:
+    if query.suffix != '.yaml':
         for ext in try_extensions:
             yield from _get_try_paths(Path(str(query) + ext))
 
@@ -50,14 +50,10 @@ def find_manifest(query: str) -> Path:
             raise ValueError(
                 f"Could not convert query='{query}' to string"
             ) from e
-    if Path(query).suffix and Path(query).suffix not in ['.yaml']:
-        raise ValueError(
-            "Query should have .yaml extension, or no extension at all."
-        )
 
     try_paths: List[Path] = list(_get_try_paths(query))
     if not query.endswith('.yaml'):
-        # Check if there is a file called default or default.yaml
+        # Check if there is a file called `default` or `default.yaml`
         # in a subdirectory named `query`
         try_paths.extend(_get_try_paths(Path(query) / Path('default')))
     # Remove duplicates while preserving order
