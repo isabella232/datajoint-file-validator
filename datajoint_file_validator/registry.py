@@ -1,8 +1,31 @@
 import pathlib
+from typing import List, Union, Generator, Tuple
+from pprint import pformat as pf
 from wcmatch.pathlib import Path
 from . import Manifest
 from .config import config
 from . import logger, __path__ as MODULE_HOMES
+
+
+def _get_try_paths(query: Union[str, Path], try_extensions: Tuple = ('.yaml',)) -> Generator[Path, None, None]:
+    """
+    Given a `query` path, yield possible paths to try to find a manifest file,
+    in decreasing order of priority. If query has no extension, try adding
+    every extension in `try_extensions` to the end of the query.
+    """
+    if isinstance(query, str):
+        query = Path(query)
+    # If the query is a path that exists, then we can just use that.
+    yield Path(query)
+    # Check the `manifests` folder in the current directory.
+    yield (Path('manifests') / Path(query))
+    # Check the `manifests` folder in the site packages
+    for module_loc in MODULE_HOMES:
+        yield (Path(module_loc) / Path('manifests') / Path(query))
+    # If query has no extension, try adding .yaml
+    if not query.suffix:
+        for ext in try_extensions:
+            yield from _get_try_paths(Path(str(query) + ext))
 
 
 def find_manifest(query: str) -> Path:
@@ -21,26 +44,30 @@ def find_manifest(query: str) -> Path:
         A resolved path to a manifest file.
     """
     if not isinstance(query, str):
-        query = str(query)
-    assert not query.endswith('.yml')
-    assert not query.endswith('.json')
+        try:
+            query = str(query)
+        except Exception as e:
+            raise ValueError(
+                f"Could not convert query='{query}' to string"
+            ) from e
+    if Path(query).suffix and Path(query).suffix not in ['.yaml']:
+        raise ValueError(
+            "Query should have .yaml extension, or no extension at all."
+        )
+
+    try_paths: List[Path] = list(_get_try_paths(query))
     if not query.endswith('.yaml'):
-        query += '.yaml'
-    try_paths = [
-        # If the query is a path that exists, then we can just use that.
-        Path(query),
-        # Check the `manifests` folder in the current directory.
-        (Path('manifests') / Path(query)),
-        # Check the `manifests` folder in the site packages
-        *[
-            (Path(module_loc) / Path('manifests') / Path(query))
-            for module_loc in MODULE_HOMES
-        ]
-    ]
+        # Check if there is a file called default or default.yaml
+        # in a subdirectory named `query`
+        try_paths.extend(_get_try_paths(Path(query) / Path('default')))
+    # Remove duplicates while preserving order
+    try_paths = list(dict.fromkeys(try_paths))
+    logger.debug(f"Trying paths: {pf(try_paths)}")
+
     for path in try_paths:
         if path.exists():
             logger.debug(f"Found manifest file: {path}")
             return path
         else:
             logger.debug(f"No manifest file found at: {path}")
-    raise FileNotFoundError(f"Could not find manifest file: {query}")
+    raise FileNotFoundError(f"Could not find manifest file with query: {query}")
