@@ -40,7 +40,7 @@ jobs:
           pipx install poetry
           poetry install
       - name: Run all pytests
-        run: poetry run pytest --cov=datajoint_file_validator tests
+        run: poetry run pytest --cov-report term-missing --cov=datajoint_file_validator tests
       - name: Check formatting with black
         run: |
           poetry run black --check datajoint_file_validator tests
