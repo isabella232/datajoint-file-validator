@@ -1,5 +1,6 @@
 import pytest
 from typing import Tuple
+from itertools import product
 import glob
 import datajoint_file_validator as djfval
 
@@ -8,8 +9,7 @@ import datajoint_file_validator as djfval
     "manifest_path",
     (
         "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
-        # Symlink
-        "datajoint_file_validator/manifests/demo_dlc/default.yaml",
+        "datajoint_file_validator/manifests/demo_dlc/default.yaml", # Symlink
     ),
 )
 def test_can_parse_manifest_from_yaml(manifest_path):
@@ -18,15 +18,32 @@ def test_can_parse_manifest_from_yaml(manifest_path):
     assert isinstance(mani, djfval.manifest.Manifest)
 
 
+@pytest.mark.parametrize(
+    "manifest_path, fmt",
+    product((
+        "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
+        "datajoint_file_validator/manifests/demo_dlc/default.yaml", # Symlink
+    ),
+    (
+        "table",
+        "yaml",
+        "json",
+    ))
+)
+def test_error_report_output_format(manifest_path, fmt):
+    success, report = djfval.validate(
+        "tests/data/filesets/fileset0",
+        manifest_path,
+        format=fmt,
+    )
+    assert isinstance(report, list)
+    assert isinstance(report[0], dict)
+
+
 class TestE2EValidaiton:
 
     def _validate(self, path, manifest) -> Tuple:
-        success, report = djfval.validate(
-            path,
-            manifest,
-            verbose=True,
-            raise_err=False,
-        )
+        success, report = djfval.validate(path, manifest)
         failed_constraints = [item["constraint_id"] for item in report]
         failed_rules = [item["rule"] for item in report]
         return success, report, failed_constraints, failed_rules
