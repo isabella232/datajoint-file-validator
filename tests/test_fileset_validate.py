@@ -9,7 +9,7 @@ import datajoint_file_validator as djfval
     "manifest_path",
     (
         "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
-        "datajoint_file_validator/manifests/demo_dlc/default.yaml", # Symlink
+        "datajoint_file_validator/manifests/demo_dlc/default.yaml",  # Symlink
     ),
 )
 def test_can_parse_manifest_from_yaml(manifest_path):
@@ -20,15 +20,17 @@ def test_can_parse_manifest_from_yaml(manifest_path):
 
 @pytest.mark.parametrize(
     "manifest_path, fmt",
-    product((
-        "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
-        "datajoint_file_validator/manifests/demo_dlc/default.yaml", # Symlink
+    product(
+        (
+            "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
+            "datajoint_file_validator/manifests/demo_dlc/default.yaml",  # Symlink
+        ),
+        (
+            "table",
+            "yaml",
+            "json",
+        ),
     ),
-    (
-        "table",
-        "yaml",
-        "json",
-    ))
 )
 def test_error_report_output_format(manifest_path, fmt):
     success, report = djfval.validate(
@@ -41,7 +43,6 @@ def test_error_report_output_format(manifest_path, fmt):
 
 
 class TestE2EValidaiton:
-
     def _validate(self, path, manifest) -> Tuple:
         success, report = djfval.validate(path, manifest)
         failed_constraints = [item["constraint_id"] for item in report]
@@ -51,7 +52,7 @@ class TestE2EValidaiton:
     def test_fileset0(self):
         success, report, failed_constraints, failed_rules = self._validate(
             "tests/data/filesets/fileset0",
-            "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml"
+            "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
         )
         assert not success
         assert isinstance(report, list)
