@@ -10,7 +10,9 @@ def find_matching_paths(filenames, patterns, flags=GLOB_FLAGS, **kw):
     return glob.globfilter(filenames, patterns, flags=flags, **kw)
 
 
-def find_matching_files(snapshot: Snapshot, patterns) -> Generator[FileMetadata, None, None]:
+def find_matching_files(
+    snapshot: Snapshot, patterns
+) -> Generator[FileMetadata, None, None]:
     filenames = [file.get("path") for file in snapshot]
     return (
         file

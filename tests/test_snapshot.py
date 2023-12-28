@@ -60,8 +60,7 @@ class TestSnapshot:
             [
                 # Note that the subdir is included
                 "other_refs/",
-                # So is the symlink, even though the resolved path is also
-                # included
+                # So is the symlink, even though the resolved path is also included
                 "other_ref.fasta",
                 "other_refs/mouse_ref_genome.fasta",
                 "read1.fasta",
@@ -72,3 +71,13 @@ class TestSnapshot:
                 "ref_genome.fasta",
             ]
         )
+        for file in files:
+            if file["path"] in ("other_refs/"):
+                assert file["type"] == "directory"
+            else:
+                assert file["type"] == "file"
+
+    def test_fileset3(self, fileset_path="tests/data/filesets/fileset3.txt"):
+        files = djfval.snapshot.create_snapshot(fileset_path)
+        paths = self._get_paths(files)
+        assert paths == ["fileset3.txt"]

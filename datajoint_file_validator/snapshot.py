@@ -38,13 +38,13 @@ class FileMetadata:
     @classmethod
     def from_path(cls, path: Path, root: Path) -> "FileMetadata":
         """Return a FileMetadata object from a Path object."""
-        # Add trailing slash to directories
         is_file = path.is_file()
         rel_path = str(path.relative_to(root))
         abs_path = str(path)
-        if not is_file and not rel_path.endswith('/'):
-            rel_path += '/'
-            abs_path += '/'
+        # Add trailing slash to directories
+        if not is_file and not rel_path.endswith("/"):
+            rel_path += "/"
+            abs_path += "/"
 
         return cls(
             name=path.name,
@@ -84,7 +84,7 @@ def _snapshot_to_cls(
     """Generate a snapshot of a file or directory at local `path`."""
     root = Path(path)
     if root.is_file():
-        files = [FileMetadata.from_path(root)]
+        files = [FileMetadata.from_path(root, root.parent)]
     elif root.is_dir():
         files = [FileMetadata.from_path(p, root) for p in root.glob("**", flags=flags)]
     else:
