@@ -1,11 +1,8 @@
-import logging
 import pathlib
 from wcmatch.pathlib import Path
 from . import Manifest
 from .config import config
-from . import __path__ as MODULE_HOMES
-
-logger = logging.getLogger(__name__)
+from . import logger, __path__ as MODULE_HOMES
 
 
 def find_manifest(query: str) -> Path:
