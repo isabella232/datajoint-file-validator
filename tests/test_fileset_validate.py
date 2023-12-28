@@ -1,4 +1,5 @@
 import pytest
+from typing import Tuple
 import glob
 import datajoint_file_validator as djfval
 
@@ -11,28 +12,36 @@ import datajoint_file_validator as djfval
         "datajoint_file_validator/manifests/demo_dlc/default.yaml",
     ),
 )
-def test_parse_manifest_from_yaml(manifest_path):
+def test_can_parse_manifest_from_yaml(manifest_path):
     assert isinstance(manifest_path, str)
     mani = djfval.manifest.Manifest.from_yaml(manifest_path)
     assert isinstance(mani, djfval.manifest.Manifest)
 
 
-def test_validate_fileset0():
-    success, report = djfval.validate(
-        "tests/data/filesets/fileset0",
-        "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml",
-        verbose=True,
-        raise_err=False,
-    )
-    failed_constraints = [item["constraint_id"] for item in report]
-    assert not success
-    assert isinstance(report, list)
-    assert failed_constraints == ["count_min"]
+class TestE2EValidaiton:
 
+    def _validate(self, path, manifest) -> Tuple:
+        success, report = djfval.validate(
+            path,
+            manifest,
+            verbose=True,
+            raise_err=False,
+        )
+        failed_constraints = [item["constraint_id"] for item in report]
+        failed_rules = [item["rule"] for item in report]
+        return success, report, failed_constraints, failed_rules
 
-def test_validate_fileset1():
-    manifest = djfval.Manifest.from_dict(
-        {
+    def test_fileset0(self):
+        success, report, failed_constraints, failed_rules = self._validate(
+            "tests/data/filesets/fileset0",
+            "datajoint_file_validator/manifests/demo_dlc/v0.1.yaml"
+        )
+        assert not success
+        assert isinstance(report, list)
+        assert failed_constraints == ["count_min"]
+
+    def test_fileset1(self):
+        manifest_dict = {
             "id": "test",
             "version": "0.1",
             "description": "Test manifest",
@@ -57,16 +66,16 @@ def test_validate_fileset1():
                 },
             ],
         }
-    )
-    success, report = djfval.validate(
-        "tests/data/filesets/fileset1",
-        manifest,
-        verbose=True,
-        raise_err=False,
-    )
-    failed_constraints = [item["constraint_id"] for item in report]
-    failed_rules = [item["rule"] for item in report]
-    assert not success
-    assert isinstance(report, list)
-    assert "count_max" in failed_constraints
-    assert "max_txt_files" not in failed_rules
+        manifest = djfval.Manifest.from_dict(manifest_dict)
+        assert (
+            manifest.rules[1].id
+            == djfval.Manifest.from_dict(manifest_dict.copy()).rules[1].id
+        ), "inconsistent automatic id generation"
+
+        success, report, failed_constraints, failed_rules = self._validate(
+            "tests/data/filesets/fileset1", manifest
+        )
+        assert not success
+        assert isinstance(report, list)
+        assert "count_max" in failed_constraints
+        assert "max_txt_files" not in failed_rules
