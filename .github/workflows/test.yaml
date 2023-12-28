@@ -43,4 +43,4 @@ jobs:
         run: poetry run pytest --cov=datajoint_file_validator tests
       - name: Check formatting with black
         run: |
-          black --check datajoint_file_validator tests
+          poetry run black --check datajoint_file_validator tests
