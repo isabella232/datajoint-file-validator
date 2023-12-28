@@ -38,12 +38,20 @@ class FileMetadata:
     @classmethod
     def from_path(cls, path: Path, root: Path) -> "FileMetadata":
         """Return a FileMetadata object from a Path object."""
+        # Add trailing slash to directories
+        is_file = path.is_file()
+        rel_path = str(path.relative_to(root))
+        abs_path = str(path)
+        if not is_file and not rel_path.endswith('/'):
+            rel_path += '/'
+            abs_path += '/'
+
         return cls(
             name=path.name,
-            rel_path=str(path.relative_to(root)),
-            abs_path=str(path),
+            rel_path=rel_path,
+            abs_path=abs_path,
             size=path.stat().st_size,
-            type="file" if path.is_file() else "directory",
+            type="file" if is_file else "directory",
             last_modified=cls.to_iso_8601(path.stat().st_mtime_ns),
             extension=path.suffix,
             mtime_ns=path.stat().st_mtime_ns,
