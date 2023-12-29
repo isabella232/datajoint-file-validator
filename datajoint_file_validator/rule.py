@@ -57,17 +57,18 @@ class Rule:
     @classmethod
     def from_dict(cls, d: Dict) -> "Rule":
         """Load a rule from a dictionary."""
-        if check_valid:
-            # assert cls.check_valid(d)
-            raise NotImplementedError()
-        id = d.pop("id", None)
+        rest = {
+            k: v
+            for k, v in d.items()
+            if k not in ("id", "description", "query", "constraints")
+        }
         try:
             self_ = cls(
-                id=id,
-                description=d.pop("description", None),
-                query=cls.compile_query(d.pop("query", config.default_query)),
+                id=d.get("id"),
+                description=d.get("description"),
+                query=cls.compile_query(d.get("query", config.default_query)),
                 constraints=[
-                    cls.compile_constraint(name, val) for name, val in d.items()
+                    cls.compile_constraint(name, val) for name, val in rest.items()
                 ],
             )
         except DJFileValidatorError as e:
