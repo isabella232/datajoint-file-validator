@@ -58,10 +58,11 @@ class Rule:
             raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
 
     @classmethod
-    def from_dict(cls, d: Dict, check_syntax=False) -> "Rule":
+    def from_dict(cls, d: Dict, check_valid=False) -> "Rule":
         """Load a rule from a dictionary."""
-        if check_syntax:
-            assert cls.check_valid(d)
+        if check_valid:
+            # assert cls.check_valid(d)
+            raise NotImplementedError()
         id = d.pop("id", None)
         try:
             self_ = cls(

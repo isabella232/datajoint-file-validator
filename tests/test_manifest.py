@@ -1,22 +1,27 @@
 import pytest
 import yaml
-from wcmatch import glob
 from datajoint_file_validator import Manifest
 
 
 class TestManifest:
-
-    @pytest.mark.parametrize("manifest_file",
-        glob.glob('datajoint_file_validator/manifests/**/*.yaml', flags=glob.GLOBSTAR)
-    )
-    def test_from_yaml_and_dict(self, manifest_file: str):
+    def test_from_yaml_and_dict(self, manifest_file_from_registry: str):
         """
         Checks that the Manifest.from_yaml and from_dict methods works as expected.
         """
-        # Load manifest from file
-        with open(manifest_file, 'r') as f:
+        with open(manifest_file_from_registry, "r") as f:
             manifest_dict = yaml.safe_load(f)
-        man1 = Manifest.from_dict(manifest_dict)
-        man2 = Manifest.from_yaml(manifest_file)
+        man1 = Manifest.from_dict(manifest_dict, check_valid=False)
+        man2 = Manifest.from_yaml(manifest_file_from_registry, check_valid=False)
         assert man1 == man2
 
+    def test_all_registry_manifests_valid(self, manifest_file_from_registry: str):
+        """
+        Checks that all manifests in the registry are valid.
+        """
+        mani = Manifest.from_yaml(manifest_file_from_registry, check_valid=True)
+
+    def test_check_valid(self, manifest_file_from_registry: str):
+        """
+        Checks the Manifest.check_valid method.
+        """
+        pass

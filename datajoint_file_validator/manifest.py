@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
+from pathlib import Path
 import yaml
+from cerberus import Validator
 from .yaml import read_yaml
-from .error import DJFileValidatorError
+from .error import DJFileValidatorError, InvalidManifestError
 from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
 from .config import config
@@ -24,9 +26,12 @@ class Manifest:
     uri: Optional[str] = None
 
     @staticmethod
-    def check_valid(d: Dict) -> bool:
+    def check_valid(d: Dict, mani_schema: Path) -> Tuple[bool, Dict]:
         """Use Cerberus to check if manifest has valid syntax."""
-        raise NotImplementedError()
+        v = Validator()
+        schema: Dict = read_yaml(mani_schema)
+        valid = v.validate(d, schema)
+        return valid, v.errors
 
     @classmethod
     def from_yaml(cls, path: PathLike, **kw) -> "Manifest":
@@ -34,10 +39,15 @@ class Manifest:
         return cls.from_dict(read_yaml(path), **kw)
 
     @classmethod
-    def from_dict(cls, d: Dict, check_syntax=False) -> "Manifest":
+    def from_dict(cls, d: Dict, check_valid=False) -> "Manifest":
         """Load a manifest from a dictionary."""
-        if check_syntax:
-            assert cls.check_valid(d)
+        if check_valid:
+            mani_schema = config.manifest_schema
+            valid, errors = cls.check_valid(d, mani_schema=mani_schema)
+            if not valid:
+                raise InvalidManifestError(
+                    f"Manifest does not match schema={mani_schema}: {errors}"
+                )
         self_ = cls(
             # TODO: hash by default
             id=d["id"],
@@ -45,7 +55,7 @@ class Manifest:
             version=d["version"],
             description=d["description"],
             rules=[
-                Rule.from_dict(rule, check_syntax=check_syntax) for rule in d["rules"]
+                Rule.from_dict(rule, check_valid=check_valid) for rule in d["rules"]
             ],
         )
         return self_
