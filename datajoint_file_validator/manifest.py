@@ -9,6 +9,7 @@ from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
 from .config import config
 from .rule import Rule
+from .hash_utils import generate_id
 
 
 @dataclass
@@ -25,6 +26,10 @@ class Manifest:
     rules: List[Rule] = field(default_factory=list)
     uri: Optional[str] = None
 
+    def __post_init__(self):
+        if not self.id:
+            self.id = generate_id(self)
+
     @staticmethod
     def check_valid(d: Dict, mani_schema: Path) -> Tuple[bool, Dict]:
         """Use Cerberus to check if manifest has valid syntax."""
@@ -39,7 +44,7 @@ class Manifest:
         return cls.from_dict(read_yaml(path), **kw)
 
     @classmethod
-    def from_dict(cls, d: Dict, check_valid=False) -> "Manifest":
+    def from_dict(cls, d: Dict, check_valid=True) -> "Manifest":
         """Load a manifest from a dictionary."""
         if check_valid:
             mani_schema = config.manifest_schema
@@ -49,11 +54,10 @@ class Manifest:
                     f"Manifest does not match schema={mani_schema}: {errors}"
                 )
         self_ = cls(
-            # TODO: hash by default
-            id=d["id"],
+            id=d.get("id"),
             uri=d.get("uri"),
-            version=d["version"],
-            description=d["description"],
+            version=d.get("version"),
+            description=d.get("description"),
             rules=[
                 Rule.from_dict(rule, check_valid=check_valid) for rule in d["rules"]
             ],

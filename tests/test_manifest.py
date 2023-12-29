@@ -1,6 +1,7 @@
 import pytest
 import yaml
 from datajoint_file_validator import Manifest
+from datajoint_file_validator.yaml import read_yaml
 
 
 class TestManifest:
@@ -8,10 +9,9 @@ class TestManifest:
         """
         Checks that the Manifest.from_yaml and from_dict methods works as expected.
         """
-        with open(manifest_file_from_registry, "r") as f:
-            manifest_dict = yaml.safe_load(f)
-        man1 = Manifest.from_dict(manifest_dict, check_valid=False)
-        man2 = Manifest.from_yaml(manifest_file_from_registry, check_valid=False)
+        manifest_dict = read_yaml(manifest_file_from_registry)
+        man1 = Manifest.from_dict(manifest_dict)
+        man2 = Manifest.from_yaml(manifest_file_from_registry)
         assert man1 == man2
 
     def test_all_registry_manifests_valid(self, manifest_file_from_registry: str):
