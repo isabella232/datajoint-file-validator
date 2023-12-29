@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
+from cerberus import Validator, schema_registry
 import yaml
 from pprint import pformat as pf
 from .yaml import read_yaml
@@ -10,7 +11,7 @@ from .snapshot import Snapshot, PathLike, FileMetadata
 from .config import config
 from .rule import Rule
 from .hash_utils import generate_id
-from .manifest_validator import ManifestValidator
+from .log import logger
 
 
 @dataclass
@@ -35,11 +36,29 @@ class Manifest:
         return hash((self.id, self.version, tuple(self.rules)))
 
     @staticmethod
+    def _update_cerberus_schema_registry():
+        """
+        For every schema in the manifest schema parts directory, add it to the
+        Cerberus schema registry.
+        """
+        for schema_path in config.manifest_schema_parts.glob("*.yaml"):
+            name = schema_path.stem
+            schema = read_yaml(schema_path)
+            logger.debug(
+                f"Adding manifest schema part '{name}' to Cerberus schema registry."
+            )
+            schema_registry.add(name, schema)
+            logger.debug(
+                f"Schema registry now contains parts: {list(schema_registry.all().keys())}"
+            )
+
+    @staticmethod
     def check_valid(d: Dict, mani_schema: Path) -> Tuple[bool, Dict]:
         """Use Cerberus to check if manifest has valid syntax."""
+        Manifest._update_cerberus_schema_registry()
         schema: Dict = read_yaml(mani_schema)
         allow_unknown: Union[Dict, bool] = schema.pop("allow_unknown", False)
-        v = ManifestValidator(schema, allow_unknown=allow_unknown)
+        v = Validator(schema, allow_unknown=allow_unknown)
         valid = v.validate(d)
         return valid, v.errors
 

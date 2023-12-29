@@ -27,6 +27,30 @@ author:
 rules:
   type: list
   required: false
+  allow_unknown: true
   schema:
-    schema_ref: rule.yaml
+    type: dict
+    schema:
+      id:
+        type: string
+        required: false
+      description:
+        type: string
+        required: false
+      query:
+        type: string
+        required: false
+      count_min:
+        type: integer
+        required: false
+      count_max:
+        type: integer
+        required: false
+      regex:
+        type: string
+        required: false
+      eval:
+        type: string
+        required: false
+
 

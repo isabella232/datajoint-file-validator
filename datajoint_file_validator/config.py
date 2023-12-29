@@ -11,6 +11,9 @@ class Config(BaseSettings):
     debug: bool = True
     enable_path_handle: bool = True
     default_query: str = "**"
+    manifest_schema_parts: Path = Path(
+        "datajoint_file_validator/manifest_schemas/parts"
+    )
     manifest_schema: Path = Path(
         "datajoint_file_validator/manifest_schemas/latest.yaml"
     )
