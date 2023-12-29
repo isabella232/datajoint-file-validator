@@ -11,6 +11,9 @@ version:
 description:
   type: string
   required: false
+uri:
+  type: string
+  required: false
 author:
   type: dict
   required: false
