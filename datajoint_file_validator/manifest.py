@@ -33,9 +33,10 @@ class Manifest:
     @staticmethod
     def check_valid(d: Dict, mani_schema: Path) -> Tuple[bool, Dict]:
         """Use Cerberus to check if manifest has valid syntax."""
-        v = Validator()
         schema: Dict = read_yaml(mani_schema)
-        valid = v.validate(d, schema)
+        allow_unknown: Union[Dict, bool] = schema.pop("allow_unknown", False)
+        v = Validator(schema, allow_unknown=allow_unknown)
+        valid = v.validate(d)
         return valid, v.errors
 
     @classmethod
@@ -58,9 +59,7 @@ class Manifest:
             uri=d.get("uri"),
             version=d.get("version"),
             description=d.get("description"),
-            rules=[
-                Rule.from_dict(rule, check_valid=check_valid) for rule in d["rules"]
-            ],
+            rules=[Rule.from_dict(rule) for rule in d.get("rules", [])],
         )
         return self_
 
