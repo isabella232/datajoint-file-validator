@@ -3,7 +3,6 @@ from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 import yaml
 from pprint import pformat as pf
-from cerberus import Validator
 from .yaml import read_yaml
 from .error import DJFileValidatorError, InvalidManifestError
 from .result import ValidationResult
@@ -11,6 +10,7 @@ from .snapshot import Snapshot, PathLike, FileMetadata
 from .config import config
 from .rule import Rule
 from .hash_utils import generate_id
+from .manifest_validator import ManifestValidator
 
 
 @dataclass
@@ -39,7 +39,7 @@ class Manifest:
         """Use Cerberus to check if manifest has valid syntax."""
         schema: Dict = read_yaml(mani_schema)
         allow_unknown: Union[Dict, bool] = schema.pop("allow_unknown", False)
-        v = Validator(schema, allow_unknown=allow_unknown)
+        v = ManifestValidator(schema, allow_unknown=allow_unknown)
         valid = v.validate(d)
         return valid, v.errors
 
