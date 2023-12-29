@@ -12,8 +12,6 @@ class TestValidate:
     def test_help(self, runner):
         result = runner.invoke(app, ["validate", "--help"])
         assert result.exit_code == 0
-        # assert "Hello Camila" in result.stdout
-        # assert "Let's have a coffee in Berlin" in result.stdout
 
     def test_readme_example(self, runner):
         result = runner.invoke(

@@ -20,41 +20,6 @@ def callback():
     pass
 
 
-def show_table():
-    table = Table("Name", "Item")
-    table.add_row("Rick", "Portal Gun")
-    table.add_row("Morty", "Plumbus")
-    console.print(table)
-
-
-def open_file(path: str):
-    """
-    Open a file at PATH in the default app.
-    """
-    rprint(f":left_speech_bubble:  Opening file {path}")
-    typer.launch(path, locate=True)
-
-
-def read_file(path: Annotated[typer.FileText, typer.Option()]):
-    """
-    Reads lines from a file at PATH.
-    """
-    for line in path:
-        rprint(f"Config line: {path}")
-
-
-def _main(name: str, lastname: str = "", formal: bool = False):
-    """
-    Say hi to NAME, optionally with a --lastname.
-
-    If --formal is used, say hi very formally.
-    """
-    if formal:
-        rprint(f"Good day Ms. {name} {lastname}.")
-    else:
-        rprint(f"Hello {name} {lastname}")
-
-
 class DisplayFormat(str, Enum):
     table = "table"
     yaml = "yaml"
