@@ -1,0 +1,5 @@
+# Schema that defines a single Rule in a Manifest
+allow_unknown: false
+id:
+  type: string
+  required: false

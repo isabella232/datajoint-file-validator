@@ -1,4 +1,4 @@
-from cerberus import Validator
+from cerberus import Validator, errors
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Union, Generator
 from .yaml import read_yaml
@@ -42,7 +42,7 @@ class ManifestValidator(Validator):
         Custom validation method for `schema_ref` field.
         """
         if not isinstance(value, str):
-            self._error(field, f"value of 'schema_ref' must be a string")
+            self._error(field, f"value of 'schema_ref' must be a string, is type '{type(value)}'")
         schema_path = self._find_manifest_schema(schema_ref)
         if schema_path is None:
             self._error(
@@ -58,7 +58,8 @@ class ManifestValidator(Validator):
                 f"unable to read schema file at schema_ref='{schema_ref}': {e}"
             )
         allow_unknown: Union[Dict, bool] = schema.pop("allow_unknown", False)
-        v = Validator(schema, allow_unknown=allow_unknown)
+        v = ManifestValidator(schema, allow_unknown=allow_unknown)
         valid = v.validate(value)
         if not valid:
-            self._error(field, validator.errors)
+            for k, v in v.errors.items():
+                self._error(k, str(v))

@@ -27,5 +27,6 @@ author:
 rules:
   type: list
   required: false
-  schema_ref: rules.yaml
+  schema:
+    schema_ref: rule.yaml
 
