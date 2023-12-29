@@ -12,7 +12,7 @@ class Config(BaseSettings):
     enable_path_handle: bool = True
     default_query: str = "**"
     manifest_schema: Path = Path(
-        "datajoint_file_validator/manifest_schemas/v0.1.0.yaml"
+        "datajoint_file_validator/manifest_schemas/minimal.yaml"
     )
 
 

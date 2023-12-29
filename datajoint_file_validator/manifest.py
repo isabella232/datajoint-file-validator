@@ -20,15 +20,18 @@ class Manifest:
     syntax, and converting into a query and a set of rules.
     """
 
-    id: str
+    id: Optional[str]
     version: Optional[str] = None
     description: Optional[str] = None
-    rules: List[Rule] = field(default_factory=list)
     uri: Optional[str] = None
+    rules: List[Rule] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.id:
             self.id = generate_id(self)
+
+    def __hash__(self):
+        return hash((self.id, self.version, tuple(self.rules)))
 
     @staticmethod
     def check_valid(d: Dict, mani_schema: Path) -> Tuple[bool, Dict]:

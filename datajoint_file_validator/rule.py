@@ -23,7 +23,7 @@ class Rule:
             self.id = generate_id(self)
 
     def __hash__(self):
-        return hash((self.query, tuple(self.constraints)))
+        return hash((self.id, self.query, tuple(self.constraints)))
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
