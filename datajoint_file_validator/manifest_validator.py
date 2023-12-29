@@ -43,13 +43,22 @@ class ManifestValidator(Validator):
         """
         if not isinstance(value, str):
             self._error(field, f"value of 'schema_ref' must be a string")
-        schema = self._find_manifest_schema(schema_ref)
-        if schema is None:
+        schema_path = self._find_manifest_schema(schema_ref)
+        if schema_path is None:
             self._error(
                 field,
                 f"schema file schema_ref='{schema_ref}' not "
                 "found. Try setting an absolute path.",
             )
-        v = Validator(schema)
-        if not v.validate(value):
+        try:
+            schema = read_yaml(Path(schema_path).resolve())
+        except Exception as e:
+            self._error(
+                field,
+                f"unable to read schema file at schema_ref='{schema_ref}': {e}"
+            )
+        allow_unknown: Union[Dict, bool] = schema.pop("allow_unknown", False)
+        v = Validator(schema, allow_unknown=allow_unknown)
+        valid = v.validate(value)
+        if not valid:
             self._error(field, validator.errors)
