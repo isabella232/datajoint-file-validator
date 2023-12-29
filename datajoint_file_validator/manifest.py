@@ -2,6 +2,7 @@ from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 import yaml
+from pprint import pformat as pf
 from cerberus import Validator
 from .yaml import read_yaml
 from .error import DJFileValidatorError, InvalidManifestError
@@ -45,7 +46,12 @@ class Manifest:
     @classmethod
     def from_yaml(cls, path: PathLike, **kw) -> "Manifest":
         """Load a manifest from a YAML file."""
-        return cls.from_dict(read_yaml(path), **kw)
+        try:
+            return cls.from_dict(read_yaml(path), **kw)
+        except InvalidManifestError as e:
+            raise InvalidManifestError(
+                f"Error loading manifest at '{path}':\n{e}"
+            ) from e
 
     @classmethod
     def from_dict(cls, d: Dict, check_valid=True) -> "Manifest":
@@ -55,7 +61,8 @@ class Manifest:
             valid, errors = cls.check_valid(d, mani_schema=mani_schema)
             if not valid:
                 raise InvalidManifestError(
-                    f"Manifest does not match schema={mani_schema}: {errors}"
+                    f"Manifest does not match schema at '{mani_schema}' with "
+                    f"the following errors:\n{pf(errors, indent=4)}"
                 )
         self_ = cls(
             id=d.get("id"),
