@@ -42,6 +42,6 @@ class TestValidate:
         if fmt == "table":
             assert "━" in result.stdout
         elif fmt == "yaml":
-            assert "rule: count_min" in result.stdout
+            assert "constraint_id: count_min" in result.stdout
         elif fmt == "json":
-            assert '"rule": "count_min"' in result.stdout
+            assert "'constraint_id': 'count_min'" in result.stdout
