@@ -10,7 +10,13 @@ class BaseSettings:
 
     # Define settings attributes here
     # my_config_val: str = "default value"
-    # my_flag: bool = False # setting MY_FLAG=1 in .env will set this to True
+    # my_optional_attr: Optional[str] = None
+
+    # Setting MY_FLAG=1 in .env will set this to True
+    # my_flag: bool = False
+
+    # Setting env var MY_CASTED_ATTR='4' will try to cast this as int first, then str
+    # my_casted_attr: Union[int, str] = 2
 
     @staticmethod
     def _cast_val(val: str, type_annot: Optional[Any]) -> Any:
@@ -29,6 +35,7 @@ class BaseSettings:
             else:
                 raise ValueError(f"Failed to parse '{val}' as bool.")
 
+        # Handle generic types
         if get_origin(type_annot) is Union:
             for constr in get_args(type_annot):
                 try:
@@ -36,14 +43,19 @@ class BaseSettings:
                 except (TypeError, ValueError):
                     continue
         elif get_origin(type_annot) is not None:
-            raise TypeError(f"Cannot parse '{val}' as instance of '{type_annot.__name__}'.")
+            raise TypeError(
+                f"Cannot parse '{val}' as instance of '{type_annot.__name__}'."
+            )
         else:
             constr = type_annot
 
+        # Cast to type
         try:
             return constr(val)
         except (TypeError, ValueError) as e:
-            raise TypeError(f"Failed to parse '{val}' as instance of '{type_annot.__name__}'.") from e
+            raise TypeError(
+                f"Failed to parse '{val}' as instance of '{type_annot.__name__}'."
+            ) from e
 
     def _populate_from_dot_env(self, env_path: str):
         """
@@ -91,7 +103,6 @@ class BaseSettings:
                     f"Error parsing {key_in_d}={val} as {type_annot}: {e}"
                 ) from e
 
-
     def __init__(self, env_path: Optional[str] = None, **values):
         if not hasattr(self, "__annotations__"):
             self.__annotations__ = {}
@@ -104,7 +115,7 @@ class BaseSettings:
 
         # Check that all attributes have been set
         unset_attrs = []
-        for k in self.__annotations__:
+        for k in get_type_hints(self):
             if k.upper() == k or k.startswith("_"):
                 continue
             if not hasattr(self, k):
