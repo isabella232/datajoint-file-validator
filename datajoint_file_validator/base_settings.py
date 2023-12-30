@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union, get_type_hints, get_args, get_origin
 from dotenv import dotenv_values
 
 
@@ -17,19 +17,33 @@ class BaseSettings:
         """
         Cast a string `val` to the type of `type_annot`.
         """
+        if val is None:
+            return None
         if type_annot is None:
             return val
-        if type_annot is bool and isinstance(val, str):
-            if val.lower() in ["true", "1"]:
+        if type_annot is bool:
+            if str(val).lower() in ["true", "1"]:
                 return True
-            elif val.lower() in ["false", "0"]:
+            elif str(val).lower() in ["false", "0"]:
                 return False
             else:
-                raise ValueError(f"Cannot parse '{val}' as bool.")
+                raise ValueError(f"Failed to parse '{val}' as bool.")
+
+        if get_origin(type_annot) is Union:
+            for constr in get_args(type_annot):
+                try:
+                    return constr(val)
+                except (TypeError, ValueError):
+                    continue
+        elif get_origin(type_annot) is not None:
+            raise TypeError(f"Cannot parse '{val}' as instance of '{type_annot.__name__}'.")
+        else:
+            constr = type_annot
+
         try:
-            return type_annot(val)
+            return constr(val)
         except (TypeError, ValueError) as e:
-            raise TypeError(f"Cannot parse '{val}' as instance of '{type_annot.__name__}'.") from e
+            raise TypeError(f"Failed to parse '{val}' as instance of '{type_annot.__name__}'.") from e
 
     def _populate_from_dot_env(self, env_path: str):
         """
@@ -52,7 +66,7 @@ class BaseSettings:
         are callable, have no type annotation, or are not class attributes.
         """
         attrs = {
-            **self.__annotations__,
+            **get_type_hints(self),
             # Include attributes with no type annotation but a default value
             **self.__class__.__dict__,
         }
@@ -69,7 +83,7 @@ class BaseSettings:
             else:
                 continue
 
-            type_annot = self.__annotations__.get(k)
+            type_annot = get_type_hints(self).get(k)
             try:
                 setattr(self, k, self._cast_val(val, type_annot))
             except ValueError as e:
