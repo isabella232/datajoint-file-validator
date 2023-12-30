@@ -43,8 +43,8 @@ def test_error_report_output_format(manifest_path, fmt):
 
 
 class TestE2EValidaiton:
-    def _validate(self, path, manifest) -> Tuple:
-        success, report = djfval.validate(path, manifest)
+    def _validate(self, path, manifest, **kw) -> Tuple:
+        success, report = djfval.validate(path, manifest, **kw)
         failed_constraints = [item["constraint_id"] for item in report]
         failed_rules = [item["rule"] for item in report]
         return success, report, failed_constraints, failed_rules
@@ -58,7 +58,15 @@ class TestE2EValidaiton:
         assert isinstance(report, list)
         assert failed_constraints == ["count_min"]
 
-    def test_fileset1(self):
+    @pytest.mark.parametrize('verbose, format', product(
+        (True, False),
+        (
+            "table",
+            "yaml",
+            "json",
+        ),
+    ))
+    def test_fileset1(self, verbose, format):
         manifest_dict = {
             "id": "test",
             "version": "0.1",
@@ -91,7 +99,7 @@ class TestE2EValidaiton:
         ), "inconsistent automatic id generation"
 
         success, report, failed_constraints, failed_rules = self._validate(
-            "tests/data/filesets/fileset1", manifest
+            "tests/data/filesets/fileset1", manifest, verbose=verbose, format=format
         )
         assert not success
         assert isinstance(report, list)
