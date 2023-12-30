@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 from typing import Any, Iterable, Callable, Tuple
+from abc import ABC, abstractmethod
 from cerberus import Validator
 from ..config import config
 from ..snapshot import Snapshot
@@ -11,19 +12,18 @@ Schema = Any
 
 
 @dataclass(frozen=True)
-class Constraint:
+class Constraint(ABC):
     """A single constraint that evaluates True or False for a fileset."""
 
+    @abstractmethod
     def validate(self, snapshot: Snapshot) -> ValidationResult:
         """Validate a snapshot against a single constraint."""
-        raise NotImplementedError(
-            "Subclass of Constraint must implement validate() method."
-        )
+        pass
 
     @property
     def name(self):
         _name = getattr(self, "_name", None)
-        return _name if _name else self.__class__.__name__
+        return _name if _name is not None else self.__class__.__name__
 
 
 @dataclass(frozen=True)
@@ -143,13 +143,13 @@ class EvalConstraint(Constraint):
         except Exception as e:
             raise DJFileValidatorError(
                 f"Error parsing function in `{self.name}` constraint: {type(e).__name__}: {e}"
-            )
+            ) from e
         try:
             status = function(snapshot)
         except Exception as e:
             raise DJFileValidatorError(
                 f"Error validating function `{function_name}` in `{self.name}` constraint: {type(e).__name__}: {e}"
-            )
+            ) from e
         return ValidationResult(
             status=status,
             message=None

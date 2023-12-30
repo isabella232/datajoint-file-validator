@@ -1,4 +1,4 @@
-allow_unknown: false
+allow_unknown: true
 id:
   type: string
   required: false
@@ -9,9 +9,6 @@ version:
   type: string
   required: false
 description:
-  type: string
-  required: false
-uri:
   type: string
   required: false
 author:
@@ -27,7 +24,10 @@ author:
 rules:
   type: list
   required: false
-  allow_unknown: false
   schema:
-    schema: rule
+    type: dict
+    schema:
+      id:
+        type: string
+        required: false
 

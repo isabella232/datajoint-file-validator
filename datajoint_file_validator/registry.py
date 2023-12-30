@@ -2,9 +2,10 @@ import pathlib
 from typing import List, Union, Generator, Tuple
 from pprint import pformat as pf
 from wcmatch.pathlib import Path
-from . import Manifest
+from .manifest import Manifest
 from .config import config
-from . import logger, __path__ as MODULE_HOMES
+from .log import logger
+from . import __path__ as MODULE_HOMES
 
 
 def _get_try_paths(

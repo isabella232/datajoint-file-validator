@@ -1,0 +1,26 @@
+# Schema that defines a single Rule in a Manifest
+id:
+  type: string
+  required: false
+description:
+  type: string
+  required: false
+query:
+  type: string
+  required: false
+count_min:
+  type: integer
+  required: false
+  min: 0
+count_max:
+  type: integer
+  required: false
+  min: 0
+regex:
+  type: string
+  required: false
+eval:
+  type: string
+  required: false
+  # https://www.regular-expressions.info/modifiers.html
+  regex: '(?s)^\s*def\s+[a-zA-Z0-9_]+\s*\(.*\).*:.*$'

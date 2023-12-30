@@ -3,7 +3,7 @@ id: demo_dlc
 version: 0.1.0
 description: DeepLabCut demo fileset type
 author:
-  id: Ethan Ho
+  name: Ethan Ho
   email: ***REMOVED***
 rules:
   - id: "Min total files"
