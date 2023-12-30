@@ -58,14 +58,17 @@ class TestE2EValidaiton:
         assert isinstance(report, list)
         assert failed_constraints == ["count_min"]
 
-    @pytest.mark.parametrize('verbose, format', product(
-        (True, False),
-        (
-            "table",
-            "yaml",
-            "json",
+    @pytest.mark.parametrize(
+        "verbose, format",
+        product(
+            (True, False),
+            (
+                "table",
+                "yaml",
+                "json",
+            ),
         ),
-    ))
+    )
     def test_fileset1(self, verbose, format):
         manifest_dict = {
             "id": "test",
