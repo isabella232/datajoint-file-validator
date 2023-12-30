@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union, get_type_hints, get_args, get_origin
 from dotenv import dotenv_values
 
 
@@ -10,69 +10,115 @@ class BaseSettings:
 
     # Define settings attributes here
     # my_config_val: str = "default value"
-    # my_flag: bool = False # setting MY_FLAG=1 in .env will set this to True
+    # my_optional_attr: Optional[str] = None
+
+    # Setting MY_FLAG=1 in .env will set this to True
+    # my_flag: bool = False
+
+    # Setting env var MY_CASTED_ATTR='4' will try to cast this as int first, then str
+    # my_casted_attr: Union[int, str] = 2
 
     @staticmethod
     def _cast_val(val: str, type_annot: Optional[Any]) -> Any:
         """
         Cast a string `val` to the type of `type_annot`.
         """
+        if val is None:
+            return None
         if type_annot is None:
             return val
         if type_annot is bool:
-            if val.lower() in ["true", "1"]:
+            if str(val).lower() in ["true", "1"]:
                 return True
-            elif val.lower() in ["false", "0"]:
+            elif str(val).lower() in ["false", "0"]:
                 return False
             else:
-                raise ValueError(f"Cannot parse '{val}' as bool.")
+                raise ValueError(f"Failed to parse '{val}' as bool.")
+
+        # Handle generic types
+        if get_origin(type_annot) is Union:
+            for constr in get_args(type_annot):
+                try:
+                    return constr(val)
+                except (TypeError, ValueError):
+                    continue
+        elif get_origin(type_annot) is not None:
+            raise TypeError(
+                f"Cannot parse '{val}' as instance of '{type_annot.__name__}'."
+            )
+        else:
+            constr = type_annot
+
+        # Cast to type
         try:
-            return type_annot(val)
-        except ValueError as e:
-            raise ValueError(f"Cannot parse '{val}' as {type_annot}.") from e
+            return constr(val)
+        except (TypeError, ValueError) as e:
+            raise TypeError(
+                f"Failed to parse '{val}' as instance of '{type_annot.__name__}'."
+            ) from e
 
     def _populate_from_dot_env(self, env_path: str):
         """
         Set attributes from a .env file at `env_path`.
         """
         d = dotenv_values(env_path)
-        self._populate_from_dict(d)
+        self._populate_from_dict(d, match_upper=True)
 
     def _populate_from_env_vars(self):
         """
         Set attributes from environment variables.
         """
         d = os.environ
-        self._populate_from_dict(d)
+        self._populate_from_dict(d, match_upper=True)
 
-    def _populate_from_dict(self, d: Dict[str, Any]):
+    def _populate_from_dict(self, d: Dict[str, Any], match_upper: bool = False):
         """
         Set attributes from a dictionary `d`.
         Skips attributes that are upper-cased, start with an underscore,
         are callable, have no type annotation, or are not class attributes.
         """
-        for k, v in self.__class__.__dict__.items():
-            val_from_dict = d.get(k.upper(), None)
-            type_annot = self.__class__.__annotations__.get(k, None)
-            if (
-                k.startswith("_")
-                or callable(v)
-                or k.upper() == k
-                or type_annot is None
-                or val_from_dict is None
-            ):
+        attrs = {
+            **get_type_hints(self),
+            # Include attributes with no type annotation but a default value
+            **self.__class__.__dict__,
+        }
+        for k in attrs:
+            key_in_d = k.upper() if match_upper else k
+            if k.upper() == k or k.startswith("_"):
                 continue
+            if key_in_d in d:
+                val = d[key_in_d]
+            elif k in self.__class__.__dict__:
+                val = self.__class__.__dict__[k]
+                if callable(val):
+                    continue
+            else:
+                continue
+
+            type_annot = get_type_hints(self).get(k)
             try:
-                setattr(self, k, self.cast_val(v, type_annot))
+                setattr(self, k, self._cast_val(val, type_annot))
             except ValueError as e:
                 raise ValueError(
-                    f"Error parsing {k}={val_from_dict} as {type_annot}: {e}"
+                    f"Error parsing {key_in_d}={val} as {type_annot}: {e}"
                 ) from e
 
-    def __init__(self, env_path: Optional[str] = None, values: Optional[Dict] = None):
+    def __init__(self, env_path: Optional[str] = None, **values):
+        if not hasattr(self, "__annotations__"):
+            self.__annotations__ = {}
         env_path = env_path or self.ENV_PATH
         if os.path.isfile(env_path):
             self._populate_from_dot_env(env_path)
         self._populate_from_env_vars()
         if values:
             self._populate_from_dict(values)
+
+        # Check that all attributes have been set
+        unset_attrs = []
+        for k in get_type_hints(self):
+            if k.upper() == k or k.startswith("_"):
+                continue
+            if not hasattr(self, k):
+                unset_attrs.append(k)
+        if unset_attrs:
+            raise ValueError(f"Missing values for attributes: {unset_attrs}")

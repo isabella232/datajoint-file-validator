@@ -42,10 +42,8 @@ def validate(
     # Infer how to fetch manifest
     if isinstance(manifest, Manifest):
         mani = manifest
-    elif isinstance(manifest, str):
-        mani = Manifest.from_yaml(manifest)
     else:
-        raise ValueError("manifest must be a path or Manifest object.")
+        mani = Manifest.from_yaml(manifest)
 
     # Infer how to create snapshot
     if isinstance(target, str):
