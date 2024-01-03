@@ -98,7 +98,7 @@ class BaseSettings:
             type_annot = get_type_hints(self).get(k)
             try:
                 setattr(self, k, self._cast_val(val, type_annot))
-            except ValueError as e:
+            except (TypeError, ValueError) as e:
                 raise ValueError(
                     f"Error parsing {key_in_d}={val} as {type_annot}: {e}"
                 ) from e
