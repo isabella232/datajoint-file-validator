@@ -25,6 +25,32 @@ class TestValidate:
         assert result.exit_code == 1
         assert "failed" in result.stderr
 
+    def test_readme_example_with_symlink(self, runner):
+        result = runner.invoke(
+            app,
+            [
+                "validate",
+                "tests/data/filesets/fileset0",
+                # "demo_dlc",
+                "datajoint_file_validator/manifests/demo_dlc/default.yaml",
+            ],
+        )
+        assert result.exit_code == 1
+        assert "failed" in result.stderr
+
+    def test_readme_example_with_discovery(self, runner):
+        result = runner.invoke(
+            app,
+            [
+                "validate",
+                "tests/data/filesets/fileset0",
+                "demo_dlc",
+            ],
+        )
+        assert result.exit_code == 1
+        assert "failed" in result.stderr
+
+
     @pytest.mark.parametrize("fmt", ("table", "yaml", "json"))
     def test_output_format(self, runner, fmt):
         result = runner.invoke(

@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Optional, Union, Tuple
 from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
+from .registry import find_manifest
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
@@ -43,7 +44,7 @@ def validate(
     if isinstance(manifest, Manifest):
         mani = manifest
     else:
-        mani = Manifest.from_yaml(manifest)
+        mani = Manifest.from_yaml(find_manifest(manifest))
 
     # Infer how to create snapshot
     if isinstance(target, str):
