@@ -166,7 +166,7 @@ def test_populate_from_dotenv(example_settings_cls, values_dict, tmp_path):
     assert settings.my_optional_str == "12"
 
 
-def test_init(example_settings_cls, values_dict, tmp_path):
+def test_init(example_settings_cls, values_dict, tmp_path, monkeypatch):
     """
     Test that values are initialized from .env, env vars, and kwargs in that order.
     """
@@ -174,22 +174,25 @@ def test_init(example_settings_cls, values_dict, tmp_path):
     with open(dotenv_path, "w") as f:
         for key, val in values_dict.items():
             f.write(f"{key.upper()}={val}\n")
+    monkeypatch.setenv("MY_STR", "my_str2")
+    monkeypatch.setenv("MY_OPTIONAL_STR", "35")
 
-    assert os.path.isfile(dotenv_path)
     settings = example_settings_cls(
-        env_path=dotenv_path, none_val=None, none_val2=None, my_flag="0", my_path="my/path"
+        env_path=dotenv_path,
+        none_val=None, none_val2=None, my_flag="0", my_path="my/path",
+        my_optional_str=120,
     )
 
     assert not hasattr(settings, "WONT_REGISTER_AS_ATTR")
     assert settings.NOT_THIS_ONE is False
-    assert settings.my_str == "my_str"
+    assert settings.my_str == "my_str2"
     assert settings.my_flag is True
     assert settings.my_other_flag is False
     assert settings.my_false_flag is True
     assert settings.my_path == Path("./my/path")
     assert settings.my_path_with_default == Path("./my/other/path")
     assert settings.my_path_cast == Path("my/other/path/")
-    assert settings.my_optional_str == "12"
+    assert settings.my_optional_str == "120"
 
 
 def test_init_raises_for_missing_attributes(example_settings_cls, values_dict):
