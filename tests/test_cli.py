@@ -50,7 +50,6 @@ class TestValidate:
         assert result.exit_code == 1
         assert "failed" in result.stderr
 
-
     @pytest.mark.parametrize("fmt", ("table", "yaml", "json"))
     def test_output_format(self, runner, fmt):
         result = runner.invoke(
