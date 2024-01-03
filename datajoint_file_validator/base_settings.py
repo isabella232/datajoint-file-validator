@@ -36,7 +36,7 @@ class BaseSettings:
                 raise ValueError(f"Failed to parse '{val}' as bool.")
 
         # Handle generic types
-        if get_origin(type_annot) is Union:
+        if get_origin(type_annot) is Union: # includes Optional
             for constr in get_args(type_annot):
                 try:
                     return constr(val)
@@ -74,12 +74,12 @@ class BaseSettings:
     def _populate_from_dict(self, d: Dict[str, Any], match_upper: bool = False):
         """
         Set attributes from a dictionary `d`.
-        Skips attributes that are upper-cased, start with an underscore,
+        Skips setting attributes that are upper-cased, start with an underscore,
         are callable, have no type annotation, or are not class attributes.
         """
         attrs = {
             **get_type_hints(self),
-            # Include attributes with no type annotation but a default value
+            # Include attribute names that have no type annotation but a default value
             **self.__class__.__dict__,
         }
         for k in attrs:
@@ -104,6 +104,29 @@ class BaseSettings:
                 ) from e
 
     def __init__(self, env_path: Optional[str] = None, **values):
+        """
+        Create a new settings object, which allows settings to imported from
+        environment variables, .env files, and keyword arguments, and accessed
+        as attributes. Attributes will be set in the following order:
+
+        1. From a .env file at `env_path` (default: `.env`)
+        2. From environment variables. Environment variables are matched to
+           attributes by upper-casing the attribute name. e.g. to set the
+           attribute `my_attr`, set the environment variable `MY_ATTR`.
+        3. From keyword arguments passed as `**values` to this constructor.
+
+        The successive step will overwrite any previously set attributes.
+        Attribute names that are upper-cased in the class definition, start
+        with an underscore, are callable, have no type annotation, or are not
+        class attributes will be ignored.
+
+        Parameters
+        ----------
+        env_path : str
+            Path to a .env file. Will be set to `.env` by default.
+        **values : Any
+            Keyword arguments to set as attributes.
+        """
         if not hasattr(self, "__annotations__"):
             self.__annotations__ = {}
         env_path = env_path or self.ENV_PATH
