@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Any, Iterable, Callable, Tuple
+from typing import Any, Iterable, Callable, Tuple, List, Dict
 from abc import ABC, abstractmethod
 from cerberus import Validator
 from ..config import config
@@ -128,7 +128,7 @@ class EvalConstraint(Constraint):
         if match:
             function_name = match.group(1)
         else:
-            raise ValueError(f"Could not parse function name from {definition}")
+            raise ValueError(f"Could not parse function name from '{definition}'")
         assert function_name in locals()
         return locals()[function_name], function_name
 
@@ -142,13 +142,15 @@ class EvalConstraint(Constraint):
             function, function_name = self._eval_function(self.val)
         except Exception as e:
             raise DJFileValidatorError(
-                f"Error parsing function in `{self.name}` constraint: {type(e).__name__}: {e}"
+                f"Error parsing function in '{self.name}' constraint: {type(e).__name__}: {e}"
             ) from e
         try:
             status = function(snapshot)
         except Exception as e:
             raise DJFileValidatorError(
-                f"Error validating function `{function_name}` in `{self.name}` constraint: {type(e).__name__}: {e}"
+                f"Error was raised while executing validation function "
+                f"'{function_name}' in "
+                f"constraint '{self.name}': {type(e).__name__}: {e}"
             ) from e
         return ValidationResult(
             status=status,
