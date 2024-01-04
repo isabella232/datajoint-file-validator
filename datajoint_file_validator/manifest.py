@@ -73,10 +73,12 @@ class Manifest:
             ) from e
 
     @classmethod
-    def from_dict(cls, d: Dict, check_valid=True) -> "Manifest":
+    def from_dict(
+        cls, d: Dict, check_valid=True, mani_schema: Optional[PathLike] = None
+    ) -> "Manifest":
         """Load a manifest from a dictionary."""
         if check_valid:
-            mani_schema = config.manifest_schema
+            mani_schema = mani_schema or config.manifest_schema
             valid, errors = cls.check_valid(d, mani_schema=mani_schema)
             if not valid:
                 raise InvalidManifestError(
