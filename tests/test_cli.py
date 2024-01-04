@@ -1,4 +1,6 @@
 import pytest
+import shutil
+from pathlib import Path
 from typer.testing import CliRunner
 from datajoint_file_validator.cli import app
 
@@ -49,6 +51,41 @@ class TestValidate:
         )
         assert result.exit_code == 1
         assert "failed" in result.stderr
+
+    def test_readme_example_success(self, runner, tmp_path):
+        # Copy fileset0 to a temporary directory
+        tmp_fileset = tmp_path / "fileset0"
+        tmp_fileset.mkdir()
+        for path in Path("tests/data/filesets/fileset0").iterdir():
+            shutil.copy(path, tmp_fileset)
+
+        # Failed run
+        result = runner.invoke(
+            app,
+            [
+                "validate",
+                str(tmp_fileset),
+                "demo_dlc",
+            ],
+        )
+        assert result.exit_code == 1
+        assert "failed" in result.stderr
+
+        # Add two files to fileset
+        (tmp_fileset / "file1.txt").touch()
+        (tmp_fileset / "file2.txt").touch()
+
+        # Success run
+        result = runner.invoke(
+            app,
+            [
+                "validate",
+                str(tmp_fileset),
+                "demo_dlc",
+            ],
+        )
+        assert result.exit_code == 0
+        assert "failed" not in result.stderr
 
     @pytest.mark.parametrize("fmt", ("table", "yaml", "json"))
     def test_output_format(self, runner, fmt):
