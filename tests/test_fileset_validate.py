@@ -1,8 +1,37 @@
 import pytest
-from typing import Tuple
+from typing import Tuple, Dict
 from itertools import product
 import glob
 import datajoint_file_validator as djfval
+
+
+@pytest.fixture
+def manifest_dict() -> Dict:
+    return {
+        "id": "test",
+        "version": "0.1",
+        "description": "Test manifest",
+        "rules": [
+            {
+                "id": "count_min_max",
+                "description": "Check count min max",
+                "query": "**",
+                "count_min": 20,
+            },
+            {
+                # id automatically generated from hash of constraints
+                "count_max": 3,
+            },
+            {
+                "id": "max_txt_files",
+                "query": "*.txt",
+                "count_max": 5,
+            },
+            {
+                "eval": "def test_custom(snapshot):\n    return False",
+            },
+        ],
+    }
 
 
 @pytest.mark.parametrize(
@@ -69,32 +98,7 @@ class TestE2EValidaiton:
             ),
         ),
     )
-    def test_fileset1(self, verbose, format):
-        manifest_dict = {
-            "id": "test",
-            "version": "0.1",
-            "description": "Test manifest",
-            "rules": [
-                {
-                    "id": "count_min_max",
-                    "description": "Check count min max",
-                    "query": "**",
-                    "count_min": 20,
-                },
-                {
-                    # id automatically generated from hash of constraints
-                    "count_max": 3,
-                },
-                {
-                    "id": "max_txt_files",
-                    "query": "*.txt",
-                    "count_max": 5,
-                },
-                {
-                    "eval": "def test_custom(snapshot):\n    return False",
-                },
-            ],
-        }
+    def test_fileset1(self, verbose, format, manifest_dict):
         manifest = djfval.Manifest.from_dict(manifest_dict)
         assert (
             manifest.rules[1].id
@@ -108,3 +112,20 @@ class TestE2EValidaiton:
         assert isinstance(report, list)
         assert "count_max" in failed_constraints
         assert "max_txt_files" not in failed_rules
+
+    def test_invalid_format(self, manifest_dict):
+        """Test invalid format specification"""
+        manifest = djfval.Manifest.from_dict(manifest_dict)
+        with pytest.raises(ValueError):
+            self._validate(
+                "tests/data/filesets/fileset1", manifest, verbose=True, format="invalid_format"
+            )
+
+    def test_fail_with_raise_err(self, manifest_dict):
+        """Test raises on failure if raise_err=True"""
+        manifest = djfval.Manifest.from_dict(manifest_dict)
+        with pytest.raises(djfval.error.DJFileValidatorError):
+            self._validate(
+                "tests/data/filesets/fileset1", manifest, verbose=True,
+                format="table", raise_err=True
+            )

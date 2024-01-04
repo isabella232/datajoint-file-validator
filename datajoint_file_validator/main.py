@@ -1,13 +1,14 @@
 import sys
 import yaml
 from typing import List, Dict, Any, Optional, Union, Tuple
+from rich import print as rprint
+from rich.console import Console
+from rich.table import Table
 from .manifest import Manifest, Rule
 from .snapshot import Snapshot, create_snapshot, PathLike
 from .result import ValidationResult
 from .registry import find_manifest
-from rich import print as rprint
-from rich.console import Console
-from rich.table import Table
+from .error import DJFileValidatorError
 
 ErrorReport = List[Dict[str, Any]]
 
