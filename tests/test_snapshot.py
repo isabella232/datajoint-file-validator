@@ -81,3 +81,9 @@ class TestSnapshot:
         files = djfval.snapshot.create_snapshot(fileset_path)
         paths = self._get_paths(files)
         assert paths == ["fileset3.txt"]
+
+    def test_nonexistent_fileset(
+        self, fileset_path="tests/data/filesets/my_dummy_fileset"
+    ):
+        with pytest.raises(FileNotFoundError):
+            djfval.snapshot.create_snapshot(fileset_path)

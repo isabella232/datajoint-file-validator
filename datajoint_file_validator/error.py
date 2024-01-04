@@ -4,3 +4,7 @@ class DJFileValidatorError(Exception):
 
 class InvalidManifestError(DJFileValidatorError):
     pass
+
+
+class InvalidRuleError(DJFileValidatorError):
+    pass

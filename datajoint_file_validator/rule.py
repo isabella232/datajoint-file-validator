@@ -5,7 +5,7 @@ from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
 from .query import Query, GlobQuery
 from .config import config
-from .error import DJFileValidatorError
+from .error import InvalidRuleError
 from .hash_utils import generate_id
 
 
@@ -42,17 +42,20 @@ class Rule:
 
     @staticmethod
     def compile_query(raw: Any) -> "Query":
-        assert isinstance(raw, str)
+        if not isinstance(raw, str):
+            raise InvalidRuleError(f"Query must be a string, not '{type(raw)}'")
         return GlobQuery(path=raw)
 
     @staticmethod
-    def compile_constraint(name: str, val: Any) -> "Constraint":
-        if name not in CONSTRAINT_MAP:
-            raise DJFileValidatorError(f"Unknown constraint: {name}")
+    def compile_constraint(
+        name: str, val: Any, constraint_map=CONSTRAINT_MAP
+    ) -> "Constraint":
+        if name not in constraint_map:
+            raise InvalidRuleError(f"Unknown constraint: '{name}'")
         try:
-            return CONSTRAINT_MAP[name](val)
-        except DJFileValidatorError as e:
-            raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
+            return constraint_map[name](val)
+        except Exception as e:
+            raise InvalidRuleError(f"Error parsing constraint '{name}': {e}") from e
 
     @classmethod
     def from_dict(cls, d: Dict) -> "Rule":
@@ -71,6 +74,6 @@ class Rule:
                     cls.compile_constraint(name, val) for name, val in rest.items()
                 ],
             )
-        except DJFileValidatorError as e:
-            raise DJFileValidatorError(f"Error parsing rule '{id}': {e}")
+        except InvalidRuleError as e:
+            raise InvalidRuleError(f"Error parsing rule '{id}': {e}")
         return self_

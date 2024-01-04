@@ -88,7 +88,7 @@ def _snapshot_to_cls(
     elif root.is_dir():
         files = [FileMetadata.from_path(p, root) for p in root.glob("**", flags=flags)]
     else:
-        raise ValueError(f"path {path} is not a file or directory")
+        raise FileNotFoundError(f"path {path} is not a file or directory")
     return files
 
 

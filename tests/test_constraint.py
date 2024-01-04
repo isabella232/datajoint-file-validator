@@ -1,5 +1,9 @@
 import pytest
-from datajoint_file_validator.constraint import Constraint, EvalConstraint
+from datajoint_file_validator.constraint import (
+    Constraint,
+    EvalConstraint,
+    CountMinConstraint,
+)
 from datajoint_file_validator.snapshot import create_snapshot, Snapshot
 from datajoint_file_validator.error import DJFileValidatorError
 from datajoint_file_validator.config import config
@@ -16,6 +20,19 @@ def disable_feature_allow_eval():
     config.allow_eval = False
     yield
     config.allow_eval = og_val
+
+
+class TestCountMinConstraint:
+    def test_str_value(self):
+        """Check that CountMinConstraint (and dataclasses in general)
+        will allow a string value even if the annotation is int."""
+        # Valid
+        c = CountMinConstraint(2)
+        assert c.val == 2
+
+        # Also valid
+        c = CountMinConstraint("a string")
+        assert c.val == "a string"
 
 
 class TestEvalConstraint:

@@ -26,32 +26,6 @@ class TestManifest:
     def test_check_valid(self, manifest_dict, tmp_path):
         """
         Checks the Manifest.check_valid method.
-
-        return {
-            "id": "test",
-            "version": "0.1",
-            "description": "Test manifest",
-            "rules": [
-                {
-                    "id": "count_min_max",
-                    "description": "Check count min max",
-                    "query": "**",
-                    "count_min": 20,
-                },
-                {
-                    # id automatically generated from hash of constraints
-                    "count_max": 3,
-                },
-                {
-                    "id": "max_txt_files",
-                    "query": "*.txt",
-                    "count_max": 5,
-                },
-                {
-                    "eval": "def test_custom(snapshot):\n    return False",
-                },
-            ],
-        }
         """
         fp_valid = tmp_path / "manifest_valid.yaml"
         with open(fp_valid, "w") as f:
@@ -65,13 +39,14 @@ class TestManifest:
         with open(fp_invalid, "w") as f:
             yaml.dump(invalid_dict, f)
 
-        # Test the two manifests
+        # Test the valid manifest
         is_valid, errors = Manifest.check_valid(
             manifest_dict, mani_schema=config.manifest_schema
         )
         assert is_valid, errors
         valid_mani = Manifest.from_yaml(fp_valid, check_valid=True)
 
+        # Test the invalid manifest
         is_valid, errors = Manifest.check_valid(
             invalid_dict, mani_schema=config.manifest_schema
         )
