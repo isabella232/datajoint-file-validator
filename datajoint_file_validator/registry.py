@@ -47,10 +47,7 @@ def find_manifest(query: str) -> Path:
         A resolved path to a manifest file.
     """
     if not isinstance(query, str):
-        try:
-            query = str(query)
-        except Exception as e:
-            raise ValueError(f"Could not convert query='{query}' to string") from e
+        query = str(query)
 
     try_paths: List[Path] = list(_get_try_paths(query))
     if not query.endswith(".yaml"):
