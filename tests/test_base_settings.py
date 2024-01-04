@@ -168,18 +168,27 @@ def test_populate_from_dotenv(example_settings_cls, values_dict, tmp_path):
 
 def test_init(example_settings_cls, values_dict, tmp_path, monkeypatch):
     """
-    Test that values are initialized from .env, env vars, and kwargs in that order.
+    Test that values are initialized from default values, .env, env vars,
+    and kwargs in that order.
     """
+    # Write .env
     dotenv_path = tmp_path / ".env"
     with open(dotenv_path, "w") as f:
         for key, val in values_dict.items():
             f.write(f"{key.upper()}={val}\n")
+
+    # Set env vars
     monkeypatch.setenv("MY_STR", "my_str2")
     monkeypatch.setenv("MY_OPTIONAL_STR", "35")
+    monkeypatch.setenv("MY_FALSE_FLAG", "1")
 
+    # Initialize settings with kwargs
     settings = example_settings_cls(
         env_path=dotenv_path,
-        none_val=None, none_val2=None, my_flag="0", my_path="my/path",
+        none_val=None,
+        none_val2=None,
+        my_path="my/path",
+        my_false_flag=0,
         my_optional_str=120,
     )
 
@@ -187,8 +196,9 @@ def test_init(example_settings_cls, values_dict, tmp_path, monkeypatch):
     assert settings.NOT_THIS_ONE is False
     assert settings.my_str == "my_str2"
     assert settings.my_flag is True
+    assert settings.no_annot == "foobar", "default value was overwritten"
     assert settings.my_other_flag is False
-    assert settings.my_false_flag is True
+    assert settings.my_false_flag is False
     assert settings.my_path == Path("./my/path")
     assert settings.my_path_with_default == Path("./my/other/path")
     assert settings.my_path_cast == Path("my/other/path/")
@@ -229,7 +239,9 @@ def test_cast_val(example_settings_cls):
     assert example_settings_cls._cast_val("my/path", Path) == Path("my/path")
     with pytest.raises(TypeError):
         example_settings_cls._cast_val("my/path", Callable) == "my/path"
-    assert example_settings_cls._cast_val("my/path", Union[Callable, Path]) == Path("my/path")
+    assert example_settings_cls._cast_val("my/path", Union[Callable, Path]) == Path(
+        "my/path"
+    )
     with pytest.raises(TypeError):
         example_settings_cls._cast_val("my/path", Union[Callable, Callable])
 

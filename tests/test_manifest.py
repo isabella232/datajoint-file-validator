@@ -25,4 +25,3 @@ class TestManifest:
         Checks the Manifest.check_valid method.
         """
         pass
-

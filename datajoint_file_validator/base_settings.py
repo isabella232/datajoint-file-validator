@@ -36,7 +36,7 @@ class BaseSettings:
                 raise ValueError(f"Failed to parse '{val}' as bool.")
 
         # Handle generic types
-        if get_origin(type_annot) is Union: # includes Optional
+        if get_origin(type_annot) is Union:  # includes Optional
             for constr in get_args(type_annot):
                 try:
                     return constr(val)
@@ -84,16 +84,14 @@ class BaseSettings:
         }
         for k in attrs:
             key_in_d = k.upper() if match_upper else k
-            if k.upper() == k or k.startswith("_"):
+            if (
+                k.upper() == k
+                or k.startswith("_")
+                or callable(getattr(self, k, None))
+                or key_in_d not in d
+            ):
                 continue
-            if key_in_d in d:
-                val = d[key_in_d]
-            elif k in self.__class__.__dict__:
-                val = self.__class__.__dict__[k]
-                if callable(val):
-                    continue
-            else:
-                continue
+            val = d[key_in_d]
 
             type_annot = get_type_hints(self).get(k)
             try:
@@ -109,11 +107,12 @@ class BaseSettings:
         environment variables, .env files, and keyword arguments, and accessed
         as attributes. Attributes will be set in the following order:
 
-        1. From a .env file at `env_path` (default: `.env`)
-        2. From environment variables. Environment variables are matched to
+        1. From default values set in the class definition.
+        2. From a .env file at `env_path` (default: `.env`)
+        3. From environment variables. Environment variables are matched to
            attributes by upper-casing the attribute name. e.g. to set the
            attribute `my_attr`, set the environment variable `MY_ATTR`.
-        3. From keyword arguments passed as `**values` to this constructor.
+        4. From keyword arguments passed as `**values` to this constructor.
 
         The successive step will overwrite any previously set attributes.
         Attribute names that are upper-cased in the class definition, start
@@ -129,6 +128,8 @@ class BaseSettings:
         """
         if not hasattr(self, "__annotations__"):
             self.__annotations__ = {}
+
+        self._populate_from_dict(self.__class__.__dict__)  # From default values
         env_path = env_path or self.ENV_PATH
         if os.path.isfile(env_path):
             self._populate_from_dot_env(env_path)
