@@ -79,3 +79,13 @@ class TestEvalConstraint:
         c = EvalConstraint("lambda x: x > 0")
         with pytest.raises(DJFileValidatorError):
             c.validate(snapshot_fileset1)
+
+    def test_syntax_error(self, snapshot_fileset1: Snapshot):
+        """Raises error due to trailing parenthesis."""
+        c = EvalConstraint(
+            "def test_custom(snapshot):\n    return len(file for file in "
+            "snapshot if file['extension'] == '.md') < 3)"
+        )
+        with pytest.raises(DJFileValidatorError) as e:
+            c.validate(snapshot_fileset1)
+        assert "SyntaxError" in str(e.value)
