@@ -19,34 +19,42 @@ def disable_feature_allow_eval():
 
 
 class TestEvalConstraint:
-    def test_error_if_disabled(self, snapshot_fileset1: Snapshot, disable_feature_allow_eval):
-        c = EvalConstraint("def func(snapshot: List[Dict[str, Any]]) -> bool: "
-                           "return len(snapshot) > 0")
+    def test_error_if_disabled(
+        self, snapshot_fileset1: Snapshot, disable_feature_allow_eval
+    ):
+        c = EvalConstraint(
+            "def func(snapshot: List[Dict[str, Any]]) -> bool: "
+            "return len(snapshot) > 0"
+        )
         with pytest.raises(DJFileValidatorError):
             c.validate(snapshot_fileset1)
 
     def test_basic_usage_success(self, snapshot_fileset1: Snapshot):
-        c = EvalConstraint("def func(snapshot: List[Dict[str, Any]]) -> bool: "
-                           "return len(snapshot) > 0")
+        c = EvalConstraint(
+            "def func(snapshot: List[Dict[str, Any]]) -> bool: "
+            "return len(snapshot) > 0"
+        )
         result = c.validate(snapshot_fileset1)
         assert result.status is True
 
     def test_basic_usage_failure(self, snapshot_fileset1: Snapshot):
-        c = EvalConstraint("def func(snapshot: List[Dict[str, Any]]) -> bool: "
-                           "return False")
+        c = EvalConstraint(
+            "def func(snapshot: List[Dict[str, Any]]) -> bool: " "return False"
+        )
         result = c.validate(snapshot_fileset1)
         assert result.status is False
-        assert 'failed' in result.message
+        assert "failed" in result.message
 
     def test_func_invalid_syntax(self, snapshot_fileset1: Snapshot):
-        c = EvalConstraint("def func(snapshot: my_dummy_type) -> bool: "
-                           "return True")
+        c = EvalConstraint("def func(snapshot: my_dummy_type) -> bool: " "return True")
         with pytest.raises(Exception):
             c.validate(snapshot_fileset1)
 
     def test_func_that_raises(self, snapshot_fileset1: Snapshot):
-        c = EvalConstraint("def func(snapshot: List[Dict[str, Any]]) -> bool: "
-                           "raise Exception('foo')")
+        c = EvalConstraint(
+            "def func(snapshot: List[Dict[str, Any]]) -> bool: "
+            "raise Exception('foo')"
+        )
         with pytest.raises(Exception):
             c.validate(snapshot_fileset1)
 
