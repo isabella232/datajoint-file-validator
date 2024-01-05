@@ -105,3 +105,33 @@ class TestValidate:
             assert "constraint_id: count_min" in result.stdout
         elif fmt == "json":
             assert "'constraint_id': 'count_min'" in result.stdout
+
+    def test_list_manifests_basic(self, runner):
+        result = runner.invoke(
+            app,
+            [
+                "list-manifests",
+            ],
+        )
+        assert result.exit_code == 0
+        assert "demo_dlc" in result.stdout
+
+    @pytest.mark.parametrize("fmt", ("table", "yaml", "json"))
+    def test_list_manifests_format(self, runner, fmt):
+        result = runner.invoke(
+            app,
+            [
+                "list-manifests",
+                "--format",
+                fmt,
+            ],
+        )
+        assert result.exit_code == 0
+        assert "demo_dlc" in result.stdout
+
+        if fmt == "table":
+            assert "━" in result.stdout
+        elif fmt == "yaml":
+            assert "name: demo_dlc" in result.stdout
+        elif fmt == "json":
+            assert "'name': 'demo_dlc'" in result.stdout
