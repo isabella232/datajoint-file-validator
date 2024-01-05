@@ -80,3 +80,17 @@ def test_list_manifests_basic():
     assert isinstance(manifests[0], dict)
     logger.info(f"Found {len(manifests)} manifests:")
     logger.info(pf(manifests))
+
+def test_list_manifests_additional_dir(manifest_dict, tmp_path):
+    """Test registry.list_manifests with additional directory"""
+    new_manifest_path = tmp_path / "new_manifest.yaml"
+    manifest_dict["id"] = "my_new_manifest"
+    with open(new_manifest_path, "w") as f:
+        safe_dump(manifest_dict, f)
+
+    manifests = registry.list_manifests(query=None, additional_dirs=[tmp_path])
+    assert len(manifests) > 0
+    mani_names = [mani._meta["name"] for mani in manifests]
+    mani_ids = [mani._meta["id"] for mani in manifests]
+    assert "new_manifest" in mani_names
+    assert "my_new_manifest" in mani_ids
