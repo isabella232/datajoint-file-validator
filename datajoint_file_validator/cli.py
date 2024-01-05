@@ -11,6 +11,8 @@ from . import main, registry
 
 console = Console()
 app = typer.Typer()
+manifest_app = typer.Typer(name="manifest")
+app.add_typer(manifest_app, name="manifest")
 
 
 @app.callback()
@@ -57,7 +59,7 @@ def validate(
     raise typer.Exit(code=1)
 
 
-@app.command()
+@manifest_app.command(name="list")
 def list_manifests(
     query: Optional[str] = typer.Option(
         None,
@@ -69,8 +71,6 @@ def list_manifests(
     List all available manifests.
     """
     manifests: List[Dict[str, Any]] = registry.list_manifests(query=query)
-    rprint(f"Found {len(manifests)} manifests:")
-
     if format == DisplayFormat.table:
         table = registry.table_from_manifest_list(manifests)
         console = Console()

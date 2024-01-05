@@ -110,7 +110,8 @@ class TestValidate:
         result = runner.invoke(
             app,
             [
-                "list-manifests",
+                "manifest",
+                "list",
             ],
         )
         assert result.exit_code == 0
@@ -121,7 +122,8 @@ class TestValidate:
         result = runner.invoke(
             app,
             [
-                "list-manifests",
+                "manifest",
+                "list",
                 "--format",
                 fmt,
             ],

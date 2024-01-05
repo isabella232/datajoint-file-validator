@@ -147,7 +147,7 @@ def table_from_manifest_list(manifests: List[Dict[str, Any]]) -> Table:
     table = Table(
         show_header=True,
         header_style="bold",
-        title="Available Manifests",
+        title=None,
         show_lines=True,
     )
     table.add_column("ID")
