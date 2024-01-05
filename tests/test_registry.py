@@ -1,8 +1,10 @@
 import os
 import pytest
 from pathlib import Path
+from pprint import pformat as pf
 from yaml import safe_dump
 from datajoint_file_validator import registry, Manifest
+from . import logger
 
 
 @pytest.fixture
@@ -69,3 +71,12 @@ def test_find_in_subdir_from_site_pkg_symlink():
     assert resolved.resolve().name == "v0.1.yaml"
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest("demo_dlc.yaml")
+
+
+def test_list_manifests_basic():
+    """Test registry.list_manifests"""
+    manifests = registry.list_manifests(query=None)
+    assert len(manifests) > 0
+    assert isinstance(manifests[0], dict)
+    logger.info(f"Found {len(manifests)} manifests:")
+    logger.info(pf(manifests))

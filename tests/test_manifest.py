@@ -14,7 +14,9 @@ class TestManifest:
         """
         manifest_dict = read_yaml(manifest_file_from_registry)
         man1 = Manifest.from_dict(manifest_dict)
+        assert isinstance(man1.id, str)
         man2 = Manifest.from_yaml(manifest_file_from_registry)
+        assert isinstance(man2.id, str)
         assert man1 == man2
 
     def test_all_registry_manifests_valid(self, manifest_file_from_registry: str):
