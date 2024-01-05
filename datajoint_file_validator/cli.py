@@ -1,15 +1,18 @@
 import sys
 import typer
 from enum import Enum
+from typing import List, Dict, Any, Optional
 from typing_extensions import Annotated
 import yaml
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
-from . import main
+from . import main, registry
 
 console = Console()
 app = typer.Typer()
+manifest_app = typer.Typer(name="manifest")
+app.add_typer(manifest_app, name="manifest")
 
 
 @app.callback()
@@ -54,3 +57,26 @@ def validate(
     elif format == DisplayFormat.json:
         rprint(report)
     raise typer.Exit(code=1)
+
+
+@manifest_app.command(name="list")
+def list_manifests(
+    query: Optional[str] = typer.Option(
+        None,
+        help="Filter manifest names using this regular expression query",
+    ),
+    format: DisplayFormat = DisplayFormat.table,
+):
+    """
+    List all available manifests.
+    """
+    manifests: List[Dict[str, Any]] = registry.list_manifests(query=query)
+    if format == DisplayFormat.table:
+        table = registry.table_from_manifest_list(manifests)
+        console = Console()
+        console.print(table)
+    elif format == DisplayFormat.yaml:
+        rprint(file=sys.stderr)
+        rprint(yaml.dump(manifests))
+    elif format == DisplayFormat.json:
+        rprint(manifests)

@@ -27,6 +27,8 @@ class Manifest:
     description: Optional[str] = None
     uri: Optional[str] = None
     rules: List[Rule] = field(default_factory=list)
+    # Additional, unchecked metadata for the manifest
+    _meta: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.id:
