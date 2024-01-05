@@ -2,7 +2,8 @@ import pathlib
 import re
 from typing import List, Union, Generator, Tuple, Optional, Dict, Any
 from pprint import pformat as pf
-from wcmatch.pathlib import Path
+from wcmatch.pathlib import Path, GLOBSTAR
+from wcmatch.glob import glob
 from .manifest import Manifest
 from .config import config
 from .log import logger
@@ -86,27 +87,27 @@ def list_manifests(query: Optional[str] = None, sort_alpha: Optional[str] = "asc
         query = "(?s).*"
     manifests = list()
 
-    # Get the unique set of parent directories from _get_try_paths
-    parent_dirs = set([
-        path.parent for path in _get_try_paths('arbitrary_query.yaml')
-        if path.parent.is_dir()
+    # Get the unique set of possible manifest paths from _get_try_paths
+    poss_paths = set([
+        Path(path).resolve() for sublist in [
+            glob(str(f)) for f in _get_try_paths('*')
+        ] for path in sublist
     ])
-    logger.debug(f"Searching for manifests in parent directories: {parent_dirs}")
+    logger.debug(f"Searching for manifests at the following paths: {pf(poss_paths)}")
 
-    for parent_dir in parent_dirs:
-        for path in parent_dir.iterdir():
-            if path.suffix != ".yaml" or not re.search(query, path.name):
-                continue
-            try:
-                manifest = Manifest.from_yaml(path)
-            except InvalidManifestError as e:
-                logger.debug(f"Could not load manifest at {path} "
-                             f"due to InvalidManifestError: {e}")
-                continue
-            else:
-                manifest._meta["path"] = str(path)
-                manifest._meta["rel_path"] = str(path.relative_to(parent_dir))
-                manifests.append(manifest)
+    for path in poss_paths:
+        if path.suffix != ".yaml" or not re.search(query, path.name):
+            continue
+        try:
+            manifest = Manifest.from_yaml(path)
+        except InvalidManifestError as e:
+            logger.debug(f"Could not load manifest at {path} "
+                         f"due to InvalidManifestError: {e}")
+            continue
+        else:
+            manifest._meta["path"] = str(path)
+            manifest._meta["name"] = str(path.name)
+            manifests.append(manifest)
     # Remove duplicates
     manifests = set(manifests)
 
