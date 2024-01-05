@@ -29,6 +29,9 @@ def _get_try_paths(
         yield (Path(module_loc) / Path("manifests") / Path(query))
     # If query has no extension, try adding .yaml
     if query.suffix != ".yaml":
+        # Check if there is a file called `default.yaml`
+        # in a subdirectory named `query`
+        yield from _get_try_paths(Path(query) / Path("default.yaml"))
         for ext in try_extensions:
             yield from _get_try_paths(Path(str(query) + ext))
 
@@ -52,10 +55,6 @@ def find_manifest(query: str) -> Path:
         query = str(query)
 
     try_paths: List[Path] = list(_get_try_paths(query))
-    if not query.endswith(".yaml"):
-        # Check if there is a file called `default` or `default.yaml`
-        # in a subdirectory named `query`
-        try_paths.extend(_get_try_paths(Path(query) / Path("default")))
     # Remove duplicates while preserving order
     try_paths = list(dict.fromkeys(try_paths))
     logger.debug(f"Trying paths: {pf(try_paths)}")
