@@ -69,7 +69,11 @@ def find_manifest(query: str) -> Path:
     raise FileNotFoundError(f"Could not find manifest file with query: {query}")
 
 
-def list_manifests(query: Optional[str] = None, sort_alpha: Optional[str] = "asc") -> List[Dict[str, Any]]:
+def list_manifests(
+    query: Optional[str] = None,
+    sort_alpha: Optional[str] = "asc",
+    additional_dirs: Optional[list] = None,
+) -> List[Dict[str, Any]]:
     """
     List all available manifests.
 
@@ -84,37 +88,40 @@ def list_manifests(query: Optional[str] = None, sort_alpha: Optional[str] = "asc
         A list of dicts containing information about each manifest.
     """
     if query is None:
-        query = "(?s).*"
-    manifests = list()
+        query = ".+"
+    additional_dirs = additional_dirs or list()
 
     # Get the unique set of possible manifest paths from _get_try_paths
-    poss_paths = set([
-        Path(path).resolve() for sublist in [
-            glob(str(f)) for f in _get_try_paths('*')
-        ] for path in sublist
-    ])
+    poss_paths = set()
+    for dir in ["*", *[f"{dir}/*" for dir in additional_dirs]]:
+        for glob_query in _get_try_paths(dir):
+            for path_str in glob(str(glob_query)):
+                poss_paths.add(Path(path_str).resolve())
     logger.debug(f"Searching for manifests at the following paths: {pf(poss_paths)}")
 
+    manifests = set()
     for path in poss_paths:
         if path.suffix != ".yaml" or not re.search(query, path.name):
             continue
         try:
             manifest = Manifest.from_yaml(path)
         except InvalidManifestError as e:
-            logger.debug(f"Could not load manifest at {path} "
-                         f"due to InvalidManifestError: {e}")
+            logger.debug(
+                f"Could not load manifest at {path} "
+                f"due to InvalidManifestError: {e}"
+            )
             continue
         else:
             manifest._meta["path"] = str(path)
-            manifest._meta["name"] = str(path.name)
-            manifests.append(manifest)
-    # Remove duplicates
-    manifests = set(manifests)
+            manifest._meta["name"] = str(path.stem)
+            manifests.add(manifest)
+    manifests = list(manifests)
 
     if sort_alpha is not None:
         if sort_alpha not in ("asc", "desc"):
-            raise ValueError(f"sort_alpha must be 'asc' or 'desc', "
-                             f"not {sort_alpha}")
+            raise ValueError(
+                f"sort_alpha must be 'asc' or 'desc', " f"not {sort_alpha}"
+            )
         manifests = sorted(manifests, key=lambda m: getattr(m, "id", None))
         if sort_alpha == "desc":
             manifests = list(reversed(manifests))
