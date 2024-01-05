@@ -71,12 +71,12 @@ def list_manifests(
     manifests: List[Dict[str, Any]] = registry.list_manifests(query=query)
     rprint(f"Found {len(manifests)} manifests:")
 
-    # if format == DisplayFormat.table:
-    #     table = main.table_from_report(report)
-    #     console = Console()
-    #     console.print(table)
-    # elif format == DisplayFormat.yaml:
-    #     rprint(file=sys.stderr)
-    #     rprint(yaml.dump(report))
-    # elif format == DisplayFormat.json:
-    #     rprint(report)
+    if format == DisplayFormat.table:
+        table = registry.table_from_manifest_list(manifests)
+        console = Console()
+        console.print(table)
+    elif format == DisplayFormat.yaml:
+        rprint(file=sys.stderr)
+        rprint(yaml.dump(manifests))
+    elif format == DisplayFormat.json:
+        rprint(manifests)

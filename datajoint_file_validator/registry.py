@@ -4,6 +4,7 @@ from typing import List, Union, Generator, Tuple, Optional, Dict, Any
 from pprint import pformat as pf
 from wcmatch.pathlib import Path, GLOBSTAR
 from wcmatch.glob import glob
+from rich.table import Table
 from .manifest import Manifest
 from .config import config
 from .log import logger
@@ -113,7 +114,7 @@ def list_manifests(
             continue
         else:
             manifest._meta["path"] = str(path)
-            manifest._meta["name"] = str(path.stem)
+            manifest._meta["stem"] = str(path.stem)
             manifests.add(manifest)
     manifests = list(manifests)
 
@@ -127,3 +128,37 @@ def list_manifests(
             manifests = list(reversed(manifests))
 
     return [manifest.to_dict() for manifest in manifests]
+
+
+def table_from_manifest_list(manifests: List[Dict[str, Any]]) -> Table:
+    """
+    Create a rich table from a list of manifests' dictionary representations.
+
+    Parameters
+    ----------
+    manifests : List[Dict[str, Any]]
+        A list of manifests.
+
+    Returns
+    -------
+    Table
+        A rich table.
+    """
+    table = Table(
+        show_header=True,
+        header_style="bold",
+        title="Available Manifests",
+        show_lines=True,
+    )
+    table.add_column("ID")
+    table.add_column("Version")
+    table.add_column("Description")
+    table.add_column("Path", overflow="fold")
+    for manifest in manifests:
+        table.add_row(
+            manifest["id"],
+            manifest.get("version"),
+            manifest.get("description"),
+            manifest["_meta"]["path"],
+        )
+    return table
