@@ -6,39 +6,14 @@ repo_name: ethho/datajoint-file-validator
 repo_url: https://github.com/ethho/datajoint-docs
 nav:
   - Welcome: index.md
-  - DataJoint Python: core/datajoint-python/
-  - DataJoint Elements:
-    - elements/index.md
-    - Concepts: elements/concepts.md
-    - User Guide: elements/user-guide.md
-    - Developer Guide: elements/developer-guide.md
-    - Management:
-      - Plan: elements/management/plan.md
-      - Governance: elements/management/governance.md
-      - Selection: elements/management/selection.md
-      - Quality Assurance: elements/management/quality-assurance.md
-      - Outreach: elements/management/outreach.md
-      - Dissemination: elements/management/dissemination.md
-      - Adoption: elements/management/adoption.md
-  - Additional Resources: additional-resources.md
-  - Project Showcase:
-    - projects/index.md
-    - Catalog: https://catalog.datajoint.io
-    - Teams: projects/teams.md
-    - Publications: projects/publications.md
-  - Support & Events: support-events.md
-  - Partnerships:
-    - DANDI: partnerships/dandi.md
-    - Facemap: partnerships/facemap.md
-    - INCF: partnerships/incf.md
-    - NWB: partnerships/nwb.md
-    - Open Ephys GUI: partnerships/openephysgui.md
-    - Suite2p: partnerships/suite2p.md
-  - About:
-    - History: about/history.md
-    - Team: about/datajoint-team.md
-    - Citation Guidelines: about/citation.md
-    - Contribution Guidelines: about/contribute.md
+  - Quick Start: quick_start.md
+  - Getting Started:
+    - Installation: installation.md
+    - Usage: usage.md
+  - Contribution Guidelines: contribute.md
+  - API Docs:
+    - Manifest: api/manifest.md
+  - Release Notes: changelog.md
 
 # ---------------------------- STANDARD -----------------------------
 
@@ -93,6 +68,12 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.emoji:
+      options:
+        custom_icons:
+          - .overrides/.icons
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - footnotes
   - pymdownx.details: # permit folded <details> blocks via `??? note "Title"` format
   - pymdownx.snippets # Allows including file snippets e.g. --8<-- "; src/file.md"
