@@ -73,17 +73,18 @@ plugins:
       glob:
         - archive/*
         - images/*md
+  - mkdocstrings:
+      enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
 markdown_extensions:
   - attr_list
   - md_in_html
   - toc:
       permalink: true
-  - pymdownx.emoji:
-      options:
-        custom_icons:
-          - .overrides/.icons
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
   - mdx_truly_sane_lists
   - pymdownx.superfences:
       custom_fences:
