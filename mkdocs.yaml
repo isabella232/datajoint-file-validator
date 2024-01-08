@@ -1,9 +1,9 @@
 # ---------------------- PROJECT SPECIFIC ---------------------------
 
-site_name: DataJoint Documentation
+site_name: DataJoint File Validator Documentation
 site_url: http://localhost/docs
-repo_name: datajoint/datajoint-docs
-repo_url: https://github.com/datajoint/datajoint-docs
+repo_name: ethho/datajoint-file-validator
+repo_url: https://github.com/ethho/datajoint-docs
 nav:
   - Welcome: index.md
   - DataJoint Python: core/datajoint-python/
@@ -42,14 +42,14 @@ nav:
 
 # ---------------------------- STANDARD -----------------------------
 
-docs_dir: ./src
-edit_uri: ./edit/main/src
+docs_dir: ./docs
+edit_uri: ./edit/main/docs
 theme:
   font:
     text: Roboto Slab
     code: Source Code Pro
   name: material
-  custom_dir: src/.overrides
+  custom_dir: docs/.overrides
   icon:
     logo: main/company-logo
   favicon: assets/images/company-logo-blue.png
@@ -69,9 +69,6 @@ theme:
 plugins:
   - search
   - section-index
-  - redirects:
-      redirect_maps:
-        "index.md": "welcome.md"
   - exclude:
       glob:
         - archive/*
