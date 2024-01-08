@@ -17,7 +17,7 @@ This repository includes a [devcontainer](https://code.visualstudio.com/docs/dev
 1. Install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension in VS Code and open the repository in a container.
 2. Open the devcontainer in GitHub Codespaces:
 
-![Launch devcontainer in GitHub Codespace instance](docs/img/codespace_launch.png)
+![Launch devcontainer in GitHub Codespace instance](docs/images/codespace_launch.png)
 
 ## Quick Start
 
