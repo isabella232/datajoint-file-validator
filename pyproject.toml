@@ -9,7 +9,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.8.1,<4.0.0"
 cerberus = "^1.3.5"
 typer = {version = "^0.9.0", extras = ["all"]}
 pyyaml = "^6.0.1"
@@ -40,6 +40,7 @@ mdx-truly-sane-lists = "^1.3"
 pymdown-extensions = "^10.7"
 mkdocs-section-index = "^0.3.8"
 mkdocstrings = {version = "^0.24.0", extras = ["python"]}
+termynal = "^0.11.1"
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]

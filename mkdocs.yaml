@@ -55,6 +55,7 @@ plugins:
         python:
           options:
             show_source: true
+  - termynal
 markdown_extensions:
   - attr_list
   - md_in_html

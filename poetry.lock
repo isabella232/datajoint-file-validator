@@ -637,20 +637,6 @@ files = [
 ]
 
 [[package]]
-name = "mkdocs-pymdownx-material-extras"
-version = "2.5.6"
-description = "Plugin to extend MkDocs Material theme."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "mkdocs_pymdownx_material_extras-2.5.6-py3-none-any.whl", hash = "sha256:ed5bfc23c6f42f485603e05abc22926c27c2b31ef9972a0132582b73f49557e9"},
-    {file = "mkdocs_pymdownx_material_extras-2.5.6.tar.gz", hash = "sha256:e0cf0aa4f284a78ecab9caf0bc62a12d8b836a5abbd49f9638cc03b2698a021c"},
-]
-
-[package.dependencies]
-mkdocs-material = ">=8.3.3"
-
-[[package]]
 name = "mkdocs-redirects"
 version = "1.2.1"
 description = "A MkDocs plugin for dynamic page redirects to prevent broken links."
@@ -1149,6 +1135,23 @@ files = [
 ]
 
 [[package]]
+name = "termynal"
+version = "0.11.1"
+description = "A lightweight and modern animated terminal window"
+optional = false
+python-versions = ">=3.8.1,<4.0.0"
+files = [
+    {file = "termynal-0.11.1-py3-none-any.whl", hash = "sha256:553fc58b126a0482b71a442263d33a9b47fb69868a7fdd6cc36dc9f006aab7a2"},
+    {file = "termynal-0.11.1.tar.gz", hash = "sha256:ce70d264a649d26365bf72b8cfc5aa2bf903adafebc1027347343779a8695ff0"},
+]
+
+[package.dependencies]
+markdown = "*"
+
+[package.extras]
+mkdocs = ["mkdocs (>=1.4,<2.0)"]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1280,5 +1283,5 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.8"
-content-hash = "5689a52986135598853ae883a51a12d80890d96de08e2d683a7ec463fd3162e5"
+python-versions = ">=3.8.1,<4.0.0"
+content-hash = "439391db77bfbc63dd1eaff25aab689fb5ecadf3e550114c7273dc9c33863a4f"
