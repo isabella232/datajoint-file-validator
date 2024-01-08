@@ -74,6 +74,7 @@ def list_manifests(
     query: Optional[str] = None,
     sort_alpha: Optional[str] = "asc",
     additional_dirs: Optional[list] = None,
+    ignore_patterns: Optional[list] = ('mkdocs.yaml', 'docs-example', 'docs'),
 ) -> List[Dict[str, Any]]:
     """
     List all available manifests.
@@ -96,7 +97,7 @@ def list_manifests(
     poss_paths = set()
     for dir in ["*", *[f"{dir}/*" for dir in additional_dirs]]:
         for glob_query in _get_try_paths(dir):
-            for path_str in glob(str(glob_query)):
+            for path_str in glob(str(glob_query), exclude=ignore_patterns):
                 poss_paths.add(Path(path_str).resolve())
     logger.debug(f"Searching for manifests at the following paths: {pf(poss_paths)}")
 
