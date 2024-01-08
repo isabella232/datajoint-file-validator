@@ -1,0 +1,139 @@
+# ---------------------- PROJECT SPECIFIC ---------------------------
+
+site_name: DataJoint Documentation
+site_url: http://localhost/docs
+repo_name: datajoint/datajoint-docs
+repo_url: https://github.com/datajoint/datajoint-docs
+nav:
+  - Welcome: index.md
+  - DataJoint Python: core/datajoint-python/
+  - DataJoint Elements:
+    - elements/index.md
+    - Concepts: elements/concepts.md
+    - User Guide: elements/user-guide.md
+    - Developer Guide: elements/developer-guide.md
+    - Management:
+      - Plan: elements/management/plan.md
+      - Governance: elements/management/governance.md
+      - Selection: elements/management/selection.md
+      - Quality Assurance: elements/management/quality-assurance.md
+      - Outreach: elements/management/outreach.md
+      - Dissemination: elements/management/dissemination.md
+      - Adoption: elements/management/adoption.md
+  - Additional Resources: additional-resources.md
+  - Project Showcase:
+    - projects/index.md
+    - Catalog: https://catalog.datajoint.io
+    - Teams: projects/teams.md
+    - Publications: projects/publications.md
+  - Support & Events: support-events.md
+  - Partnerships:
+    - DANDI: partnerships/dandi.md
+    - Facemap: partnerships/facemap.md
+    - INCF: partnerships/incf.md
+    - NWB: partnerships/nwb.md
+    - Open Ephys GUI: partnerships/openephysgui.md
+    - Suite2p: partnerships/suite2p.md
+  - About:
+    - History: about/history.md
+    - Team: about/datajoint-team.md
+    - Citation Guidelines: about/citation.md
+    - Contribution Guidelines: about/contribute.md
+
+# ---------------------------- STANDARD -----------------------------
+
+docs_dir: ./src
+edit_uri: ./edit/main/src
+theme:
+  font:
+    text: Roboto Slab
+    code: Source Code Pro
+  name: material
+  custom_dir: src/.overrides
+  icon:
+    logo: main/company-logo
+  favicon: assets/images/company-logo-blue.png
+  features:
+    - toc.integrate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: datajoint
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+  - section-index
+  - redirects:
+      redirect_maps:
+        "index.md": "welcome.md"
+  - exclude:
+      glob:
+        - archive/*
+        - images/*md
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.emoji:
+      options:
+        custom_icons:
+          - .overrides/.icons
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - mdx_truly_sane_lists
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - footnotes
+  - pymdownx.details: # permit folded <details> blocks via `??? note "Title"` format
+  - pymdownx.snippets # Allows including file snippets e.g. --8<-- "; src/file.md"
+  - pymdownx.magiclink # Displays bare URLs as links
+  - pymdownx.tasklist: # Renders check boxes in tasks lists
+      custom_checkbox: true
+extra:
+  generator: false # Disable watermark
+  version:
+    provider: mike
+  social:
+    - icon: main/company-logo
+      link: https://www.datajoint.com
+      name: DataJoint
+    - icon: fontawesome/brands/slack
+      link: https://datajoint.slack.com
+      name: Slack
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/datajoint
+      name: LinkedIn
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/datajoint
+      name: Twitter
+    - icon: fontawesome/brands/github
+      link: https://github.com/datajoint
+      name: GitHub
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/u/datajoint
+      name: DockerHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/user/datajointbot
+      name: PyPI
+    - icon: fontawesome/brands/stack-overflow
+      link: https://stackoverflow.com/questions/tagged/datajoint
+      name: StackOverflow
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCdeCuFOTCXlVMRzh6Wk-lGg
+      name: YouTube
+extra_css:
+  - assets/stylesheets/extra.css
+extra_javascript:
+  - https://js-na1.hs-scripts.com/23133402.js  # HubSpot chatbot
