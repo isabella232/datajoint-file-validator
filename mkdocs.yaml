@@ -15,7 +15,14 @@ nav:
     - 3. Publish a manifest to the registry: tutorial/3-publish.md
   - Contribution Guidelines: contribute.md
   - API Docs:
+    - Main: api/main.md
     - Manifest: api/manifest.md
+    - Snapshot: api/snapshot.md
+    - Registry: api/registry.md
+    - Rules: api/rule.md
+    - Query: api/query.md
+    - Config: api/config.md
+    - Base Settings: api/base_settings.md
   - Release Notes: changelog.md
 
 # ---------------------------- STANDARD -----------------------------
