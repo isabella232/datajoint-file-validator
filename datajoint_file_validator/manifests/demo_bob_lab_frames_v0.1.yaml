@@ -4,7 +4,7 @@ version: 0.1.0
 description: Example of a fileset type for a Bob Lab fileset
 author:
   name: Ethan Ho
-  email: ***REMOVED***
+  email: 53266718+ethho@users.noreply.github.com
 rules:
   - id: num_files_constraint
     description: Check that there are between 1 and 5 files in the directory

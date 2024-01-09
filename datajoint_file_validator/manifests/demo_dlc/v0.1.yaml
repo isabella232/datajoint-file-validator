@@ -4,7 +4,7 @@ version: 0.1.0
 description: DeepLabCut demo fileset type
 author:
   name: Ethan Ho
-  email: ***REMOVED***
+  email: 53266718+ethho@users.noreply.github.com
 rules:
   - id: "Min total files"
     description: "Check that there are at least 6 files anywhere in the fileset"
