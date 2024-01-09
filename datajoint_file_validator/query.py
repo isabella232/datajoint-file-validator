@@ -1,5 +1,5 @@
 import os
-from typing import Generator, List, Dict
+from typing import Generator, List, Dict, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import PurePath

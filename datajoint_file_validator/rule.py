@@ -3,7 +3,7 @@ from typing import Dict, List, Any, Optional
 from .constraint import Constraint, CONSTRAINT_MAP
 from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
-from .query import Query, GlobQuery
+from .query import Query, GlobQuery, CompositeQuery
 from .config import config
 from .error import InvalidRuleError, InvalidQueryError
 from .hash_utils import generate_id
