@@ -156,10 +156,13 @@ class TestCompositeQuery:
         for part in query.parts:
             assert isinstance(part, djfval.query.Query)
         assert query.parts[0].path == "2021-10-02/*"
-        assert query.parts[1].type == djfval.query.FileType.FILE == "file"
+        assert query.parts[1].type == "file"
 
-    def test_fileset0(self):
-        assert set(self._comp_query("2021-10-02/*", ss)) == set(
+    def test_fileset1(self):
+        fileset_path = "tests/data/filesets/fileset1"
+        ss = djfval.snapshot.create_snapshot(fileset_path)
+        ss_paths = [item["path"] for item in ss]
+        assert set(self._comp_query("2021-10-02/*", "file", ss)) == set(
             [
                 "2021-10-02/subject1_frame1.png",
                 "2021-10-02/subject1_frame2.png",
@@ -172,4 +175,24 @@ class TestCompositeQuery:
                 "2021-10-02/subject1_frame6.png",
                 "2021-10-02/subject1_frame5.png",
             ]
+        )
+
+        assert set(self._comp_query("2021-10-02/*", None, ss)) == set(
+            [
+                "2021-10-02/subject1_frame1.png",
+                "2021-10-02/subject1_frame2.png",
+                "2021-10-02/obs.md",
+                "2021-10-02/subject1_frame3.png",
+                "2021-10-02/subject1_frame7.png",
+                "2021-10-02/subject1_frame0.png",
+                # Now included
+                "2021-10-02/foo/",
+                "2021-10-02/subject1_frame4.png",
+                "2021-10-02/subject1_frame6.png",
+                "2021-10-02/subject1_frame5.png",
+            ]
+        )
+
+        assert set(self._comp_query("2021-10-02/*", "directory", ss)) == set(
+            ["2021-10-02/foo/",]
         )
