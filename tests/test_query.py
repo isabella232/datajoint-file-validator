@@ -137,11 +137,11 @@ class TestGlobQuery:
 
 
 class TestCompositeQuery:
-    def _comp_query(self, pattern, type, ss):
+    def _comp_query(self, pattern, file_type, ss):
         filtered_snapshot = djfval.query.CompositeQuery(
             parts=[
                 djfval.query.GlobQuery(pattern),
-                djfval.query.TypeQuery(type),
+                djfval.query.TypeQuery(file_type),
             ]
         ).filter(ss)
         return [item["path"] for item in filtered_snapshot]
@@ -156,7 +156,38 @@ class TestCompositeQuery:
         for part in query.parts:
             assert isinstance(part, djfval.query.Query)
         assert query.parts[0].path == "2021-10-02/*"
-        assert query.parts[1].type == "file"
+        assert query.parts[1].file_type == "file"
+
+    def test_from_other(self):
+        # with pytest.raises(djfval.error.InvalidQueryError):
+        #     djfval.query.CompositeQuery.from_dict(None)
+        with pytest.raises(djfval.error.InvalidQueryError):
+            djfval.query.CompositeQuery.from_dict("my_str")
+
+    def test_from_dict_empty(self):
+        with pytest.raises(djfval.error.InvalidQueryError):
+            djfval.query.CompositeQuery.from_dict(dict())
+
+    def test_from_and(self):
+        gq = djfval.query.GlobQuery("2021-10-02/*")
+        tq = djfval.query.TypeQuery("file")
+        cq = gq & tq
+        assert isinstance(cq, djfval.query.CompositeQuery)
+        assert cq.parts[0] == gq
+        assert cq.parts[1] == tq
+
+        # With fileset1
+        fileset_path = "tests/data/filesets/fileset1"
+        ss = djfval.snapshot.create_snapshot(fileset_path)
+        assert set(self._comp_query("2021-10-02/*", "file", ss)) == set([
+            file["path"] for file in
+            gq.filter(tq.filter(ss))
+        ])
+
+        # Test bool
+        assert bool(gq) is True
+        assert bool(tq) is True
+        assert bool(djfval.query.CompositeQuery()) is False
 
     def test_fileset1(self):
         fileset_path = "tests/data/filesets/fileset1"

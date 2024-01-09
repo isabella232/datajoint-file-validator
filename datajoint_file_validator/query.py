@@ -48,7 +48,7 @@ class FileType(Enum):
 class TypeQuery(Query):
     """A query that filters based on type (file or directory)."""
 
-    type: Optional[FileType] = None
+    file_type: Optional[FileType] = None
 
     def filter(self, snapshot: Snapshot) -> Snapshot:
         """Filter a Snapshot based on this query."""
@@ -57,7 +57,7 @@ class TypeQuery(Query):
     def _filter_generator(self, snapshot: Snapshot) -> Generator:
         """Filter a Snapshot based on this query. Returns a generator."""
         for metadata in snapshot:
-            if self.type is None or metadata.get("type") == self.type:
+            if self.file_type is None or metadata.get("type") == self.file_type:
                 yield metadata
 
 
@@ -84,10 +84,10 @@ class CompositeQuery(Query):
         if not d:
             raise InvalidQueryError("CompositeQuery cannot be empty")
         path = d.get("path", config.default_query)
-        type = d.get("type", None)
+        file_type = d.get("type", None)
         return cls(
             parts=[
                 GlobQuery(path=path),
-                TypeQuery(type=type),
+                TypeQuery(file_type=file_type),
             ]
         )
