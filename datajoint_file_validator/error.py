@@ -8,3 +8,7 @@ class InvalidManifestError(DJFileValidatorError):
 
 class InvalidRuleError(DJFileValidatorError):
     pass
+
+
+class InvalidQueryError(DJFileValidatorError):
+    pass
