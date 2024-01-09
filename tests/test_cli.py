@@ -72,8 +72,8 @@ class TestValidate:
         assert "failed" in result.stderr
 
         # Add two files to fileset
-        (tmp_fileset / "file1.txt").touch()
-        (tmp_fileset / "file2.txt").touch()
+        (tmp_fileset / "file1.mp4").touch()
+        (tmp_fileset / "file2.csv").touch()
 
         # Success run
         result = runner.invoke(
