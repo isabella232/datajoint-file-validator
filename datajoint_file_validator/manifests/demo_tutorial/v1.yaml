@@ -1,0 +1,31 @@
+id: demo_tutorial
+description: >
+  An example manifest for the DataJoint File Validator tutorial.
+version: 0.1.0
+author:
+  name: Ethan Ho
+  email: 53266718+ethho@users.noreply.github.com
+rules:
+  - count_min: 6
+  - count_max: 7
+  - id: count_txt_files
+    description: Check that there are between 1 and 2 .txt files in the directory
+    query: "*.txt"
+    count_min: 1
+    count_max: 2
+  - id: check_only_csv_files_subdir
+    description: Check that all files in the subdirectory are .csv files
+    query: "my_subdirectory/*"
+    regex: '^.+\.csv$'
+    count_min: 3
+  - id: check_subdirectory_prefix
+    description: >
+      Using the eval constraint, check that all files in the
+      subdirectory start with "my_subdirectory/subject"
+    query: "my_subdirectory/*"
+    eval: |
+      def check_subdirectory(results: list[dict]) -> list[bool]:
+          for r in results:
+              if not r['path'].startswith('my_subdirectory/subject'):
+                  return False
+          return True
