@@ -3,6 +3,7 @@ from datajoint_file_validator.constraint import (
     Constraint,
     EvalConstraint,
     CountMinConstraint,
+    RegexConstraint,
 )
 from datajoint_file_validator.snapshot import create_snapshot, Snapshot
 from datajoint_file_validator.error import DJFileValidatorError
@@ -33,6 +34,35 @@ class TestCountMinConstraint:
         # Also valid
         c = CountMinConstraint("a string")
         assert c.val == "a string"
+
+
+class TestRegexConstraint:
+    def test_basic_usage_pass(self, snapshot_fileset1: Snapshot):
+        c = RegexConstraint(".+")
+        assert c.val == ".+"
+        result = c.validate(snapshot_fileset1)
+        assert result.status is True
+
+    def test_basic_usage_fail(self, snapshot_fileset1: Snapshot):
+        failing_patterns = (
+            "^.*\\.mp4$|.*\\.csv$",
+            "^.*\\.mp4$|.*\\.csv|.*\\.png$",
+            "^.+\\.txt$|.+\\.md|.+\\.png$",
+            "^.+\\.txt$|.+\\.md|.+\\.png|2021-10-0[12]/$",
+        )
+        for pattern in failing_patterns:
+            c = RegexConstraint(pattern)
+            result = c.validate(snapshot_fileset1)
+            assert result.status is False
+
+    def test_fileset1_passing(self, snapshot_fileset1: Snapshot):
+        passing_patterns = (
+            "^.+\\.txt$|.+\\.md|.+\\.png|2021-10-0[12]/(?:foo/)?$",
+        )
+        for pattern in passing_patterns:
+            c = RegexConstraint(pattern)
+            result = c.validate(snapshot_fileset1)
+            assert result.status is True
 
 
 class TestEvalConstraint:

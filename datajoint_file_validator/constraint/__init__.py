@@ -83,13 +83,14 @@ class SchemaConvertibleConstraint(Constraint):
         validators: Iterable[Validator] = list(
             map(lambda file: self._validate_file(schema, file), snapshot)
         )
+        status = bool(not any(getattr(validator, "errors", None) for validator in validators))
         return ValidationResult(
-            status=all(validators),
-            message=None
-            if all(validators)
+            status=status,
+            message=None if status
             else {
                 file["path"]: validator.errors
                 for file, validator in zip(snapshot, validators)
+                if validator.errors
             },
             context=dict(snapshot=snapshot, constraint=self),
         )
