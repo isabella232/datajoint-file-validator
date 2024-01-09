@@ -6,19 +6,40 @@ author:
   name: Ethan Ho
   email: 53266718+ethho@users.noreply.github.com
 rules:
-  - count_min: 6
-  - count_max: 7
-  - id: count_txt_files
+
+  - id: rule-1-min
+    description: >
+      Check that there are at least 5 files or subdirectories
+      in the fileset.
+    count_min: 5
+
+  - id: rule-2-max
+    description: >
+      Check that there are at most 7 files or subdirectories
+      in the fileset.
+    count_max: 7
+
+  - id: rule-3-files
+    description: >
+      Check that there are at least 5 files in the directory
+      (excluding subdirectories).
+    query:
+      type: file
+      path: "**"
+    count_min: 5
+
+  - id: rule-4-txt
     description: Check that there are between 1 and 2 .txt files in the directory
     query: "*.txt"
     count_min: 1
     count_max: 2
-  - id: check_only_csv_files_subdir
+
+  - id: rule-5-regex
     description: Check that all files in the subdirectory are .csv files
     query: "my_subdirectory/*"
-    regex: '^.+\.csv$'
-    count_min: 3
-  - id: check_subdirectory_prefix
+    regex: "^.+\\.csv$"
+
+  - id: rule-6-eval
     description: >
       Using the eval constraint, check that all files in the
       subdirectory start with "my_subdirectory/subject"

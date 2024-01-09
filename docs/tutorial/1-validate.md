@@ -91,14 +91,38 @@ We can use either the Python API or the included command line interface (CLI) to
         /some/path/to/demo_tutorial/v1.yaml
         ```
 
-        Now we can validate the fileset using the `validate` function:
+        Now we can validate the fileset using the `validate` function.
+        We set the `verbose=True` to show a table-style report of the validation results:
 
         ```python3
-        >>> success, report = validate(my_dataset_path, manifest_path)
+        >>> success, report = validate(my_dataset_path, manifest_path, verbose=True)
+        Validation failed with the following errors:
+        ┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+        ┃ Rule ID      ┃ Rule Description   ┃ Constraint ID ┃ Constraint Value ┃ Errors              ┃
+        ┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
+        │ rule-3-files │ Check that there   │ count_min     │ 5                │ constraint          │
+        │              │ are at least 5     │               │                  │ `count_min` failed: │
+        │              │ files in the       │               │                  │ 4 < 5               │
+        │              │ directory          │               │                  │                     │
+        │              │ (excluding         │               │                  │                     │
+        │              │ subdirectories).   │               │                  │                     │
+        │              │                    │               │                  │                     │
+        ├──────────────┼────────────────────┼───────────────┼──────────────────┼─────────────────────┤
+        │ rule-5-regex │ Check that all     │ regex         │ ^.+\.csv$        │ {'my_subdirectory/… │
+        │              │ files in the       │               │                  │ {'path': ["value    │
+        │              │ subdirectory are   │               │                  │ does not match      │
+        │              │ .csv files         │               │                  │ regex               │
+        │              │                    │               │                  │ '^.+\\.csv$'"]}}    │
+        └──────────────┴────────────────────┴───────────────┴──────────────────┴─────────────────────┘
+        ```
+
+        We can also inspect the validation results programmatically:
+
+        ```python3
         >>> print(success)
-        True
+        False
         >>> print(report)
-        []
+        [{'rule': 'rule-3-files', 'rule_description': 'Check that there are at least 5 files in the directory (excluding subdirectories).\n', 'constraint_id': 'count_min', 'constraint_value': 5, 'errors': 'constraint `count_min` failed: 4 < 5'}, {'rule': 'rule-5-regex', 'rule_description': 'Check that all files in the subdirectory are .csv files', 'constraint_id': 'regex', 'constraint_value': '^.+\\.csv$', 'errors': {'my_subdirectory/subject3.txt': {'path': ["value does not match regex '^.+\\.csv$'"]}}}]
         >>>
         ```
 
