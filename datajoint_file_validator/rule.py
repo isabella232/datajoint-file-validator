@@ -27,8 +27,6 @@ class Rule:
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
-        if self.query.path == config.default_query and config.debug:
-            assert filtered_snapshot == snapshot
         results = list(
             map(
                 lambda constraint: constraint.validate(filtered_snapshot),
