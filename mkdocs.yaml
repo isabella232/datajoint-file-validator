@@ -40,6 +40,7 @@ theme:
   favicon: assets/images/company-logo-blue.png
   features:
     - toc.integrate
+    - content.tabs.link
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: datajoint
@@ -72,6 +73,7 @@ markdown_extensions:
   - toc:
       permalink: true
   - mdx_truly_sane_lists
+  - admonition
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -87,7 +89,11 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - footnotes
   - pymdownx.details: # permit folded <details> blocks via `??? note "Title"` format
-  - pymdownx.snippets # Allows including file snippets e.g. --8<-- "; src/file.md"
+  - pymdownx.snippets: # Allows including file snippets e.g. --8<-- "; src/file.md"
+      check_paths: true
+      base_path:
+        - docs/snippets
+  - pymdownx.highlight:
   - pymdownx.magiclink # Displays bare URLs as links
   - pymdownx.tasklist: # Renders check boxes in tasks lists
       custom_checkbox: true

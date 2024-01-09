@@ -74,7 +74,7 @@ def list_manifests(
     query: Optional[str] = None,
     sort_alpha: Optional[str] = "asc",
     additional_dirs: Optional[list] = None,
-    ignore_patterns: Optional[list] = ('mkdocs.yaml', 'docs-example', 'docs'),
+    ignore_patterns: Optional[list] = ("mkdocs.yaml", "docs-example", "docs"),
 ) -> List[Dict[str, Any]]:
     """
     List all available manifests.

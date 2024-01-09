@@ -22,9 +22,6 @@ The Python package `datajoint_file_validator` allows users to check if their fil
 Through the [Python API](usage.md#validate-using-python-api) or the [command line interface (CLI)](usage.md#validate-using-the-command-line-interface-cli), users can validate files or filesets against a manifest and receive a report of any errors or warnings.
 
 The DataJoint File Validator is designed to be extensible.
-Users can define their own fileset types by [writing manifests](tutorial.md#write-a-manifest) that define rules and constraints for their custom fileset type.
+Users can define their own fileset types by [writing manifests](tutorial/2-manifest.md) that define rules and constraints for their custom fileset type.
 Users are encouraged to share their manifests with the community by [contributing them to the Manifest Registry](contribute.md#contribute-a-manifest).
 The Python package defines a [manifest language](src/manifest_schemas/latest.yaml) that aids in writing custom manifests.
-
-
---8<-- "src/manifest_schemas/latest.yaml"

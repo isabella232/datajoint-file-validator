@@ -2,7 +2,7 @@
 name = "datajoint-file-validator"
 version = "0.1.0"
 description = "A tool to validate DataJoint files and filesets"
-authors = ["Ethan Ho <***REMOVED***>"]
+authors = ["Ethan Ho <53266718+ethho@users.noreply.github.com>"]
 license = "MIT"
 include = [
     { path = "manifests", format = ["sdist", "wheel"] }

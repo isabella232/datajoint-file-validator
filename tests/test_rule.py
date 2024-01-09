@@ -116,3 +116,14 @@ class TestRule:
                 val="not a number",
                 constraint_map=dict(count_min=(lambda: None)),
             )
+
+    def test_invalid_rule_error_composite_query(self):
+        with pytest.raises(InvalidRuleError) as e:
+            Rule.from_dict(
+                {
+                    "id": "test",
+                    "description": "Test rule",
+                    "query": {},
+                }
+            )
+        assert "empty" in str(e.value).lower(), str(e.value)

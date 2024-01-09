@@ -4,14 +4,14 @@ As a first step, [install the `datajoint-file-validator` package](installation.m
 
 ## Validate Using Python API
 
-Validate an [example fileset](../tests/data/filesets/fileset0) against an [example manifest](../datajoint_file_validator/manifests/demo_dlc/v0.1.yaml) using the Python API:
+Validate an [example fileset](src/filesets/fileset0) against an [example manifest](src/manifests/demo_dlc/v0.1.yaml) using the Python API:
 
 ```python
 from datajoint_file_validator import validate
 
 my_dataset_path = 'tests/data/filesets/fileset0'
 manifest_path = 'datajoint_file_validator/manifests/demo_dlc/v0.1.yaml'
-success, report = validate(my_dataset_path, manifest_path, verbose=True, format='json')
+success, report = validate(my_dataset_path, manifest_path, verbose=True)
 # Validation failed with the following errors:
 # [
 #     {
