@@ -2,13 +2,10 @@
 
 ## Using Pip
 
-```bash
-pip install datajoint_file_validator@git+https://github.com/ethho/datajoint-file-validator.git
+<!-- termynal -->
+
+```console
+$ pip install git+https://github.com/ethho/datajoint-file-validator.git
+---> 100%
+Successfully installed datajoint-file-validator-0.0.1
 ```
-
-## Using Poetry
-
-This project uses [Poetry](https://python-poetry.org/) to manage dependencies. To set up a development environment, install Poetry and run `poetry install`:
-
-1. Clone [this repository](https://github.com/ethho/datajoint-file-validator.git).
-2. Navit

@@ -3,13 +3,16 @@
 site_name: DataJoint File Validator Documentation
 site_url: http://localhost/docs
 repo_name: ethho/datajoint-file-validator
-repo_url: https://github.com/ethho/datajoint-docs
+repo_url: https://github.com/ethho/datajoint-file-validator
 nav:
   - Welcome: index.md
-  - Quick Start: quick_start.md
   - Getting Started:
     - Installation: installation.md
-    - Usage: usage.md
+    - Basic Usage: usage.md
+  - Tutorial:
+    - 1. Validate a file or fileset: tutorial/1-validate.md
+    - 2. Write a custom manifest: tutorial/2-manifest.md
+    - 3. Publish a manifest to the registry: tutorial/3-publish.md
   - Contribution Guidelines: contribute.md
   - API Docs:
     - Manifest: api/manifest.md

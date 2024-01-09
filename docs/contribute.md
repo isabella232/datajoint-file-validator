@@ -13,13 +13,10 @@ $ pipx install poetry
 $ poetry install --with dev
 ```
 
-When [running tests](#run-tests), [serving documentation](#build-and-serve-documentation), [using the CLI](./quick_start.md#using-the-command-line-interface-cli), or issuing any project-specific shell commands, be sure to either:
+When [running tests](#run-tests), [serving documentation](#build-and-serve-documentation), [using the CLI](./usage.md#validate-using-the-command-line-interface-cli), or issuing any project-specific shell commands, be sure to either:
 
-* Issue all commands after entering the [poetry virtual environment](https://python-poetry.org/docs/basic-usage/#activating-the-virtual-environment)
-	* Enter the virtual environment with `poetry shell`
-	* Exit the virtual environment with `deactivate`
-* Preface all commands with [`poetry run`](https://python-poetry.org/docs/basic-usage/#using-poetry-run)
-	* For example, run unit tests with `poetry run pytest`
+- Issue all commands after entering the [poetry virtual environment](https://python-poetry.org/docs/basic-usage/#activating-the-virtual-environment). You can enter the virtual environment with `poetry shell`, and exit the virtual environment with `deactivate`.
+- Preface all commands with [`poetry run`](https://python-poetry.org/docs/basic-usage/#using-poetry-run). For example, run unit tests with `poetry run pytest`.
 
 ### Using Dev Container
 
