@@ -6,8 +6,17 @@ description:
   type: string
   required: false
 query:
-  type: string
-  required: false
+  anyof:
+    - type: string
+    - type: dict
+      allow_unknown: false
+      schema:
+        type:
+          type: string
+          required: false
+        path:
+          type: string
+          required: false
 count_min:
   type: integer
   required: false
