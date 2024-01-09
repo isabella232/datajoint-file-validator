@@ -10,9 +10,9 @@ nav:
     - Installation: installation.md
     - Basic Usage: usage.md
   - Tutorial:
-    - 1. Validate a file or fileset: tutorial/1-validate.md
-    - 2. Write a custom manifest: tutorial/2-manifest.md
-    - 3. Publish a manifest to the registry: tutorial/3-publish.md
+    - 1. Validate a Fileset: tutorial/1-validate.md
+    - 2. Write a Custom Manifest: tutorial/2-manifest.md
+    - 3. Publish a Manifest to the Registry: tutorial/3-publish.md
   - Contribution Guidelines: contribute.md
   - API Docs:
     - Main: api/main.md
@@ -66,7 +66,12 @@ plugins:
         python:
           options:
             show_source: true
-  - termynal
+  - termynal:
+      title: bash
+      buttons: macos
+      prompt_literal_start:
+        - "$"
+        - ">>>"
 markdown_extensions:
   - attr_list
   - md_in_html

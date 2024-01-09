@@ -25,6 +25,8 @@ This can be a set of files that you have already created, or you can create a ne
 
 For this tutorial, we will create an example fileset in the shell:
 
+<!-- termynal -->
+
 ```console
 $ mkdir my_fileset
 $ mkdir my_fileset/my_subdirectory
@@ -35,6 +37,8 @@ $ touch my_fileset/my_subdirectory/subject3.txt
 ```
 
 We can now check the contents of the fileset, and save the path to the fileset for later:
+
+<!-- termynal -->
 
 ```console
 $ ls my_fileset/**
@@ -61,121 +65,201 @@ Now that we've created an example fileset full of empty files, we can use the Fi
 For the purposes of this tutorial, we will use an example fileset type called `demo_tutorial`, whose manifest file is included in the File Validator package.
 We can use either the Python API or the included command line interface (CLI) to validate the fileset:
 
-!!! example "Validate the Fileset"
+---
 
-    === "Python"
+We'll start by opening a Python interactive shell and importing the `validate` function from the File Validator package:
 
-        We'll start by opening a Python interactive shell and importing the `validate` function from the File Validator package:
+<!-- termynal -->
 
-        ```console
-        $ python3
-        Python 3.11.4 (main, Dec  7 2023, 15:43:41) [GCC 12.3.0] on linux
-        Type "help", "copyright", "credits" or "license" for more information.
-        >>> from datajoint_file_validator import validate, find_manifest
-        ```
-
-        Next, import the path to the example fileset we created earlier:
-
-        ```python3
-        >>> import os
-        >>> my_dataset_path = os.environ['MY_FILESET_PATH']
-        >>> print(my_dataset_path)
-        /some/path/to/my_fileset
-        ```
-
-        We can set the path to the manifest file as a string, or we can use the `find_manifest` function which will attempt to find the manifest file automatically:
-
-        ```python3
-        >>> manifest_path = find_manifest('demo_tutorial/v1')
-        >>> print(manifest_path)
-        /some/path/to/demo_tutorial/v1.yaml
-        ```
-
-        Now we can validate the fileset using the `validate` function.
-        We set the `verbose=True` to show a table-style report of the validation results:
-
-        ```python3
-        >>> success, report = validate(my_dataset_path, manifest_path, verbose=True)
-        Validation failed with the following errors:
-        ┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
-        ┃ Rule ID      ┃ Rule Description   ┃ Constraint ID ┃ Constraint Value ┃ Errors              ┃
-        ┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
-        │ rule-3-files │ Check that there   │ count_min     │ 5                │ constraint          │
-        │              │ are at least 5     │               │                  │ `count_min` failed: │
-        │              │ files in the       │               │                  │ 4 < 5               │
-        │              │ directory          │               │                  │                     │
-        │              │ (excluding         │               │                  │                     │
-        │              │ subdirectories).   │               │                  │                     │
-        │              │                    │               │                  │                     │
-        ├──────────────┼────────────────────┼───────────────┼──────────────────┼─────────────────────┤
-        │ rule-5-regex │ Check that all     │ regex         │ ^.+\.csv$        │ {'my_subdirectory/… │
-        │              │ files in the       │               │                  │ {'path': ["value    │
-        │              │ subdirectory are   │               │                  │ does not match      │
-        │              │ .csv files         │               │                  │ regex               │
-        │              │                    │               │                  │ '^.+\\.csv$'"]}}    │
-        └──────────────┴────────────────────┴───────────────┴──────────────────┴─────────────────────┘
-        ```
-
-        We can also inspect the validation results programmatically:
-
-        ```python3
-        >>> print(success)
-        False
-        >>> print(report)
-        [{'rule': 'rule-3-files', 'rule_description': 'Check that there are at least 5 files in the directory (excluding subdirectories).\n', 'constraint_id': 'count_min', 'constraint_value': 5, 'errors': 'constraint `count_min` failed: 4 < 5'}, {'rule': 'rule-5-regex', 'rule_description': 'Check that all files in the subdirectory are .csv files', 'constraint_id': 'regex', 'constraint_value': '^.+\\.csv$', 'errors': {'my_subdirectory/subject3.txt': {'path': ["value does not match regex '^.+\\.csv$'"]}}}]
-        >>>
-        ```
-
-    === "CLI"
-
-        <!-- termynal -->
-
-        ```console
-        $ datajoint-file-validator validate tests/data/filesets/fileset0 datajoint_file_validator/manifests/demo_dlc/v0.1.yaml
-        ❌ Validation failed with 1 errors!
-        ┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓
-        ┃                ┃ Rule           ┃               ┃ Constraint    ┃                ┃
-        ┃ Rule ID        ┃ Description    ┃ Constraint ID ┃ Value         ┃ Errors         ┃
-        ┡━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━┩
-        │ Min total      │ Check that     │ count_min     │ 6             │ constraint     │
-        │ files          │ there are at   │               │               │ `count_min`    │
-        │                │ least 6 files  │               │               │ failed: 4 < 6  │
-        │                │ anywhere in    │               │               │                │
-        │                │ the fileset    │               │               │                │
-        └────────────────┴────────────────┴───────────────┴───────────────┴────────────────┘
-        ```
-
-# Test Tabs
-
-=== "C"
-
-    ``` c
-    #include <stdio.h>
-
-    int main(void) {
-      printf("Hello world!\n");
-      return 0;
-    }
-    ```
-
-=== "C++"
-
-    ``` c++
-    #include <iostream>
-
-    int main(void) {
-      std::cout << "Hello world!" << std::endl;
-      return 0;
-    }
-    ```
-
-## Inspect a Manifest
-
-<details>
-<summary> <code>manifests/demo_dlc/default.yaml</code> </summary>
-
-```{.yaml linenums="1"}
---8<-- "manifests/demo_dlc/default.yaml"
+```console
+$ python3
+Python 3.11.4 (main, Dec  7 2023, 15:43:41) [GCC 12.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from datajoint_file_validator import validate, find_manifest
 ```
 
-</details>
+Next, import the path to the example fileset we created earlier:
+
+<!-- termynal -->
+
+```python3
+>>> import os
+>>> my_dataset_path = os.environ['MY_FILESET_PATH']
+>>> print(my_dataset_path)
+/some/path/to/my_fileset
+```
+
+We can set the path to the manifest file as a string, or we can use the `find_manifest` function which will attempt to find the manifest file automatically:
+
+<!-- termynal -->
+
+```python3
+>>> manifest_path = find_manifest('demo_tutorial/v1')
+>>> print(manifest_path)
+/some/path/to/demo_tutorial/v1.yaml
+```
+
+Now we can validate the fileset using the `validate` function.
+We set the `verbose=True` to show a table-style report of the validation results:
+
+<!-- termynal -->
+
+```python3
+>>> success, report = validate(my_dataset_path, manifest_path, verbose=True)
+Validation failed with the following errors:
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+┃ Rule ID      ┃ Rule Description   ┃ Constraint ID ┃ Constraint Value ┃ Errors              ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
+│ rule-3-files │ Check that there   │ count_min     │ 5                │ constraint          │
+│              │ are at least 5     │               │                  │ `count_min` failed: │
+│              │ files in the       │               │                  │ 4 < 5               │
+│              │ directory          │               │                  │                     │
+│              │ (excluding         │               │                  │                     │
+│              │ subdirectories).   │               │                  │                     │
+│              │                    │               │                  │                     │
+├──────────────┼────────────────────┼───────────────┼──────────────────┼─────────────────────┤
+│ rule-5-regex │ Check that all     │ regex         │ ^.+\.csv$        │ {'my_subdirectory/… │
+│              │ files in the       │               │                  │ {'path': ["value    │
+│              │ subdirectory are   │               │                  │ does not match      │
+│              │ .csv files         │               │                  │ regex               │
+│              │                    │               │                  │ '^.+\\.csv$'"]}}    │
+└──────────────┴────────────────────┴───────────────┴──────────────────┴─────────────────────┘
+```
+
+We see that our example fileset failed validation against the `demo_tutorial` fileset type.
+The validation report shows us that the fileset failed two rules:
+
+1. The fileset contains only 4 files total, not 5 as required in the manifest.
+2. The `my_subdirectory` subdirectory contains a file that does not match the expected regex pattern: it ends with the `.csv` instead of `.txt`.
+
+If this were a fileset that we were about to upload to the DataJoint platform, we would want to fix these errors before uploading the fileset.
+
+We can also inspect the validation results programmatically:
+
+<!-- termynal -->
+
+```python3
+>>> print(success)
+False
+>>> from pprint import pprint
+>>> pprint(report)
+[{'constraint_id': 'count_min',
+  'constraint_value': 5,
+  'errors': 'constraint `count_min` failed: 4 < 5',
+  'rule': 'rule-3-files',
+  'rule_description': 'Check that there are at least 5 files in the directory '
+                      '(excluding subdirectories).\n'},
+ {'constraint_id': 'regex',
+  'constraint_value': '^.+\\.csv$',
+  'errors': {'my_subdirectory/subject3.txt': {'path': ['value does not match '
+                                                       "regex '^.+\\.csv$'"]}},
+  'rule': 'rule-5-regex',
+  'rule_description': 'Check that all files in the subdirectory are .csv '
+                      'files'}]
+```
+
+## 1.4. Fixing Errors in the Fileset and Re-Validating
+
+Now that we know what errors are present in the fileset, we can fix them.
+In this case, we will add a new file to the fileset, and rename the file that does not match the regex pattern:
+
+<!-- termynal -->
+
+```console
+$ touch my_fileset/more_observations.txt
+$ mv my_fileset/my_subdirectory/subject3.txt my_fileset/my_subdirectory/subject3.csv
+$ ls my_fileset/**
+my_fileset/more_observations.txt  my_fileset/observations.txt
+
+my_fileset/my_subdirectory:
+subject1.csv  subject2.csv  subject3.csv
+```
+
+We can now re-validate the fileset:
+
+<!-- termynal -->
+
+```python3
+>>> success, report = validate(my_dataset_path, manifest_path, verbose=True)
+>>> print(success)
+True
+>>> print(report)
+[]
+```
+
+We see that the fileset now passes validation, and the validation report is empty!
+
+## 1.5. Validate the Fileset using the CLI
+
+As an alternative to using the Python API, we can also validate the fileset using the included command line interface (CLI).
+For the sake of demonstration, we'll remove one of our files, so that the fileset will fail validation:
+
+<!-- termynal -->
+
+```console
+$ rm my_fileset/my_subdirectory/subject1.csv
+$ ls my_fileset/**
+my_fileset/more_observations.txt  my_fileset/observations.txt
+
+my_fileset/my_subdirectory:
+subject2.csv  subject3.csv
+```
+
+We can now validate the fileset using the CLI:
+
+<!-- termynal -->
+
+```console
+$ datajoint-file-validator validate $MY_FILESET_PATH demo_tutorial/v1
+❌ Validation failed with 1 errors!
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Rule ID      ┃ Rule Description       ┃ Constraint ID ┃ Constraint Value ┃ Errors                ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
+│ rule-3-files │ Check that there are   │ count_min     │ 5                │ constraint            │
+│              │ at least 5 files in    │               │                  │ `count_min` failed: 4 │
+│              │ the directory          │               │                  │ < 5                   │
+│              │ (excluding             │               │                  │                       │
+│              │ subdirectories).       │               │                  │                       │
+│              │                        │               │                  │                       │
+└──────────────┴────────────────────────┴───────────────┴──────────────────┴───────────────────────┘
+```
+
+We can also output the report in JSON or YAML formats, and save the report to a file:
+
+<!-- termynal -->
+
+```console
+$ datajoint-file-validator validate --format json $MY_FILESET_PATH demo_tutorial/v1
+❌ Validation failed with 1 errors!
+[
+    {
+        'rule': 'rule-3-files',
+        'rule_description': 'Check that there are at least 5 files in the directory (excluding
+subdirectories).\n',
+        'constraint_id': 'count_min',
+        'constraint_value': 5,
+        'errors': 'constraint `count_min` failed: 4 < 5'
+    }
+]
+
+$ datajoint-file-validator validate --format yaml $MY_FILESET_PATH demo_tutorial/v1 > report.yaml
+❌ Validation failed with 1 errors!
+
+$ cat report.yaml
+- constraint_id: count_min
+  constraint_value: 5
+  errors: 'constraint `count_min` failed: 4 < 5'
+  rule: rule-3-files
+  rule_description: 'Check that there are at least 5 files in the directory
+    (excluding subdirectories).'
+```
+
+Once again, we can fix the errors in the fileset and re-validate:
+
+<!-- termynal -->
+
+```console
+$ touch my_fileset/my_subdirectory/subject6.csv # add a new file to pass validation
+$ datajoint-file-validator validate $MY_FILESET_PATH demo_tutorial/v1
+✔ Validation successful!
+```
