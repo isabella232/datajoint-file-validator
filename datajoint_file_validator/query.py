@@ -67,6 +67,9 @@ class CompositeQuery(Query):
 
     parts: List[Query] = field(default_factory=list)
 
+    def __hash__(self):
+        return hash(tuple(self.parts))
+
     def filter(self, snapshot: Snapshot) -> Snapshot:
         """Filter a Snapshot based on this query."""
         for part in self.parts:

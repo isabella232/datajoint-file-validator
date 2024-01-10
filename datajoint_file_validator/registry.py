@@ -91,6 +91,8 @@ def list_manifests(
     """
     if query is None:
         query = ".+"
+    else:
+        query = '.*' + query + '.*'
     additional_dirs = additional_dirs or list()
 
     # Get the unique set of possible manifest paths from _get_try_paths
@@ -98,12 +100,14 @@ def list_manifests(
     for dir in ["*", *[f"{dir}/*" for dir in additional_dirs]]:
         for glob_query in _get_try_paths(dir):
             for path_str in glob(str(glob_query), exclude=ignore_patterns):
-                poss_paths.add(Path(path_str).resolve())
+                poss_paths.add(Path(path_str))
     logger.debug(f"Searching for manifests at the following paths: {pf(poss_paths)}")
 
     manifests = set()
     for path in poss_paths:
-        if path.suffix != ".yaml" or not re.search(query, path.name):
+        if path.suffix != ".yaml":
+            continue
+        if not re.match(query, path.name) and not re.match(query, path.parent.name):
             continue
         try:
             manifest = Manifest.from_yaml(path)
