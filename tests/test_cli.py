@@ -134,6 +134,6 @@ class TestValidate:
         if fmt == "table":
             assert "━" in result.stdout
         elif fmt == "yaml":
-            assert "stem: v0.1" in result.stdout
+            assert "stem: default" in result.stdout
         elif fmt == "json":
-            assert "'stem': 'v0.1'" in result.stdout
+            assert "'stem': 'default'" in result.stdout

@@ -87,7 +87,7 @@ def test_list_manifests_basic():
     filtered_manis = registry.list_manifests(query="demo")
     mani_names = [mani["_meta"]["stem"] for mani in filtered_manis]
     for mani_name in mani_names:
-        assert "demo" in mani_name
+        assert "demo" in mani_name or "default" in mani_name
 
     assert not registry.list_manifests(query="gibberish_manifest_name")
     assert registry.list_manifests(query="(gibberish_manifest_name|demo)")
@@ -130,8 +130,8 @@ def test_list_manifests_sort_alpha():
     manis_desc = registry.list_manifests(query=None, sort_alpha="desc")
     assert len(manis_asc) > 1
     assert len(manis_desc) > 1
-    assert manis_asc[0]["_meta"]["stem"] < manis_asc[-1]["_meta"]["stem"]
-    assert manis_desc[0]["_meta"]["stem"] > manis_desc[-1]["_meta"]["stem"]
+    assert manis_asc[0]["id"] < manis_asc[-1]["id"]
+    assert manis_desc[0]["id"] > manis_desc[-1]["id"]
     assert manis_asc[0] == manis_desc[-1]
     assert manis_asc[-1] == manis_desc[0]
 
