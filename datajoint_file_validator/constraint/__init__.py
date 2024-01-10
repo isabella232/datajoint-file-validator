@@ -62,14 +62,14 @@ class CountMaxConstraint(Constraint):
 
 @dataclass(frozen=True)
 class SchemaConvertibleConstraint(Constraint):
+
+    @abstractmethod
     def to_schema(self) -> Schema:
         """
         Convert this constraint to a Cerberus schema that each file in
         the Snapshot will be validated against.
         """
-        raise NotImplementedError(
-            "Subclass of SchemaConvertibleConstraint must implement to_schema() method."
-        )
+        pass
 
     @staticmethod
     def _validate_file(schema: Schema, file: dict) -> Validator:
