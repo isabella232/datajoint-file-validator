@@ -179,10 +179,9 @@ class TestCompositeQuery:
         # With fileset1
         fileset_path = "tests/data/filesets/fileset1"
         ss = djfval.snapshot.create_snapshot(fileset_path)
-        assert set(self._comp_query("2021-10-02/*", "file", ss)) == set([
-            file["path"] for file in
-            gq.filter(tq.filter(ss))
-        ])
+        assert set(self._comp_query("2021-10-02/*", "file", ss)) == set(
+            [file["path"] for file in gq.filter(tq.filter(ss))]
+        )
 
         # Test bool
         assert bool(gq) is True
@@ -225,5 +224,7 @@ class TestCompositeQuery:
         )
 
         assert set(self._comp_query("2021-10-02/*", "directory", ss)) == set(
-            ["2021-10-02/foo/",]
+            [
+                "2021-10-02/foo/",
+            ]
         )

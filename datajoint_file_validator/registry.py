@@ -92,7 +92,7 @@ def list_manifests(
     if query is None:
         query = ".+"
     else:
-        query = '.*' + query + '.*'
+        query = ".*" + query + ".*"
     additional_dirs = additional_dirs or list()
 
     # Get the unique set of possible manifest paths from _get_try_paths

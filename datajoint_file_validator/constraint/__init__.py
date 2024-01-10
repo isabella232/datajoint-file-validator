@@ -62,7 +62,6 @@ class CountMaxConstraint(Constraint):
 
 @dataclass(frozen=True)
 class SchemaConvertibleConstraint(Constraint):
-
     @abstractmethod
     def to_schema(self) -> Schema:
         """
@@ -83,10 +82,13 @@ class SchemaConvertibleConstraint(Constraint):
         validators: Iterable[Validator] = list(
             map(lambda file: self._validate_file(schema, file), snapshot)
         )
-        status = bool(not any(getattr(validator, "errors", None) for validator in validators))
+        status = bool(
+            not any(getattr(validator, "errors", None) for validator in validators)
+        )
         return ValidationResult(
             status=status,
-            message=None if status
+            message=None
+            if status
             else {
                 file["path"]: validator.errors
                 for file, validator in zip(snapshot, validators)

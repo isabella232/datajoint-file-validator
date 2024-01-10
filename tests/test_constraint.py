@@ -56,9 +56,7 @@ class TestRegexConstraint:
             assert result.status is False
 
     def test_fileset1_passing(self, snapshot_fileset1: Snapshot):
-        passing_patterns = (
-            "^.+\\.txt$|.+\\.md|.+\\.png|2021-10-0[12]/(?:foo/)?$",
-        )
+        passing_patterns = ("^.+\\.txt$|.+\\.md|.+\\.png|2021-10-0[12]/(?:foo/)?$",)
         for pattern in passing_patterns:
             c = RegexConstraint(pattern)
             result = c.validate(snapshot_fileset1)
