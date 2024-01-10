@@ -41,17 +41,27 @@ $ mkdir datajoint_file_validator/manifests/my_type
 ```
 
 Copy your manifest file to this new directory, with a file name that matches the `version` of the manifest file.
-The version of our manifest file is `0.1.0`, so we will copy our manifest file to `datajoint_file_validator/manifests/my_type/v0.1.0.yaml`.
-We can then commit and push our changes to our fork:
+The version of our manifest is `0.1.0`, so we will copy the manifest file to `datajoint_file_validator/manifests/my_type/v0.1.0.yaml`.
+We also want to create a symbolic link called `default.yaml` that points to the `v0.1.0.yaml` file.
+This symlink is necessary in order for the Python package to recognize our new manifest file.
 
 <!-- termynal -->
 
 ```console
 $ cp my_type.yaml datajoint_file_validator/manifests/my_type/v0.1.0.yaml
-$ git add datajoint_file_validator/manifests/my_type/v0.1.0.yaml
+$ ln -s v0.1.0.yaml datajoint_file_validator/manifests/my_type/default.yaml
+```
+
+We can then commit and push changes to our fork:
+
+<!-- termynal -->
+
+```console
+$ git add datajoint_file_validator/manifests/my_type/
 $ git commit -m "Add manifest for my_type v0.1.0"
 $ git push origin main
 ```
+
 
 ### 3.1.4. Create a Pull Request Against the Main Repository
 
