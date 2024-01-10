@@ -61,7 +61,8 @@ Now that we've created an example fileset full of empty files, we can use the Fi
     We say that a fileset is **valid** if it matches the expected structure described by its manifest.
 
 For the purposes of this tutorial, we will use an example fileset type called `demo_tutorial`, whose manifest file is included in the File Validator package.
-We can use either the Python API or the included command line interface (CLI) to validate the fileset:
+<!-- We can use either the Python API or the included command line interface (CLI) to validate the fileset.
+We'll start with the Python API, and then show how to use the CLI. -->
 
 ---
 
@@ -127,8 +128,8 @@ Validation failed with the following errors:
 We see that our example fileset failed validation against the `demo_tutorial` fileset type.
 The validation report shows us that the fileset failed two rules:
 
-1. The fileset contains only 4 files total, not 5 as required in the manifest.
-2. The `my_subdirectory` subdirectory contains a file that does not match the expected regex pattern: it ends with the `.csv` instead of `.txt`.
+1. `rule-3-files`: The fileset contains only 4 files total, not 5 as required in the manifest.
+2. `rule-5-regex`: The `my_subdirectory` subdirectory contains a file that does not match the expected regex pattern: it ends with the `.txt` instead of `.csv`.
 
 <!-- If this were a fileset that we were about to upload to the DataJoint platform, we would want to fix these errors before uploading the fileset. -->
 
@@ -159,7 +160,9 @@ False
 ## 1.4. Fixing Errors in the Fileset and Re-Validating
 
 Now that we know what errors are present in the fileset, we can fix them.
-In this case, we will
+In a real-world scenario, validation failure could indicate that we have forgotten or misnamed a file that is required for downstream analysis.
+Therefore, in practice, the measures you take to fix errors will depend on your specific use case.
+In this example use case, we will
 
 1. Add a new file to the fileset, so that we satisfy rule `rule-3-files`, and
 2. Rename the file that does not match the regex pattern, to satisfy rule `rule-5-regex`.
@@ -269,8 +272,8 @@ $ datajoint-file-validator validate $MY_FILESET_PATH demo_tutorial/v1
 ## 1.6. List Available Manifests
 
 Although the File Validator package gives you a toolbox for creating your own manifest files for custom fileset types, it also includes commonly used fileset types that you can use out of the box.
-You can list the available manifests using the `list_manifests` function in the Python API.
-You can filter the list of available manifests by passing a regular expression pattern to the `list_manifests` function:
+These include manifests contributed by the DataJoint team and the community.
+You can list the available manifests using the `list_manifests` function in the Python API, and filter results by passing a regular expression pattern:
 
 <!-- termynal -->
 
