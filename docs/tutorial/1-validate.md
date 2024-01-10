@@ -29,6 +29,7 @@ For this tutorial, we will create an example fileset in the shell:
 
 ```console
 $ mkdir my_fileset
+$ mkdir my_fileset/my_subject
 $ mkdir my_fileset/my_subdirectory
 $ touch my_fileset/observations.txt
 $ touch my_fileset/my_subdirectory/subject1.csv
@@ -46,6 +47,8 @@ my_fileset/observations.txt
 
 my_fileset/my_subdirectory:
 subject1.csv  subject2.csv  subject3.txt
+
+my_fileset/my_subject:
 $ export MY_FILESET_PATH="$(pwd)/my_fileset"
 $ echo "My fileset path is: $MY_FILESET_PATH"
 ```
@@ -177,6 +180,8 @@ my_fileset/more_observations.txt  my_fileset/observations.txt
 
 my_fileset/my_subdirectory:
 subject1.csv  subject2.csv  subject3.csv
+
+my_fileset/my_subject:
 ```
 
 We can now re-validate the fileset:
@@ -207,6 +212,8 @@ my_fileset/more_observations.txt  my_fileset/observations.txt
 
 my_fileset/my_subdirectory:
 subject2.csv  subject3.csv
+
+my_fileset/my_subject:
 ```
 
 We can now validate the fileset using the CLI:
@@ -268,7 +275,6 @@ $ datajoint-file-validator validate $MY_FILESET_PATH demo_tutorial/v1
 ✔ Validation successful!
 ```
 
-
 ## 1.6. List Available Manifests
 
 Although the File Validator package gives you a toolbox for creating your own manifest files for custom fileset types, it also includes commonly used fileset types that you can use out of the box.
@@ -319,7 +325,7 @@ Let's read the contents using `cat /path/to/demo_tutorial/default.yaml` or your 
 </details>
 
 Again, we'll go into more detail about how to write a custom manifest in the [next section](2-manifest.md).
-For now, note that the manifest is a YAML file that contains a list of rules.
+For now, note that the manifest is a YAML file that contains a list of rules, all of which must pass in order for a fileset to be valid.
 Most of these rules passed when we validated our fileset, but the rules with IDs `rule-3-files` (lines 22-29) and `rule-5-regex` (lines 37-40) failed.
 Notice that the manifest author has included a `description` of each rule, as well as a `description` of the manifest itself, so that the end user can understand what the manifest is for and what the rules are checking for.
 

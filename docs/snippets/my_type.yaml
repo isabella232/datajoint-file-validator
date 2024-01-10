@@ -1,0 +1,29 @@
+id: my_type
+version: 0.1.0
+description: >
+  An example fileset type for the DataJoint
+  File Validator tutorial.
+author:
+  name: Alice
+  email: alice@example.com
+rules:
+  - id: my_simple_rule
+    description: >
+      A simple rule that checks that there are
+      at least 3 files (not including subdirectories
+      themselves) anywhere in the fileset.
+    count_min: 3
+    count_max: 5
+  - id: top_level_txt_files
+    description: >
+      Check that there are exactly 1 .txt files
+      at the top level of the directory.
+    query: "*.txt"
+    count_min: 1
+    count_max: 1
+  - id: csv_files_anywhere
+    description: >
+      Check that there are exactly 2 .csv files
+      anywhere in the fileset.
+    query: "**/*.csv"
+    count_min: 2
