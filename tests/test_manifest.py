@@ -1,6 +1,7 @@
 import pytest
 import yaml
 from copy import deepcopy
+from wcmatch import glob, pathlib
 from datajoint_file_validator import Manifest
 from datajoint_file_validator.yaml import read_yaml
 from datajoint_file_validator.error import InvalidManifestError
@@ -24,6 +25,18 @@ class TestManifest:
         Checks that all manifests in the registry are valid.
         """
         mani = Manifest.from_yaml(manifest_file_from_registry, check_valid=True)
+
+    def test_all_registry_manifests_unique_id(self):
+        """
+        Checks that all manifests in the registry have unique ids.
+        """
+        mani_paths = set([pathlib.Path(path).resolve() for path in glob.glob(
+            "datajoint_file_validator/manifests/**/*.yaml", flags=glob.GLOBSTAR
+        )])
+        manis = [Manifest.from_yaml(mani_path, check_valid=True) for mani_path in mani_paths]
+        mani_ids = [(mani.id, mani.version) for mani in manis]
+        duplicate_ids = [mani_id for mani_id in mani_ids if mani_ids.count(mani_id) > 1]
+        assert len(mani_ids) == len(set(mani_ids)), f"Duplicate ids: {duplicate_ids}"
 
     def test_check_valid(self, manifest_dict, tmp_path):
         """
