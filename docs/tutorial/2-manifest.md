@@ -174,8 +174,8 @@ Suppose that we wanted to check the number of `.csv` files _anywhere_ in the fil
 We can define another rule to check this, now using the `**.csv` query that matches all `.csv` files anywhere in the fileset.
 Append to the manifest `rules`:
 
-```{.yaml linenums="1"}
---8<-- "snippets/my_type.yaml:24:30"
+```{.yaml linenums="24"}
+--8<-- "snippets/my_type.yaml:24:29"
 ```
 
 Since the `**/*.csv` query matches two files, `my_subdirectory/subject1.csv` and `my_subdirectory/subject2.csv` (it will also match `.csv` files at the top level, if there were any), the `count_min` constraint is satisfied.
@@ -194,7 +194,7 @@ So far, we've only used simple glob-style queries to filter the list of files in
 We can define more complex queries using the `query` field, which accepts `path` and `type` fields.
 For example, we can define a query that matches the glob-style pattern `subject`, but excludes directories (only files):
 
-```{.yaml linenums="1"}
+```{.yaml linenums="30"}
 --8<-- "snippets/my_type.yaml:30:37"
 ```
 
@@ -207,7 +207,7 @@ So far, we've only used the `count_min` and `count_max` constraints.
 We can also use the `regex` constraint to check if files match a regular expression.
 For example, we can create a new rule that checks that all files in the `my_subdirectory` directory end with the `.csv`  or `.txt` extension:
 
-```{.yaml linenums="1"}
+```{.yaml linenums="38"}
 --8<-- "snippets/my_type.yaml:38:45"
 ```
 
@@ -225,7 +225,7 @@ The value of `eval` should be a definition of a Python function that:
 
 For example, we can define a rule that implements the same logic as our `top_level_txt_files` rule, but uses the `eval` constraint instead of built-in constraints:
 
-```{.yaml linenums="1"}
+```{.yaml linenums="46"}
 --8<-- "snippets/my_type.yaml:46:59"
 ```
 
@@ -257,6 +257,8 @@ That being said, we ask that you adhere to the following best practices when wri
 - Ensure that the code you write in `eval` is safe to run. Avoid fetching data from the internet or running code from lesser-known third party libraries.
 - If the function `print`s anything, ensure that it writes to `sys.stderr`, not the default `sts.stdout` buffer. You can do this by passing `file=sys.stderr` to the `print` function. This ensures that users can redirect [validation reports from `STDOUT` to file](1-validate.md#15-validate-the-fileset-using-the-cli) without corrupting the YAML or JSON formatted report.
 
+For details on the fields available in each file dictionary, see the [dataclass attributes of the `FileMetadata` class](../../api/snapshot/#datajoint_file_validator.snapshot.FileMetadata).
+
 ## 1.8. Conclusion
 
 In this section, we learned how to write a custom manifest that can be used to validate a fileset.
@@ -271,45 +273,9 @@ The complete manifest that we wrote in this section is shown below:
 --8<-- "snippets/my_type.yaml"
 ```
 
+</details>
+
 ## Next Steps
 
 Now that you've written a custom manifest, you can publish it to the [manifest registry](registry/index.md) so that others can use or extend it.
 See [part 3](3-publish.md) of this tutorial for more details.
-
-</details>
-
-## Test Tabs
-
-=== "C"
-
-    ``` c
-    #include <stdio.h>
-
-    int main(void) {
-      printf("Hello world!\n");
-      return 0;
-    }
-    ```
-
-=== "C++"
-
-    ``` c++
-    #include <iostream>
-
-    int main(void) {
-      std::cout << "Hello world!" << std::endl;
-      return 0;
-    }
-    ```
-
-## Inspect a Manifest
-
-<details>
-<summary> <code>manifests/demo_dlc/default.yaml</code> </summary>
-
-```{.yaml linenums="1"}
---8<-- "snippets/manifests/demo_dlc/default.yaml"
-```
-
-</details>
-
