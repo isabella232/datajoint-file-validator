@@ -1,5 +1,9 @@
 # Basic Usage
 
+_For a comprehensive guide on using the `datajoint-file-validator` package, please see the [tutorial](tutorial/1-validate.md)._
+
+----
+
 As a first step, [install the `datajoint-file-validator` package](installation.md). Optionally, [set up a development environment](contribute.md#set-up-a-development-environment.md).
 
 ## Validate Using Python API
@@ -50,4 +54,4 @@ $ datajoint-file-validator validate tests/data/filesets/fileset0 datajoint_file_
 
 ## Next Steps
 
-For a more detailed introduction to the `datajoint-file-validator` package, see the [tutorial](tutorial/index.md).
+For a more detailed introduction to the `datajoint-file-validator` package, see the [tutorial](tutorial/1-validate.md).

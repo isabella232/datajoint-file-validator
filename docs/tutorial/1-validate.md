@@ -2,8 +2,8 @@
 
 Welcome to the DataJoint File Validator tutorial!
 In this section, we will walk through the process of validating a set of files, to check if they match the expected format.
-You might want to do this if you are, for example, a researcher who wants to check that your data files are in the correct format before uploading them to the DataJoint platform or sharing them with others in your research group.
-Or, you might be a developer who wants to check that your code is generating files in the correct format.
+You might want to do this if you are a researcher who wants to check that your data files are in the correct format before uploading them to the DataJoint platform, or sharing them with others in your research group.
+Or, you might be a developer who wants to check that your code is generating files in the correct format, or that users are submitting files in the correct format.
 
 ## 1.1. Install the File Validator
 
@@ -15,7 +15,7 @@ Please note that the File Validator requires Python 3.7 or later.
 ```console
 $ pip install git+https://github.com/ethho/datajoint-file-validator.git
 ---> 100%
-Successfully installed datajoint-file-validator-0.0.1
+Successfully installed datajoint-file-validator-0.1.0
 ```
 
 ## 1.2. Create a Fileset
@@ -54,9 +54,7 @@ $ echo "My fileset path is: $MY_FILESET_PATH"
 
 Now that we've created an example fileset full of empty files, we can use the File Validator to check that the fileset matches the expected format.
 
-!!! note
-
-    Some terminology before we continue:
+!!! note "A footnote on terminology"
 
     Formally, we call the "expected format" of a fileset its **fileset type**.
     A fileset type is defined by a **manifest**, which is a YAML file that describes the expected structure of the fileset.
@@ -100,7 +98,7 @@ We can set the path to the manifest file as a string, or we can use the `find_ma
 ```
 
 Now we can validate the fileset using the `validate` function.
-We set the `verbose=True` to show a table-style report of the validation results:
+We can set the `verbose=True` option to show a table-style report of the validation results:
 
 <!-- termynal -->
 
@@ -132,9 +130,9 @@ The validation report shows us that the fileset failed two rules:
 1. The fileset contains only 4 files total, not 5 as required in the manifest.
 2. The `my_subdirectory` subdirectory contains a file that does not match the expected regex pattern: it ends with the `.csv` instead of `.txt`.
 
-If this were a fileset that we were about to upload to the DataJoint platform, we would want to fix these errors before uploading the fileset.
+<!-- If this were a fileset that we were about to upload to the DataJoint platform, we would want to fix these errors before uploading the fileset. -->
 
-We can also inspect the validation results programmatically:
+We can also inspect the validation results as a Python object, which is useful for validating programmatically:
 
 <!-- termynal -->
 
@@ -161,7 +159,10 @@ False
 ## 1.4. Fixing Errors in the Fileset and Re-Validating
 
 Now that we know what errors are present in the fileset, we can fix them.
-In this case, we will add a new file to the fileset, and rename the file that does not match the regex pattern:
+In this case, we will
+
+1. Add a new file to the fileset, so that we satisfy rule `rule-3-files`, and
+2. Rename the file that does not match the regex pattern, to satisfy rule `rule-5-regex`.
 
 <!-- termynal -->
 
@@ -224,7 +225,7 @@ $ datajoint-file-validator validate $MY_FILESET_PATH demo_tutorial/v1
 └──────────────┴────────────────────────┴───────────────┴──────────────────┴───────────────────────┘
 ```
 
-We can also output the report in JSON or YAML formats, and save the report to a file:
+We can also output the report in JSON or YAML formats, and save it to a file:
 
 <!-- termynal -->
 
@@ -263,3 +264,64 @@ $ touch my_fileset/my_subdirectory/subject6.csv # add a new file to pass validat
 $ datajoint-file-validator validate $MY_FILESET_PATH demo_tutorial/v1
 ✔ Validation successful!
 ```
+
+
+## 1.6. List Available Manifests
+
+Although the File Validator package gives you a toolbox for creating your own manifest files for custom fileset types, it also includes commonly used fileset types that you can use out of the box.
+You can list the available manifests using the `list_manifests` function in the Python API.
+You can filter the list of available manifests by passing a regular expression pattern to the `list_manifests` function:
+
+<!-- termynal -->
+
+```python3
+>>> from datajoint_file_validator import list_manifests
+>>> print(f"There are {len(list_manifests())} available manifests.")
+There are 4 available manifests.
+>>> print(f"There are {len(list_manifests(query='demo_tutorial'))} manifests that match.")
+There are 1 manifests that match.
+```
+
+Alternatively, use the CLI:
+
+<!-- termynal -->
+
+```console
+$ datajoint-file-validator manifest list --query 'demo_tutorial'
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ID            ┃ Version ┃ Description                        ┃ Path                                ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ demo_tutorial │ 0.1.0   │ An example manifest for the        │ /path/to/demo_tutorial/default.yaml │
+│               │         │ DataJoint File Validator tutorial. │                                     │
+│               │         │                                    │                                     │
+└───────────────┴─────────┴────────────────────────────────────┴─────────────────────────────────────┘
+```
+
+## 1.7. Inspect a Manifest
+
+We will cover the details of how to write a custom manifest in the [next section](2-manifest.md).
+For now, we will inspect the contents of the `demo_tutorial` manifest that we used above.
+We see from the `list_manifests` output above that the `demo_tutorial` manifest is located at `/path/to/demo_tutorial/default.yaml` (the actual path to the manifest will be different on your system).
+Let's read the contents using `cat /path/to/demo_tutorial/default.yaml` or your favorite text editor:
+
+<!-- termynal -->
+
+<details>
+<summary> Output of <code>cat /path/to/demo_tutorial/default.yaml</code> </summary>
+
+```{.yaml linenums="1"}
+--8<-- "snippets/manifests/demo_tutorial/v1.yaml"
+```
+
+</details>
+
+Again, we'll go into more detail about how to write a custom manifest in the [next section](2-manifest.md).
+For now, note that the manifest is a YAML file that contains a list of rules.
+Most of these rules passed when we validated our fileset, but the rules with IDs `rule-3-files` (lines 22-29) and `rule-5-regex` (lines 37-40) failed.
+Notice that the manifest author has included a `description` of each rule, as well as a `description` of the manifest itself, so that the end user can understand what the manifest is for and what the rules are checking for.
+
+## 1.8. Next Steps
+
+In this section, we learned how to validate a fileset using the File Validator package.
+We also learned how to use the included command line interface (CLI) to validate a fileset.
+In the [next section](2-manifest.md), we will learn how to write a custom manifest to define a new fileset type.

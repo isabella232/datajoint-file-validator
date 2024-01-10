@@ -32,7 +32,7 @@
 <summary> <code>manifests/demo_dlc/default.yaml</code> </summary>
 
 ```{.yaml linenums="1"}
---8<-- "manifests/demo_dlc/default.yaml"
+--8<-- "snippets/manifests/demo_dlc/default.yaml"
 ```
 
 </details>
