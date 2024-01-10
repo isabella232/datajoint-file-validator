@@ -10,12 +10,13 @@ Or, you might be a lab manager who wants to implement data sharing best practice
 
 It is recommended that you complete [tutorial part 1](1-validate.md) before continuing, so that you understand how to validate a fileset using the File Validator.
 
-For this section, we'll re-use the `my_fileset` fileset that we created in the previous section.
+For this section, we'll recreate the `my_fileset` fileset that we created in the previous section.
 If you don't have a `my_fileset` directory, you can create one using the shell commands:
 
 <!-- termynal -->
 
 ```console
+$ rm -r my_fileset || true # remove the fileset if it already exists from part 1
 $ mkdir my_fileset
 $ mkdir my_fileset/my_subject
 $ mkdir my_fileset/my_subdirectory
@@ -38,7 +39,6 @@ subject1.csv  subject2.csv  subject3.txt
 
 my_fileset/my_subject:
 $ export MY_FILESET_PATH="$(pwd)/my_fileset"
-$ echo "My fileset path is: $MY_FILESET_PATH"
 ```
 
 ## 1.2. Create a Manifest
@@ -129,7 +129,7 @@ $ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
 ┃ Rule ID        ┃ Rule Description     ┃ Constraint ID ┃ Constraint Value ┃ Errors                ┃
 ┡━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
 │ my_simple_rule │ A simple rule that   │ count_max     │ 3                │ constraint            │
-│                │ checks that there    │               │                  │ `count_max` failed: 5 │
+│                │ checks that there    │               │                  │ `count_max` failed: 6 │
 │                │ are at least 3 files │               │                  │ > 3                   │
 │                │ (not including       │               │                  │                       │
 │                │ subdirectories       │               │                  │                       │
@@ -139,7 +139,7 @@ $ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
 └────────────────┴──────────────────────┴───────────────┴──────────────────┴───────────────────────┘
 ```
 
-We can increase `count_max` to 5 to make our fileset valid again:
+We can increase `count_max` to 6 to make our fileset valid again:
 
 ```{.yaml linenums="1"}
 --8<-- "snippets/my_type.yaml::16"
@@ -188,7 +188,95 @@ $ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
 ✔ Validation successful!
 ```
 
-## 1.5. Regex Constraints
+## 1.5. Complex Queries
+
+So far, we've only used simple glob-style queries to filter the list of files in the fileset.
+We can define more complex queries using the `query` field, which accepts `path` and `type` fields.
+For example, we can define a query that matches the glob-style pattern `subject`, but excludes directories (only files):
+
+```{.yaml linenums="1"}
+--8<-- "snippets/my_type.yaml:30:37"
+```
+
+The `path` pattern `**/*subject*` matches `my_directory/subject1.csv`, `my_directory/subject2.csv`, `my_directory/subject3.csv`, and the directory `my_subject/`.
+With the `type: file` component, `my_subject/` is excluded from the query, and only the three files are validated against the constraints.
+
+## 1.6. Regex Constraint
+
+So far, we've only used the `count_min` and `count_max` constraints.
+We can also use the `regex` constraint to check if files match a regular expression.
+For example, we can create a new rule that checks that all files in the `my_subdirectory` directory end with the `.csv`  or `.txt` extension:
+
+```{.yaml linenums="1"}
+--8<-- "snippets/my_type.yaml:38:45"
+```
+
+For details on how to write regular expressions, see online resources such as [regexr.com](https://regexr.com/).
+
+## 1.7. Eval Constraint
+
+Although the built-in constraints give us a lot of flexibility in defining rules, sometimes we need to write custom logic to check if a file is valid.
+The `eval` constraint accommodates these use cases by allowing us to write custom Python code to check if a fileset is valid.
+The value of `eval` should be a definition of a Python function that:
+
+- Is defined using the `def` syntax, as opposed to `lambda` syntax.
+- Takes as its first argument a list of dictionaries, where each dictionary contains information about a file in the fileset.
+- Returns a boolean value: `True` if the fileset is valid, and `False` otherwise.
+
+For example, we can define a rule that implements the same logic as our `top_level_txt_files` rule, but uses the `eval` constraint instead of built-in constraints:
+
+```{.yaml linenums="1"}
+--8<-- "snippets/my_type.yaml:46:59"
+```
+
+When we validate, we see the `STDERR` output from the `print` statement:
+
+<!-- termynal -->
+
+```console
+$ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
+Found .txt file: {'abs_path': '/home/eho/repos/dj/datajoint-file-validator/docs/snippets/my_fileset/observations.txt',
+ 'atime_ns': 1704917387733281020,
+ 'ctime_ns': 1704917387125281156,
+ 'extension': '.txt',
+ 'last_modified': '2024-01-10T13:09:47.125281+00:00',
+ 'mtime_ns': 1704917387125281156,
+ 'name': 'observations.txt',
+ 'path': 'observations.txt',
+ 'rel_path': 'observations.txt',
+ 'size': 0,
+ 'type': 'file'}
+✔ Validation successful!
+```
+
+With the `eval` constraint, manifest authors have flexibility to write almost any rule they can think of.
+That being said, we ask that you adhere to the following best practices when writing `eval` constraints:
+
+- Use a built-in constraint if possible. Built-in constraints validate faster, and emit more informative error messages when validation fails.
+- Avoid running complex or computentially intensive logic in `eval` functions. By convention, fileset validation should be quick and easy to run. Instead, move complex logic to a separate script and use `datajoint-file-validator` as a dependency.
+- Ensure that the code you write in `eval` is safe to run. Avoid fetching data from the internet or running code from lesser-known third party libraries.
+- If the function `print`s anything, ensure that it writes to `sys.stderr`, not the default `sts.stdout` buffer. You can do this by passing `file=sys.stderr` to the `print` function. This ensures that users can redirect [validation reports from `STDOUT` to file](1-validate.md#15-validate-the-fileset-using-the-cli) without corrupting the YAML or JSON formatted report.
+
+## 1.8. Conclusion
+
+In this section, we learned how to write a custom manifest that can be used to validate a fileset.
+We encourage you to experiment with writing your own manifests, and consult the [manifest registry](registry/index.md) for examples and inspiration.
+The complete manifest that we wrote in this section is shown below:
+
+
+<details>
+<summary> <code>my_type.yaml</code> </summary>
+
+```{.yaml linenums="1"}
+--8<-- "snippets/my_type.yaml"
+```
+
+## Next Steps
+
+Now that you've written a custom manifest, you can publish it to the [manifest registry](registry/index.md) so that others can use or extend it.
+See [part 3](3-publish.md) of this tutorial for more details.
+
+</details>
 
 ## Test Tabs
 

@@ -29,7 +29,6 @@ For this tutorial, we will create an example fileset in the shell:
 
 ```console
 $ mkdir my_fileset
-$ mkdir my_fileset/my_subject
 $ mkdir my_fileset/my_subdirectory
 $ touch my_fileset/observations.txt
 $ touch my_fileset/my_subdirectory/subject1.csv
@@ -48,7 +47,6 @@ my_fileset/observations.txt
 my_fileset/my_subdirectory:
 subject1.csv  subject2.csv  subject3.txt
 
-my_fileset/my_subject:
 $ export MY_FILESET_PATH="$(pwd)/my_fileset"
 $ echo "My fileset path is: $MY_FILESET_PATH"
 ```
@@ -180,8 +178,6 @@ my_fileset/more_observations.txt  my_fileset/observations.txt
 
 my_fileset/my_subdirectory:
 subject1.csv  subject2.csv  subject3.csv
-
-my_fileset/my_subject:
 ```
 
 We can now re-validate the fileset:
@@ -212,8 +208,6 @@ my_fileset/more_observations.txt  my_fileset/observations.txt
 
 my_fileset/my_subdirectory:
 subject2.csv  subject3.csv
-
-my_fileset/my_subject:
 ```
 
 We can now validate the fileset using the CLI:
