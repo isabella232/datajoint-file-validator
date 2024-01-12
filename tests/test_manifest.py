@@ -30,10 +30,17 @@ class TestManifest:
         """
         Checks that all manifests in the registry have unique ids.
         """
-        mani_paths = set([pathlib.Path(path).resolve() for path in glob.glob(
-            "datajoint_file_validator/manifests/**/*.yaml", flags=glob.GLOBSTAR
-        )])
-        manis = [Manifest.from_yaml(mani_path, check_valid=True) for mani_path in mani_paths]
+        mani_paths = set(
+            [
+                pathlib.Path(path).resolve()
+                for path in glob.glob(
+                    "datajoint_file_validator/manifests/**/*.yaml", flags=glob.GLOBSTAR
+                )
+            ]
+        )
+        manis = [
+            Manifest.from_yaml(mani_path, check_valid=True) for mani_path in mani_paths
+        ]
         mani_ids = [(mani.id, mani.version) for mani in manis]
         duplicate_ids = [mani_id for mani_id in mani_ids if mani_ids.count(mani_id) > 1]
         assert len(mani_ids) == len(set(mani_ids)), f"Duplicate ids: {duplicate_ids}"

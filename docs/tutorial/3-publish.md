@@ -67,4 +67,6 @@ $ git push origin main
 
 Finally, create a pull request against the `main` branch of the main repository by following this link:
 
-[Click here to create a pull request for a new manifest](https://github.com/ethho/datajoint-file-validator/compare/main?template=new_manifest.md&labels=new-manifest,manifest&title=New+Manifest&assignees=ethho)
+1. [Click here to create a pull request for a new manifest](https://github.com/ethho/datajoint-file-validator/compare/main?template=new_manifest.md&labels=new-manifest,manifest&title=New+Manifest&assignees=ethho&is_cross_repo=1)
+2. Click "compare across forks" and select your fork and `main` branch (or whichever branch you pushed to)
+3. Click "Create a Pull Request"

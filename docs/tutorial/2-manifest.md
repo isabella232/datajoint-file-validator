@@ -88,8 +88,8 @@ $ datajoint-file-validator manifest list --query 'my_type'
 ## 1.3. Add a Rule to the Manifest
 
 Now that we have a manifest, we can add rules to it.
-Rules are defined using the `rules` key in the manifest, which is a list of rules.
-Let's start by defining a simple rule: we want to ensure that there are at least 3 files (not including subdirectories themselves) anywhere in the fileset.
+Rules are defined using the `rules` key in the manifest.
+Let's start by defining a simple rule: we want to ensure that there are at least 3 files (including subdirectories themselves) anywhere in the fileset.
 Append a `rules` section so that your manifest looks like this:
 
 ```{.yaml linenums="1"}
@@ -98,8 +98,8 @@ Append a `rules` section so that your manifest looks like this:
 
 Like the manifest, this rule has an `id` (which _should_ be unique), and human-readable `description`.
 Both of these fields are optional, but recommended, especially if you are writing a manifest that will be used by others.
-On line 15, we define the `count_min` field, which contains the logic that checks if our rule is valid
-Formally, we call this `count_min` field a **constraint**, and it is one of several types of constraints that we can use to define rules.
+On line 15, we define the `count_min` field, which contains the logic that checks if our rule is valid.
+Formally, we call this field a **constraint**, and it is one of several types of constraints that we can use.
 
 If we validate our fileset again, we'll see that it is still valid against our manifest because it has at least 3 files:
 
@@ -115,7 +115,7 @@ This time, we'll use the `count_max` constraint to ensure that there are no more
 
 ```{.yaml linenums="1"}
 --8<-- "snippets/my_type.yaml::15"
-      count_max: 3
+    count_max: 3
 ```
 
 Since our fileset has 4 files, it now fails validation because all constraints in a rule must be satisfied:
@@ -131,7 +131,7 @@ $ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
 │ my_simple_rule │ A simple rule that   │ count_max     │ 3                │ constraint            │
 │                │ checks that there    │               │                  │ `count_max` failed: 6 │
 │                │ are at least 3 files │               │                  │ > 3                   │
-│                │ (not including       │               │                  │                       │
+│                │ (including           │               │                  │                       │
 │                │ subdirectories       │               │                  │                       │
 │                │ themselves) anywhere │               │                  │                       │
 │                │ in the fileset.      │               │                  │                       │
@@ -171,7 +171,7 @@ After filtering, the only file that matches this query is `observations.txt`, wh
     If `query` is not defined for a rule, it is automatically set to the default value of `**`, which matches all files in the fileset.
 
 Suppose that we wanted to check the number of `.csv` files _anywhere_ in the fileset, not just at the top level.
-We can define another rule to check this, now using the `**.csv` query that matches all `.csv` files anywhere in the fileset.
+We can define another rule to check this, now using the `**/*.csv` query that matches all `.csv` files anywhere in the fileset.
 Append to the manifest `rules`:
 
 ```{.yaml linenums="24"}
@@ -211,6 +211,7 @@ For example, we can create a new rule that checks that all files in the `my_subd
 --8<-- "snippets/my_type.yaml:38:45"
 ```
 
+
 For details on how to write regular expressions, see online resources such as [regexr.com](https://regexr.com/).
 
 ## 1.7. Eval Constraint
@@ -249,15 +250,17 @@ Found .txt file: {'abs_path': '/home/eho/repos/dj/datajoint-file-validator/docs/
 ✔ Validation successful!
 ```
 
+For details on the fields available in each `file` dictionary, see the [dataclass attributes of the `FileMetadata` class](../../api/snapshot/#datajoint_file_validator.snapshot.FileMetadata).
+
+### 1.7.1. Best Practices
+
 With the `eval` constraint, manifest authors have flexibility to write almost any rule they can think of.
-That being said, we ask that you adhere to the following best practices when writing `eval` constraints:
+But with great power comes great responsibility, so we recommend that you adhere to the following best practices:
 
 - Use a built-in constraint if possible. Built-in constraints validate faster, and emit more informative error messages when validation fails.
-- Avoid running complex or computentially intensive logic in `eval` functions. By convention, fileset validation should be quick and easy to run. Instead, move complex logic to a separate script and use `datajoint-file-validator` as a dependency.
+- Avoid running complex or computationally intensive logic in `eval` functions. Fileset validation should be quick and easy to run. Instead, move complex logic to a separate script and use `datajoint-file-validator` as a dependency.
 - Ensure that the code you write in `eval` is safe to run. Avoid fetching data from the internet or running code from lesser-known third party libraries.
 - If the function `print`s anything, ensure that it writes to `sys.stderr`, not the default `sts.stdout` buffer. You can do this by passing `file=sys.stderr` to the `print` function. This ensures that users can redirect [validation reports from `STDOUT` to file](1-validate.md#15-validate-the-fileset-using-the-cli) without corrupting the YAML or JSON formatted report.
-
-For details on the fields available in each file dictionary, see the [dataclass attributes of the `FileMetadata` class](../../api/snapshot/#datajoint_file_validator.snapshot.FileMetadata).
 
 ## 1.8. Conclusion
 

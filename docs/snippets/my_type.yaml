@@ -10,7 +10,7 @@ rules:
   - id: my_simple_rule
     description: >
       A simple rule that checks that there are
-      at least 3 files (not including subdirectories
+      at least 3 files (including subdirectories
       themselves) anywhere in the fileset.
     count_min: 3
     count_max: 6
