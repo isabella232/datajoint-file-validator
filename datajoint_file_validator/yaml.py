@@ -1,6 +1,9 @@
 import yaml
 from typing import Any
 from .snapshot import PathLike
+from yamlinclude import YamlIncludeConstructor
+
+YamlIncludeConstructor.add_to_loader_class(loader_class=yaml.FullLoader, base_dir='/your/path')
 
 
 def read_yaml(path: PathLike) -> Any:
@@ -9,6 +12,6 @@ def read_yaml(path: PathLike) -> Any:
         # Cast to string
         path = str(path)
     with open(path, "r") as f:
-        contents = yaml.safe_load(f)
+        contents = yaml.load(f, Loader=yaml.FullLoader)
     # Strangely, yaml.safe_load returns None if the file is empty.
     return contents or {}
