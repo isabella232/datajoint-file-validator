@@ -971,6 +971,23 @@ files = [
 pyyaml = "*"
 
 [[package]]
+name = "pyyaml-include"
+version = "1.3.2"
+description = "Extending PyYAML with a custom constructor for including YAML files within YAML files"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyyaml-include-1.3.2.tar.gz", hash = "sha256:a516d5172092ec110a427dafe171da9341fe488eb6d1c78fb52f1f0414dec26d"},
+    {file = "pyyaml_include-1.3.2-py3-none-any.whl", hash = "sha256:cc0c0a1e4c2a91e4f0b1aea83634fe8b622fe90fc3be8e8293f1e47c5ed6001b"},
+]
+
+[package.dependencies]
+PyYAML = ">=6.0,<7.0"
+
+[package.extras]
+toml = ["toml"]
+
+[[package]]
 name = "regex"
 version = "2023.12.25"
 description = "Alternative regular expression module, to replace re."
@@ -1284,4 +1301,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0.0"
-content-hash = "439391db77bfbc63dd1eaff25aab689fb5ecadf3e550114c7273dc9c33863a4f"
+content-hash = "23085072d14b513692497300081401e5ef392ae17c7ba931973f27cdecf66884"
