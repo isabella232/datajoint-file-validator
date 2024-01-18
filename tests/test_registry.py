@@ -4,6 +4,7 @@ from pathlib import Path
 from pprint import pformat as pf
 from yaml import safe_dump
 from datajoint_file_validator import registry, Manifest
+from datajoint_file_validator.yaml import is_reference
 from . import logger
 
 
@@ -54,24 +55,28 @@ def test_find_from_site_pkg():
     resolved = registry.find_manifest("demo_rnaseq_v0.1.yaml")
 
 
-def test_find_from_site_pkg_symlink():
+def test_find_from_site_pkg_reference():
     """
-    Symlink in the manifest directory should resolve correctly.
+    Reference in the manifest directory should resolve correctly.
     """
-    resolved = registry.find_manifest("demo_rnaseq")
-    assert resolved.resolve().name == "demo_rnaseq_v0.1.yaml"
+    ref = registry.find_manifest("demo_rnaseq")
+    referenced = registry.find_manifest("demo_rnaseq_v0.1.yaml")
+    assert is_reference(ref)
+    assert is_reference(str(ref)), "covers casting"
+    assert not is_reference(referenced)
+    assert Manifest.from_yaml(ref) == Manifest.from_yaml(referenced)
 
-
-def test_find_in_subdir_from_site_pkg_symlink():
+def test_find_in_subdir_from_site_pkg_reference():
     """
-    Symlink in a subdir within the manifest directory should resolve correctly.
+    Reference in a subdir within the manifest directory should resolve correctly.
     """
-    resolved = registry.find_manifest("demo_dlc")
-    assert resolved.name == "default.yaml"
-    assert resolved.resolve().name == "v0.1.yaml"
+    ref = registry.find_manifest("demo_dlc")
+    referenced = registry.find_manifest("demo_dlc/v0.1.yaml")
+    assert is_reference(ref)
+    assert not is_reference(referenced)
+    assert Manifest.from_yaml(ref) == Manifest.from_yaml(referenced)
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest("demo_dlc.yaml")
-
 
 def test_list_manifests_basic():
     """Test registry.list_manifests"""

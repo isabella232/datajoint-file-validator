@@ -43,7 +43,7 @@ class TestManifest:
         )
         mani_ids = list()
         for mani_path in mani_paths:
-            if is_reference(str(mani_path)):
+            if is_reference(mani_path):
                 logger.debug(f"Manifest at path '{mani_path=}' is a reference")
                 # Ignore: we allow many references to other manifests
                 continue
@@ -52,9 +52,6 @@ class TestManifest:
             mani_ids.append((mani.id, mani.version))
         duplicate_ids = [mani_id for mani_id in mani_ids if mani_ids.count(mani_id) > 1]
         assert len(mani_ids) == len(set(mani_ids)), f"Duplicate ids: {duplicate_ids}"
-
-    def test_include_tag(self):
-        raise NotImplementedError()
 
     def test_check_valid(self, manifest_dict, tmp_path):
         """
