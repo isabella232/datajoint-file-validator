@@ -74,6 +74,7 @@ def list_manifests(
     query: Optional[str] = None,
     sort_alpha: Optional[str] = "asc",
     additional_dirs: Optional[list] = None,
+    ignore_patterns: Optional[list] = ("mkdocs.yaml", "docs-example", "docs"),
 ) -> List[Dict[str, Any]]:
     """
     List all available manifests.
@@ -90,19 +91,23 @@ def list_manifests(
     """
     if query is None:
         query = ".+"
+    else:
+        query = ".*" + query + ".*"
     additional_dirs = additional_dirs or list()
 
     # Get the unique set of possible manifest paths from _get_try_paths
     poss_paths = set()
     for dir in ["*", *[f"{dir}/*" for dir in additional_dirs]]:
         for glob_query in _get_try_paths(dir):
-            for path_str in glob(str(glob_query)):
-                poss_paths.add(Path(path_str).resolve())
+            for path_str in glob(str(glob_query), exclude=ignore_patterns):
+                poss_paths.add(Path(path_str))
     logger.debug(f"Searching for manifests at the following paths: {pf(poss_paths)}")
 
     manifests = set()
     for path in poss_paths:
-        if path.suffix != ".yaml" or not re.search(query, path.name):
+        if path.suffix != ".yaml":
+            continue
+        if not re.match(query, path.name) and not re.match(query, path.parent.name):
             continue
         try:
             manifest = Manifest.from_yaml(path)

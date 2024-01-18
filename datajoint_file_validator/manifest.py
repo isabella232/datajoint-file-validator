@@ -69,7 +69,7 @@ class Manifest:
         """Load a manifest from a YAML file."""
         try:
             return cls.from_dict(read_yaml(path), **kw)
-        except InvalidManifestError as e:
+        except (InvalidManifestError, yaml.error.YAMLError) as e:
             raise InvalidManifestError(
                 f"Error loading manifest at '{path}':\n{e}"
             ) from e

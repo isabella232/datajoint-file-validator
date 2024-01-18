@@ -72,8 +72,8 @@ class TestValidate:
         assert "failed" in result.stderr
 
         # Add two files to fileset
-        (tmp_fileset / "file1.txt").touch()
-        (tmp_fileset / "file2.txt").touch()
+        (tmp_fileset / "file1.mp4").touch()
+        (tmp_fileset / "file2.csv").touch()
 
         # Success run
         result = runner.invoke(
@@ -104,7 +104,7 @@ class TestValidate:
         elif fmt == "yaml":
             assert "constraint_id: count_min" in result.stdout
         elif fmt == "json":
-            assert "'constraint_id': 'count_min'" in result.stdout
+            assert '"constraint_id": "count_min"' in result.stdout
 
     def test_list_manifests_basic(self, runner):
         result = runner.invoke(
@@ -134,6 +134,6 @@ class TestValidate:
         if fmt == "table":
             assert "━" in result.stdout
         elif fmt == "yaml":
-            assert "stem: v0.1" in result.stdout
+            assert "stem: default" in result.stdout
         elif fmt == "json":
-            assert "'stem': 'v0.1'" in result.stdout
+            assert '"stem": "default"' in result.stdout

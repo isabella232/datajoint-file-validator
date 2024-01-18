@@ -1,8 +1,10 @@
 import re
+import sys
 from dataclasses import dataclass
 from typing import Any, Iterable, Callable, Tuple, List, Dict
 from abc import ABC, abstractmethod
 from cerberus import Validator
+from pprint import pprint, pformat
 from ..config import config
 from ..snapshot import Snapshot
 from ..result import ValidationResult
@@ -62,14 +64,13 @@ class CountMaxConstraint(Constraint):
 
 @dataclass(frozen=True)
 class SchemaConvertibleConstraint(Constraint):
+    @abstractmethod
     def to_schema(self) -> Schema:
         """
         Convert this constraint to a Cerberus schema that each file in
         the Snapshot will be validated against.
         """
-        raise NotImplementedError(
-            "Subclass of SchemaConvertibleConstraint must implement to_schema() method."
-        )
+        pass
 
     @staticmethod
     def _validate_file(schema: Schema, file: dict) -> Validator:
@@ -83,13 +84,17 @@ class SchemaConvertibleConstraint(Constraint):
         validators: Iterable[Validator] = list(
             map(lambda file: self._validate_file(schema, file), snapshot)
         )
+        status = bool(
+            not any(getattr(validator, "errors", None) for validator in validators)
+        )
         return ValidationResult(
-            status=all(validators),
+            status=status,
             message=None
-            if all(validators)
+            if status
             else {
                 file["path"]: validator.errors
                 for file, validator in zip(snapshot, validators)
+                if validator.errors
             },
             context=dict(snapshot=snapshot, constraint=self),
         )

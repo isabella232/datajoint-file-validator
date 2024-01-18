@@ -1,0 +1,59 @@
+id: my_type
+version: 0.1.0
+description: >
+  An example fileset type for the DataJoint
+  File Validator tutorial.
+author:
+  name: Alice
+  email: alice@example.com
+rules:
+  - id: my_simple_rule
+    description: >
+      A simple rule that checks that there are
+      at least 3 files (including subdirectories
+      themselves) anywhere in the fileset.
+    count_min: 3
+    count_max: 6
+  - id: top_level_txt_files
+    description: >
+      Check that there are exactly 1 .txt files
+      at the top level of the directory.
+    query: "*.txt"
+    count_min: 1
+    count_max: 1
+  - id: csv_files_anywhere
+    description: >
+      Check that there at least 2 .csv files
+      anywhere in the fileset.
+    query: "**/*.csv"
+    count_min: 2
+  - id: count_subject_files
+    description: >
+      Check that there are at most 3 files that
+      match the pattern "subject".
+    query:
+      type: file # must be "file" or "directory"
+      path: "**/*subject*"
+    count_max: 3
+  - id: subdirectory_contains_csv_or_txt
+    description: >
+      Check that all files in my_subdirectory
+      have extension .csv or .txt
+    query:
+      type: file
+      path: "my_subdirectory/*"
+    regex: ".*\\.csv|.*\\.txt$"
+  - id: top_level_txt_files_eval
+    description: >
+      Check that there are exactly 1 .txt files
+      at the top level of the directory, using
+      the eval constraint.
+    query: "*" # only top-level files and dirs
+    eval: |
+      def my_custom_validator(files: List[Dict[str, Any]]) -> bool:
+          count = 0
+          for file in files:
+              if file["path"].endswith(".txt"):
+                  print(f"Found .txt file: {pformat(file)}", file=sys.stderr)
+                  count += 1
+          return count == 1

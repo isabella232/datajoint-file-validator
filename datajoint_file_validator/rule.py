@@ -3,9 +3,9 @@ from typing import Dict, List, Any, Optional
 from .constraint import Constraint, CONSTRAINT_MAP
 from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
-from .query import Query, GlobQuery
+from .query import Query, GlobQuery, CompositeQuery
 from .config import config
-from .error import InvalidRuleError
+from .error import InvalidRuleError, InvalidQueryError
 from .hash_utils import generate_id
 
 
@@ -27,8 +27,6 @@ class Rule:
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
-        if self.query.path == config.default_query and config.debug:
-            assert filtered_snapshot == snapshot
         results = list(
             map(
                 lambda constraint: constraint.validate(filtered_snapshot),
@@ -42,7 +40,12 @@ class Rule:
 
     @staticmethod
     def compile_query(raw: Any) -> "Query":
-        if not isinstance(raw, str):
+        if isinstance(raw, dict):
+            try:
+                return CompositeQuery.from_dict(raw)
+            except InvalidQueryError as e:
+                raise InvalidRuleError(f"Error parsing query: {e}") from e
+        elif not isinstance(raw, str):
             raise InvalidRuleError(f"Query must be a string, not '{type(raw)}'")
         return GlobQuery(path=raw)
 

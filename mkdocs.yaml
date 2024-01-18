@@ -1,0 +1,140 @@
+# ---------------------- PROJECT SPECIFIC ---------------------------
+
+site_name: DataJoint File Validator Documentation
+site_url: http://localhost/docs
+repo_name: ethho/datajoint-file-validator
+repo_url: https://github.com/ethho/datajoint-file-validator
+nav:
+  - Welcome: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Basic Usage: usage.md
+  - Tutorial:
+    - 1. Validate a Fileset: tutorial/1-validate.md
+    - 2. Write a Custom Manifest: tutorial/2-manifest.md
+    - 3. Publish a Manifest to the Registry: tutorial/3-publish.md
+  - Contribution Guidelines: contribute.md
+  - API Docs:
+    - Main: api/main.md
+    - Manifest: api/manifest.md
+    - Snapshot: api/snapshot.md
+    - Registry: api/registry.md
+    - Rules: api/rule.md
+    - Query: api/query.md
+    - Config: api/config.md
+    - Base Settings: api/base_settings.md
+  - Release Notes: changelog.md
+
+# ---------------------------- STANDARD -----------------------------
+
+docs_dir: ./docs
+edit_uri: ./edit/main/docs
+theme:
+  font:
+    text: Roboto Slab
+    code: Source Code Pro
+  name: material
+  custom_dir: docs/.overrides
+  icon:
+    logo: main/company-logo
+  favicon: assets/images/company-logo-blue.png
+  features:
+    - toc.integrate
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: datajoint
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+  - section-index
+  - exclude:
+      glob:
+        - archive/*
+        - images/*md
+  - mkdocstrings:
+      enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
+  - termynal:
+      title: bash
+      buttons: macos
+      prompt_literal_start:
+        - "$"
+        - ">>>"
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - mdx_truly_sane_lists
+  - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      options:
+        custom_icons:
+          - .overrides/.icons
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - footnotes
+  - pymdownx.details: # permit folded <details> blocks via `??? note "Title"` format
+  - pymdownx.snippets: # Allows including file snippets e.g. --8<-- "; src/file.md"
+      check_paths: true
+      base_path:
+        - docs
+  - pymdownx.highlight:
+  - pymdownx.magiclink # Displays bare URLs as links
+  - pymdownx.tasklist: # Renders check boxes in tasks lists
+      custom_checkbox: true
+extra:
+  generator: false # Disable watermark
+  version:
+    provider: mike
+  social:
+    - icon: main/company-logo
+      link: https://www.datajoint.com
+      name: DataJoint
+    - icon: fontawesome/brands/slack
+      link: https://datajoint.slack.com
+      name: Slack
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/datajoint
+      name: LinkedIn
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/datajoint
+      name: Twitter
+    - icon: fontawesome/brands/github
+      link: https://github.com/datajoint
+      name: GitHub
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/u/datajoint
+      name: DockerHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/user/datajointbot
+      name: PyPI
+    - icon: fontawesome/brands/stack-overflow
+      link: https://stackoverflow.com/questions/tagged/datajoint
+      name: StackOverflow
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCdeCuFOTCXlVMRzh6Wk-lGg
+      name: YouTube
+extra_css:
+  - assets/stylesheets/extra.css
+extra_javascript:
+  - https://js-na1.hs-scripts.com/23133402.js  # HubSpot chatbot
