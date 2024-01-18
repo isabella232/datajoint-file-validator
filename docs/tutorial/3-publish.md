@@ -1,7 +1,8 @@
 # 3. Publish a Custom Manifest to the Registry
 
 If you've been following along the tutorial, you now have a manifest file for your custom fileset type `my_type`.
-Though you can already use the manifest to validate filesets, you might want to share it with others (say, in your research group or with collaborators).
+Please see the [previous section](./2-manifest.md) if you have not yet created a custom manifest file.
+You can now use your custom manifest to validate filesets, and you might want to share it with others (say, in your research group or with collaborators).
 In this section, we'll guide you through the process of publishing your manifest to the registry.
 
 ## 3.1. Using GitHub
