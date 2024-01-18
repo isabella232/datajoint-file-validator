@@ -41,9 +41,8 @@ def read_yaml(path: PathLike) -> Any:
         return _read_yaml(path)
     except FileNotFoundError as e:
         # Try resolving an include relative to the parent directory.
-        path = path.absolute()
         try:
             with working_directory(path.parent):
-                return _read_yaml(path)
+                return _read_yaml(path.relative_to(path.parent))
         except FileNotFoundError as e2:
             raise e2 from e
