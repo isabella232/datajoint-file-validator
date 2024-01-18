@@ -9,7 +9,8 @@
 </a> -->
 <!-- <a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/datajoint/datajoint-file-validator" target="_blank">
     <img src="https://coverage-badge.samuelcolvin.workers.dev/datajoint/datajoint-file-validator.svg" alt="Coverage">
-</a> -->
+</a>
+-->
 <!-- <a href="https://pypi.org/project/datajoint-file-validator" target="_blank">
     <img src="https://img.shields.io/pypi/v/datajoint-file-validator?color=%2334D058&label=pypi%20package" alt="Package version">
 </a> -->
