@@ -1,14 +1,14 @@
 # DataJoint File Validator
 
 <p align="center">
-<a href="https://github.com/ethho/datajoint-file-validator/actions/workflows/test.yaml" target="_blank">
-    <img src="https://github.com/ethho/datajoint-file-validator/actions/workflows/test.yaml/badge.svg" alt="Test">
+<a href="https://github.com/datajoint/datajoint-file-validator/actions/workflows/test.yaml" target="_blank">
+    <img src="https://github.com/datajoint/datajoint-file-validator/actions/workflows/test.yaml/badge.svg" alt="Test">
 </a>
-<!-- <a href="https://github.com/ethho/datajoint-file-validator/actions?query=workflow%3APyPi" target="_blank">
-    <img src="https://github.com/ethho/datajoint-file-validator/workflows/PyPi/badge.svg" alt="Publish">
+<!-- <a href="https://github.com/datajoint/datajoint-file-validator/actions?query=workflow%3APyPi" target="_blank">
+    <img src="https://github.com/datajoint/datajoint-file-validator/workflows/PyPi/badge.svg" alt="Publish">
 </a> -->
-<!-- <a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/ethho/datajoint-file-validator" target="_blank">
-    <img src="https://coverage-badge.samuelcolvin.workers.dev/ethho/datajoint-file-validator.svg" alt="Coverage">
+<!-- <a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/datajoint/datajoint-file-validator" target="_blank">
+    <img src="https://coverage-badge.samuelcolvin.workers.dev/datajoint/datajoint-file-validator.svg" alt="Coverage">
 </a> -->
 <!-- <a href="https://pypi.org/project/datajoint-file-validator" target="_blank">
     <img src="https://img.shields.io/pypi/v/datajoint-file-validator?color=%2334D058&label=pypi%20package" alt="Package version">
@@ -22,7 +22,7 @@ This repository contains a Python package that validates file sets for DataJoint
 ### Install Locally
 
 ```bash
-pip install git+https://github.com/ethho/datajoint-file-validator.git
+pip install git+https://github.com/datajoint/datajoint-file-validator.git
 ```
 
 ### Dev Container

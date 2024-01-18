@@ -2,8 +2,8 @@
 
 site_name: DataJoint File Validator Documentation
 site_url: http://localhost/docs
-repo_name: ethho/datajoint-file-validator
-repo_url: https://github.com/ethho/datajoint-file-validator
+repo_name: datajoint/datajoint-file-validator
+repo_url: https://github.com/datajoint/datajoint-file-validator
 nav:
   - Welcome: index.md
   - Getting Started:
