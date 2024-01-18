@@ -66,6 +66,7 @@ def test_find_from_site_pkg_reference():
     assert not is_reference(referenced)
     assert Manifest.from_yaml(ref) == Manifest.from_yaml(referenced)
 
+
 def test_find_in_subdir_from_site_pkg_reference():
     """
     Reference in a subdir within the manifest directory should resolve correctly.
@@ -77,6 +78,7 @@ def test_find_in_subdir_from_site_pkg_reference():
     assert Manifest.from_yaml(ref) == Manifest.from_yaml(referenced)
     with pytest.raises(FileNotFoundError):
         resolved = registry.find_manifest("demo_dlc.yaml")
+
 
 def test_list_manifests_basic():
     """Test registry.list_manifests"""
@@ -114,6 +116,7 @@ def test_list_manifests_from_tmp_path(tmp_path, monkeypatch):
     assert manifests == manifests_here == manifests_somewhere_else
     logger.debug(f"from /tmp: {pf([mani['id'] for mani in manifests])}")
     logger.debug(f"from repo root: {pf([mani['id'] for mani in manifests_here])}")
+
 
 def test_list_manifests_additional_dir(manifest_dict, tmp_path):
     """Test registry.list_manifests with additional directory"""

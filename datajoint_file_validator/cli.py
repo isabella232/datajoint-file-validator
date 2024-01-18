@@ -81,4 +81,3 @@ def list_manifests(
         rprint(yaml.dump(manifests))
     elif format == DisplayFormat.json:
         rprint(json.dumps(manifests, indent=2))
-
