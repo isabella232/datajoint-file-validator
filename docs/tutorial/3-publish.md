@@ -43,17 +43,36 @@ $ mkdir datajoint_file_validator/manifests/my_type
 
 Copy your manifest file to this new directory, with a file name that matches the `version` of the manifest file.
 The version of our manifest is `0.1.0`, so we will copy the manifest file to `datajoint_file_validator/manifests/my_type/v0.1.0.yaml`.
-We also want to create a symbolic link called `default.yaml` that points to the `v0.1.0.yaml` file.
-This symlink is necessary in order for the Python package to recognize our new manifest file.
+We should also create a **manifest reference file** called `default.yaml` that **includes** the `v0.1.0.yaml` file.
+This reference file should:
+
+1. Be named `default.yaml`
+2. Contain only an `!include` tag (and optional comments), and
+3. Reside in the same directory as `v0.1.0.yaml`.
+
+```yaml
+# default.yaml
+!include: v0.1.0.yaml
+```
+
+We can copy our manifest file and create the manifest reference file with the following commands:
 
 <!-- termynal -->
 
 ```console
 $ cp my_type.yaml datajoint_file_validator/manifests/my_type/v0.1.0.yaml
-$ ln -s v0.1.0.yaml datajoint_file_validator/manifests/my_type/default.yaml
+$ echo '!include: v0.1.0.yaml' > datajoint_file_validator/manifests/my_type/default.yaml
 ```
 
-We can then commit and push changes to our fork:
+The `default.yaml` file is necessary in order for the Python package to recognize our new manifest file.
+It also makes our new manifest discoverable using the [`list_manifests`](./1-validate.md#16-list-available-manifests) function.
+When we want to update our manifest file in the future, instead of changing the `v0.1.0.yaml` file, we should create a new manifest file with a new version number (e.g., `v0.1.1.yaml`), and update the `default.yaml` file to include the new manifest file.
+
+!!! note
+
+	A manifest reference is similar to a symbolic link in Unix systems, but there are [technical limitations](https://github.com/ethho/datajoint-file-validator/pull/12) that prevent us from using symbolic links.
+
+We can now commit and push changes to our fork:
 
 <!-- termynal -->
 
@@ -62,7 +81,6 @@ $ git add datajoint_file_validator/manifests/my_type/
 $ git commit -m "Add manifest for my_type v0.1.0"
 $ git push origin main
 ```
-
 
 ### 3.1.4. Create a Pull Request Against the Main Repository
 

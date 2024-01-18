@@ -18,7 +18,7 @@ class Config(BaseSettings):
         if Path(module_home).is_dir()
     )
     manifest_schema: Path = next(
-        Path(module_home) / Path("manifest_schemas/latest.yaml")
+        Path(module_home) / Path("manifest_schemas/default.yaml")
         for module_home in MODULE_HOMES
         if Path(module_home).is_dir()
     )
