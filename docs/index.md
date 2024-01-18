@@ -22,5 +22,5 @@ Through the [Python API](usage.md#validate-using-python-api) or the [command lin
 
 The DataJoint File Validator is designed to be extensible.
 Users can define their own fileset types by [writing manifests](tutorial/2-manifest.md) that define rules and constraints for their custom fileset type.
-Users are encouraged to share their manifests with the community by [contributing them to the Manifest Registry](contribute.md#contribute-a-manifest).
-The Python package defines a [manifest language](src/manifest_schemas/latest.yaml) that aids in writing custom manifests.
+Users are encouraged to share their manifests with the community by [contributing them to the Manifest Registry](tutorial/3-publish.md).
+The Python package defines a [manifest language](snippets/manifest_schemas/v0.1.0.yaml) that aids in writing custom manifests.

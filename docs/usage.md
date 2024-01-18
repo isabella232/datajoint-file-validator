@@ -8,7 +8,7 @@ As a first step, [install the `datajoint-file-validator` package](installation.m
 
 ## Validate Using Python API
 
-Validate an [example fileset](src/filesets/fileset0) against an [example manifest](src/manifests/demo_dlc/v0.1.yaml) using the Python API:
+Validate an [example fileset](snippets/filesets/fileset0/) against an [example manifest](snippets/manifests/demo_dlc/v0.1.yaml) using the Python API:
 
 ```python
 from datajoint_file_validator import validate

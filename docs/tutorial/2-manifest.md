@@ -312,7 +312,7 @@ But with great power comes great responsibility, so we recommend that you adhere
 ## 1.8. Conclusion
 
 In this section, we learned how to write a custom manifest that can be used to validate a fileset.
-We encourage you to experiment with writing your own manifests, and consult the [manifest registry](registry/index.md) for examples and inspiration.
+We encourage you to experiment with writing your own manifests, and consult the [manifest registry](../../registry/index.md) for examples and inspiration.
 The complete manifest that we wrote in this section is shown below:
 
 
@@ -327,5 +327,5 @@ The complete manifest that we wrote in this section is shown below:
 
 ## Next Steps
 
-Now that you've written a custom manifest, you can publish it to the [manifest registry](registry/index.md) so that others can use or extend it.
+Now that you've written a custom manifest, you can publish it to the [manifest registry](../../registry/index.md) so that others can use or extend it.
 See [part 3](3-publish.md) of this tutorial for more details.
