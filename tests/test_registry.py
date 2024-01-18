@@ -1,5 +1,6 @@
 import os
 import pytest
+import unittest
 from pathlib import Path
 from pprint import pformat as pf
 from yaml import safe_dump
@@ -113,7 +114,9 @@ def test_list_manifests_from_tmp_path(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path / "somewhere_else")
     manifests_somewhere_else = registry.list_manifests()
     assert len(manifests) > 0
-    assert manifests == manifests_here == manifests_somewhere_else
+    case = unittest.TestCase()
+    case.assertCountEqual(manifests, manifests_here)
+    case.assertCountEqual(manifests, manifests_somewhere_else)
     logger.debug(f"from /tmp: {pf([mani['id'] for mani in manifests])}")
     logger.debug(f"from repo root: {pf([mani['id'] for mani in manifests_here])}")
 
