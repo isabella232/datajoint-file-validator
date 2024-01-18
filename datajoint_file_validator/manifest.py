@@ -1,8 +1,8 @@
+import yaml
 from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 from cerberus import Validator, schema_registry
-import yaml
 from pprint import pformat as pf
 from .yaml import read_yaml
 from .error import DJFileValidatorError, InvalidManifestError
