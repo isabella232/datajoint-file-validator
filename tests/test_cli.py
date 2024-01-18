@@ -104,7 +104,7 @@ class TestValidate:
         elif fmt == "yaml":
             assert "constraint_id: count_min" in result.stdout
         elif fmt == "json":
-            assert "'constraint_id': 'count_min'" in result.stdout
+            assert '"constraint_id": "count_min"' in result.stdout
 
     def test_list_manifests_basic(self, runner):
         result = runner.invoke(
@@ -136,4 +136,4 @@ class TestValidate:
         elif fmt == "yaml":
             assert "stem: default" in result.stdout
         elif fmt == "json":
-            assert "'stem': 'default'" in result.stdout
+            assert '"stem": "default"' in result.stdout
