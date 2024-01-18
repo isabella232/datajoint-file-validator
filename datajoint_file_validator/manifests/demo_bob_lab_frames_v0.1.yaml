@@ -10,35 +10,3 @@ rules:
     description: Check that there are between 1 and 5 files in the directory
     count_min: 1
     count_max: 5
-  # - id: num_files_per_subdir
-  #   description: >
-  #     Check that each subdirectory has between 1 and 100 files
-  #     and that subdirectories only contain .mp4 files.
-  #   query: "*/"
-  #   rules:
-  #     - id: count_per_subdir
-  #       # Here, the query ("/**") is relative to the sub-directory
-  #       # instead of the root.
-  #       query: "/"
-  #       count_min: 1
-  #       count_max: 100
-  #     - id: check_file_type
-  #       # query: "**" is implicit here
-  #       regex: "^.*\\.mp4$"
-  # - id: file_type_in_subdir
-  #   description: Check that each subdirectory has exactly one obs.md file
-  #   query:
-  #     # Instead of path, regex, or type, we can write a custom query function
-  #     # that filters the items that are passed to the constraints.
-  #     eval: |
-  #       def get_subdirs(results: list[dict]) -> list[bool]:
-  #         return [True for r in results if r['type'] == 'directory' else False]
-  #   rules:
-  #     - query: "/obs.md"
-  #       description: "There is exactly one obs.md"
-  #     - query: "obs.md"
-  #       description: "Another way to write the above"
-  #     - query: "obs.md"
-  #       description: "Yet another way to write this rule"
-  #       count_min: 1
-  #       count_max: 1

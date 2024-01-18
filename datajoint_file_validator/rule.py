@@ -78,5 +78,5 @@ class Rule:
                 ],
             )
         except InvalidRuleError as e:
-            raise InvalidRuleError(f"Error parsing rule '{id}': {e}")
+            raise InvalidRuleError(f"Error parsing rule '{id}': {e}") from e
         return self_

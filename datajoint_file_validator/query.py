@@ -55,7 +55,7 @@ class TypeQuery(Query):
         return list(self._filter_generator(snapshot))
 
     def _filter_generator(self, snapshot: Snapshot) -> Generator:
-        """Filter a Snapshot based on this query. Returns a generator."""
+        """Filter a Snapshot based on this query."""
         for metadata in snapshot:
             if self.file_type is None or metadata.get("type") == self.file_type:
                 yield metadata
@@ -63,7 +63,7 @@ class TypeQuery(Query):
 
 @dataclass(frozen=True)
 class CompositeQuery(Query):
-    """A with multiple parts, each of which is a query."""
+    """A query with multiple parts, each of which is a query."""
 
     parts: List[Query] = field(default_factory=list)
 
