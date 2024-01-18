@@ -107,23 +107,18 @@ We can set the `verbose=True` option to show a table-style report of the validat
 ```python3
 >>> success, report = validate(my_dataset_path, manifest_path, verbose=True)
 Validation failed with the following errors:
-┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
-┃ Rule ID      ┃ Rule Description   ┃ Constraint ID ┃ Constraint Value ┃ Errors              ┃
-┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
-│ rule-3-files │ Check that there   │ count_min     │ 5                │ constraint          │
-│              │ are at least 5     │               │                  │ `count_min` failed: │
-│              │ files in the       │               │                  │ 4 < 5               │
-│              │ directory          │               │                  │                     │
-│              │ (excluding         │               │                  │                     │
-│              │ subdirectories).   │               │                  │                     │
-│              │                    │               │                  │                     │
-├──────────────┼────────────────────┼───────────────┼──────────────────┼─────────────────────┤
-│ rule-5-regex │ Check that all     │ regex         │ ^.+\.csv$        │ {'my_subdirectory/… │
-│              │ files in the       │               │                  │ {'path': ["value    │
-│              │ subdirectory are   │               │                  │ does not match      │
-│              │ .csv files         │               │                  │ regex               │
-│              │                    │               │                  │ '^.+\\.csv$'"]}}    │
-└──────────────┴────────────────────┴───────────────┴──────────────────┴─────────────────────┘
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Rule ID      ┃ Rule Description                         ┃ Constraint ID ┃ Constraint Value ┃ Errors                                  ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ rule-3-files │ Check that there are at least 5 files in │ count_min     │ 5                │ constraint `count_min` failed: 4 < 5    │
+│              │ the directory (excluding                 │               │                  │                                         │
+│              │ subdirectories).                         │               │                  │                                         │
+│              │                                          │               │                  │                                         │
+├──────────────┼──────────────────────────────────────────┼───────────────┼──────────────────┼─────────────────────────────────────────┤
+│ rule-5-regex │ Check that all files in the subdirectory │ regex         │ ^.+\.csv$        │ {'my_subdirectory/subject3.txt':        │
+│              │ are .csv files                           │               │                  │ {'path': ["value does not match regex   │
+│              │                                          │               │                  │ '^.+\\.csv$'"]}}                        │
+└──────────────┴──────────────────────────────────────────┴───────────────┴──────────────────┴─────────────────────────────────────────┘
 ```
 
 We see that our example fileset failed validation against the `demo_tutorial` fileset type.
