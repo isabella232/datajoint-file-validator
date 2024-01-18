@@ -125,9 +125,7 @@ def list_manifests(
 
     if sort_alpha is not None:
         if sort_alpha not in ("asc", "desc"):
-            raise ValueError(
-                f"sort_alpha must be 'asc' or 'desc', not {sort_alpha}"
-            )
+            raise ValueError(f"sort_alpha must be 'asc' or 'desc', not {sort_alpha}")
         manifests = sorted(manifests, key=lambda m: getattr(m, "id", None))
         if sort_alpha == "desc":
             manifests = list(reversed(manifests))

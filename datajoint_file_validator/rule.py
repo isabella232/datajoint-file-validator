@@ -63,11 +63,7 @@ class Rule:
     @classmethod
     def from_dict(cls, d: Dict) -> "Rule":
         """Load a rule from a dictionary."""
-        rest = {
-            k: v
-            for k, v in d.items()
-            if k not in ("id", "description", "query")
-        }
+        rest = {k: v for k, v in d.items() if k not in ("id", "description", "query")}
         try:
             self_ = cls(
                 id=d.get("id"),
