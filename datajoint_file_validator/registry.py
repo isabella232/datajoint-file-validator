@@ -97,7 +97,7 @@ def list_manifests(
 
     # Get the unique set of possible manifest paths from _get_try_paths
     poss_paths = set()
-    for dir in ["*", *[f"{dir}/*" for dir in additional_dirs]]:
+    for dir in ["*"] + [f"{dir}/*" for dir in additional_dirs]:
         for glob_query in _get_try_paths(dir):
             for path_str in glob(str(glob_query), exclude=ignore_patterns):
                 poss_paths.add(Path(path_str))
