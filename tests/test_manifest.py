@@ -1,11 +1,14 @@
 import pytest
+import re
 import yaml
 from copy import deepcopy
+from typing import List, Dict, Union
 from wcmatch import glob, pathlib
 from datajoint_file_validator import Manifest
-from datajoint_file_validator.yaml import read_yaml
+from datajoint_file_validator.yaml import read_yaml, is_reference
 from datajoint_file_validator.error import InvalidManifestError
 from datajoint_file_validator.config import config
+from . import logger
 
 
 class TestManifest:
@@ -32,18 +35,26 @@ class TestManifest:
         """
         mani_paths = set(
             [
-                pathlib.Path(path).resolve()
+                pathlib.Path(path)
                 for path in glob.glob(
                     "datajoint_file_validator/manifests/**/*.yaml", flags=glob.GLOBSTAR
                 )
             ]
         )
-        manis = [
-            Manifest.from_yaml(mani_path, check_valid=True) for mani_path in mani_paths
-        ]
-        mani_ids = [(mani.id, mani.version) for mani in manis]
+        mani_ids = list()
+        for mani_path in mani_paths:
+            if is_reference(str(mani_path)):
+                logger.debug(f"Manifest at path '{mani_path=}' is a reference")
+                # Ignore: we allow many references to other manifests
+                continue
+            # from_yaml uses read_yaml, which resolves !include tags
+            mani = Manifest.from_yaml(mani_path, check_valid=True)
+            mani_ids.append((mani.id, mani.version))
         duplicate_ids = [mani_id for mani_id in mani_ids if mani_ids.count(mani_id) > 1]
         assert len(mani_ids) == len(set(mani_ids)), f"Duplicate ids: {duplicate_ids}"
+
+    def test_include_tag(self):
+        raise NotImplementedError()
 
     def test_check_valid(self, manifest_dict, tmp_path):
         """

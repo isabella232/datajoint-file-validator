@@ -39,3 +39,21 @@ def read_yaml(path: PathLike) -> Any:
         path = pathlib.Path(path)
     with working_directory(path.parent):
         return _read_yaml(path.relative_to(path.parent))
+
+
+def is_reference(path: PathLike) -> bool:
+    """
+    Determine if a YAML file at `path` contains exactly 1 reference (using
+    the `!include` tag) to another YAML file, and nothing else
+    (besides comments).
+    """
+    if not isinstance(path, pathlib.Path):
+        path = pathlib.Path(path)
+    n_includes = 0
+    with path.open("r") as f:
+        for line in f.readlines():
+            if line.strip().startswith("#"):
+                continue
+            if line.strip().startswith("!include"):
+                n_includes += 1
+    return n_includes == 1
