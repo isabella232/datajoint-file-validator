@@ -38,7 +38,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pipx install poetry
-          poetry install
+          poetry install --with 'dev,docs' --sync
       - name: Run all pytests
         run: poetry run pytest --cov-report term-missing --cov=datajoint_file_validator tests
       - name: Check formatting with black
