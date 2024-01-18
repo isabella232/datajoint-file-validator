@@ -21,7 +21,7 @@ jobs:
           python-version: 3.11
       - name: Install Python dependencies
         run: |
-          pipx install poetry
+          pipx install "poetry>=1.3.0,<1.4.0"
           poetry config virtualenvs.create false
           poetry install --with docs --sync
       - name: Setup git
