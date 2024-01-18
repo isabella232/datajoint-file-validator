@@ -66,7 +66,7 @@ class Rule:
         rest = {
             k: v
             for k, v in d.items()
-            if k not in ("id", "description", "query", "constraints")
+            if k not in ("id", "description", "query")
         }
         try:
             self_ = cls(
