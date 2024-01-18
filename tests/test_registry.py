@@ -98,6 +98,23 @@ def test_list_manifests_basic():
     assert registry.list_manifests(query="(gibberish_manifest_name|demo)")
 
 
+def test_list_manifests_from_tmp_path(tmp_path, monkeypatch):
+    """
+    Check that registry.list_manifests still returns the registry
+    regardless of cwd.
+    """
+    manifests_here = registry.list_manifests()
+    monkeypatch.chdir(tmp_path)
+    logger.debug(f"{tmp_path=}")
+    manifests = registry.list_manifests()
+    (tmp_path / "somewhere_else").mkdir()
+    monkeypatch.chdir(tmp_path / "somewhere_else")
+    manifests_somewhere_else = registry.list_manifests()
+    assert len(manifests) > 0
+    assert manifests == manifests_here == manifests_somewhere_else
+    logger.debug(f"from /tmp: {pf([mani['id'] for mani in manifests])}")
+    logger.debug(f"from repo root: {pf([mani['id'] for mani in manifests_here])}")
+
 def test_list_manifests_additional_dir(manifest_dict, tmp_path):
     """Test registry.list_manifests with additional directory"""
     new_manifest_path = tmp_path / "new_manifest.yaml"
