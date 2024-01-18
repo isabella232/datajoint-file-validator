@@ -22,7 +22,7 @@ This repository contains a Python package that validates file sets for DataJoint
 ### Install Locally
 
 ```bash
-pip install datajoint_file_validator@git+https://github.com/ethho/datajoint-file-validator.git
+pip install git+https://github.com/ethho/datajoint-file-validator.git
 ```
 
 ### Dev Container
@@ -46,14 +46,14 @@ manifest_path = 'datajoint_file_validator/manifests/demo_dlc/v0.1.yaml'
 success, report = validate(my_dataset_path, manifest_path, verbose=True, format='json')
 # Validation failed with the following errors:
 # [
-#     {
-#         'rule': 'Min total files',
-#         'rule_description': 'Check that there are at least 6 files anywhere in the fileset',
-#         'constraint_id': 'count_min',
-#         'constraint_value': 6,
-#         'errors': 'constraint `count_min` failed: 4 < 6'
-#     }
-# ]
+#  {
+#    "rule": "Min total files",
+#    "rule_description": "Check that there are at least 6 files anywhere in the fileset",
+#    "constraint_id": "count_min",
+#    "constraint_value": 6,
+#    "errors": "constraint `count_min` failed: 4 < 6"
+#  }
+#]
 
 print(success)
 # False
