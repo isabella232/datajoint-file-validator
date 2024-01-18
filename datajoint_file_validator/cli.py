@@ -1,4 +1,5 @@
 import sys
+import json
 import typer
 from enum import Enum
 from typing import List, Dict, Any, Optional
@@ -55,7 +56,7 @@ def validate(
         rprint(file=sys.stderr)
         rprint(yaml.dump(report))
     elif format == DisplayFormat.json:
-        rprint(report)
+        rprint(json.dumps(report, indent=2))
     raise typer.Exit(code=1)
 
 
@@ -79,4 +80,5 @@ def list_manifests(
         rprint(file=sys.stderr)
         rprint(yaml.dump(manifests))
     elif format == DisplayFormat.json:
-        rprint(manifests)
+        rprint(json.dumps(manifests, indent=2))
+

@@ -1,4 +1,5 @@
 import sys
+import json
 import yaml
 from typing import List, Dict, Any, Optional, Union, Tuple
 from rich import print as rprint
@@ -138,7 +139,7 @@ def validate_snapshot(
         elif format == "yaml":
             rprint(yaml.dump(error_report))
         elif format == "json":
-            rprint(error_report)
+            rprint(json.dumps(error_report, indent=2))
         else:
             raise ValueError(f"Unsupported format: {format}")
     if raise_err and not success:

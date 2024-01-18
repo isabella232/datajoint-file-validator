@@ -237,14 +237,13 @@ We can also output the report in JSON or YAML formats, and save it to a file:
 $ datajoint-file-validator validate --format json $MY_FILESET_PATH demo_tutorial/v1
 ❌ Validation failed with 1 errors!
 [
-    {
-        'rule': 'rule-3-files',
-        'rule_description': 'Check that there are at least 5 files in the directory (excluding
-subdirectories).\n',
-        'constraint_id': 'count_min',
-        'constraint_value': 5,
-        'errors': 'constraint `count_min` failed: 4 < 5'
-    }
+  {
+    "rule": "rule-3-files",
+    "rule_description": "Check that there are at least 5 files in the directory (excluding subdirectories).\n",
+    "constraint_id": "count_min",
+    "constraint_value": 5,
+    "errors": "constraint `count_min` failed: 4 < 5"
+  }
 ]
 
 $ datajoint-file-validator validate --format yaml $MY_FILESET_PATH demo_tutorial/v1 > report.yaml
