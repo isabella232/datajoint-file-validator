@@ -1,0 +1,36 @@
+# Schema that defines a single Rule in a Manifest
+id:
+  type: string
+  required: false
+description:
+  type: string
+  required: false
+query:
+  anyof:
+    - type: string
+    - type: dict
+      allow_unknown: false
+      schema:
+        type:
+          type: string
+          required: false
+          allowed: ['file', 'directory']
+        path:
+          type: string
+          required: false
+count_min:
+  type: integer
+  required: false
+  min: 0
+count_max:
+  type: integer
+  required: false
+  min: 0
+regex:
+  type: string
+  required: false
+eval:
+  type: string
+  required: false
+  # https://www.regular-expressions.info/modifiers.html
+  regex: '(?s)^\s*def\s+[a-zA-Z0-9_]+\s*\(.*\).*:.*$'

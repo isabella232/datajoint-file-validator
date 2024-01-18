@@ -1,7 +1,10 @@
 import re
+import sys
 from dataclasses import dataclass
-from typing import Any, Iterable, Callable, Tuple
+from typing import Any, Iterable, Callable, Tuple, List, Dict
+from abc import ABC, abstractmethod
 from cerberus import Validator
+from pprint import pprint, pformat
 from ..config import config
 from ..snapshot import Snapshot
 from ..result import ValidationResult
@@ -11,19 +14,18 @@ Schema = Any
 
 
 @dataclass(frozen=True)
-class Constraint:
+class Constraint(ABC):
     """A single constraint that evaluates True or False for a fileset."""
 
+    @abstractmethod
     def validate(self, snapshot: Snapshot) -> ValidationResult:
         """Validate a snapshot against a single constraint."""
-        raise NotImplementedError(
-            "Subclass of Constraint must implement validate() method."
-        )
+        pass
 
     @property
     def name(self):
         _name = getattr(self, "_name", None)
-        return _name if _name else self.__class__.__name__
+        return _name if _name is not None else self.__class__.__name__
 
 
 @dataclass(frozen=True)
@@ -62,14 +64,13 @@ class CountMaxConstraint(Constraint):
 
 @dataclass(frozen=True)
 class SchemaConvertibleConstraint(Constraint):
+    @abstractmethod
     def to_schema(self) -> Schema:
         """
         Convert this constraint to a Cerberus schema that each file in
         the Snapshot will be validated against.
         """
-        raise NotImplementedError(
-            "Subclass of SchemaConvertibleConstraint must implement to_schema() method."
-        )
+        pass
 
     @staticmethod
     def _validate_file(schema: Schema, file: dict) -> Validator:
@@ -83,13 +84,17 @@ class SchemaConvertibleConstraint(Constraint):
         validators: Iterable[Validator] = list(
             map(lambda file: self._validate_file(schema, file), snapshot)
         )
+        status = bool(
+            not any(getattr(validator, "errors", None) for validator in validators)
+        )
         return ValidationResult(
-            status=all(validators),
+            status=status,
             message=None
-            if all(validators)
+            if status
             else {
                 file["path"]: validator.errors
                 for file, validator in zip(snapshot, validators)
+                if validator.errors
             },
             context=dict(snapshot=snapshot, constraint=self),
         )
@@ -128,7 +133,7 @@ class EvalConstraint(Constraint):
         if match:
             function_name = match.group(1)
         else:
-            raise ValueError(f"Could not parse function name from {definition}")
+            raise ValueError(f"Could not parse function name from '{definition}'")
         assert function_name in locals()
         return locals()[function_name], function_name
 
@@ -142,14 +147,16 @@ class EvalConstraint(Constraint):
             function, function_name = self._eval_function(self.val)
         except Exception as e:
             raise DJFileValidatorError(
-                f"Error parsing function in `{self.name}` constraint: {type(e).__name__}: {e}"
-            )
+                f"Error parsing function in '{self.name}' constraint: {type(e).__name__}: {e}"
+            ) from e
         try:
             status = function(snapshot)
         except Exception as e:
             raise DJFileValidatorError(
-                f"Error validating function `{function_name}` in `{self.name}` constraint: {type(e).__name__}: {e}"
-            )
+                f"Error was raised while executing validation function "
+                f"'{function_name}' in "
+                f"constraint '{self.name}': {type(e).__name__}: {e}"
+            ) from e
         return ValidationResult(
             status=status,
             message=None

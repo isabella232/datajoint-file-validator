@@ -1,14 +1,19 @@
+import sys
+import json
 import typer
 from enum import Enum
+from typing import List, Dict, Any, Optional
 from typing_extensions import Annotated
 import yaml
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
-from . import main
+from . import main, registry
 
 console = Console()
 app = typer.Typer()
+manifest_app = typer.Typer(name="manifest")
+app.add_typer(manifest_app, name="manifest")
 
 
 @app.callback()
@@ -16,47 +21,13 @@ def callback():
     """
     Welcome to datajoint-file-validator!
     """
-
-
-def show_table():
-    table = Table("Name", "Item")
-    table.add_row("Rick", "Portal Gun")
-    table.add_row("Morty", "Plumbus")
-    console.print(table)
-
-
-def open_file(path: str):
-    """
-    Open a file at PATH in the default app.
-    """
-    rprint(f":left_speech_bubble:  Opening file {path}")
-    typer.launch(path, locate=True)
-
-
-def read_file(path: Annotated[typer.FileText, typer.Option()]):
-    """
-    Reads lines from a file at PATH.
-    """
-    for line in path:
-        rprint(f"Config line: {path}")
-
-
-def _main(name: str, lastname: str = "", formal: bool = False):
-    """
-    Say hi to NAME, optionally with a --lastname.
-
-    If --formal is used, say hi very formally.
-    """
-    if formal:
-        rprint(f"Good day Ms. {name} {lastname}.")
-    else:
-        rprint(f"Hello {name} {lastname}")
+    pass
 
 
 class DisplayFormat(str, Enum):
     table = "table"
     yaml = "yaml"
-    plain = "plain"
+    json = "json"
 
 
 @app.command()
@@ -73,17 +44,40 @@ def validate(
         target, manifest, verbose=False, raise_err=raise_err
     )
     if success:
-        rprint(":heavy_check_mark: Validation successful!")
+        rprint(":heavy_check_mark: Validation successful!", file=sys.stderr)
         return
 
-    rprint(f":x: Validation failed with {len(report)} errors!")
+    rprint(f":x: Validation failed with {len(report)} errors!", file=sys.stderr)
     if format == DisplayFormat.table:
         table = main.table_from_report(report)
         console = Console()
         console.print(table)
     elif format == DisplayFormat.yaml:
-        rprint()
+        rprint(file=sys.stderr)
         rprint(yaml.dump(report))
-    elif format == DisplayFormat.plain:
-        rprint(report)
+    elif format == DisplayFormat.json:
+        rprint(json.dumps(report, indent=2))
     raise typer.Exit(code=1)
+
+
+@manifest_app.command(name="list")
+def list_manifests(
+    query: Optional[str] = typer.Option(
+        None,
+        help="Filter manifest names using this regular expression query",
+    ),
+    format: DisplayFormat = DisplayFormat.table,
+):
+    """
+    List all available manifests.
+    """
+    manifests: List[Dict[str, Any]] = registry.list_manifests(query=query)
+    if format == DisplayFormat.table:
+        table = registry.table_from_manifest_list(manifests)
+        console = Console()
+        console.print(table)
+    elif format == DisplayFormat.yaml:
+        rprint(file=sys.stderr)
+        rprint(yaml.dump(manifests))
+    elif format == DisplayFormat.json:
+        rprint(json.dumps(manifests, indent=2))

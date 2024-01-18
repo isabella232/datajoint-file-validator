@@ -1,0 +1,33 @@
+allow_unknown: true
+id:
+  type: string
+  required: false
+name:
+  type: string
+  required: false
+version:
+  type: string
+  required: false
+description:
+  type: string
+  required: false
+author:
+  type: dict
+  required: false
+  schema:
+    name:
+      type: string
+      required: false
+    email:
+      type: string
+      required: false
+rules:
+  type: list
+  required: false
+  schema:
+    type: dict
+    schema:
+      id:
+        type: string
+        required: false
+

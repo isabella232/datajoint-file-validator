@@ -10,10 +10,6 @@ class ValidationResult:
     message: Any
     context: Optional[Dict[str, Any]] = field(default_factory=dict)
 
-    @classmethod
-    def from_validator(cls, v: cerberus.Validator):
-        return cls(status=v.status, errors=v.errors)
-
     def __repr__(self):
         return f"ValidationResult(status={self.status}, message={self.message})"
 

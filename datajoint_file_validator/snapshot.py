@@ -5,8 +5,7 @@ from dataclasses import dataclass, field, asdict
 from wcmatch import pathlib
 from wcmatch.pathlib import Path
 from typing import List, Dict, Any, Optional, Union
-
-ENABLE_PATH_HANDLE = True
+from .config import config
 
 
 @dataclass
@@ -39,30 +38,38 @@ class FileMetadata:
     @classmethod
     def from_path(cls, path: Path, root: Path) -> "FileMetadata":
         """Return a FileMetadata object from a Path object."""
+        is_file = path.is_file()
+        rel_path = str(path.relative_to(root))
+        abs_path = str(path)
+        # Add trailing slash to directories
+        if not is_file and not rel_path.endswith("/"):
+            rel_path += "/"
+            abs_path += "/"
+
         return cls(
             name=path.name,
-            rel_path=str(path.relative_to(root)),
-            abs_path=str(path),
+            rel_path=rel_path,
+            abs_path=abs_path,
             size=path.stat().st_size,
-            type="file" if path.is_file() else "directory",
+            type="file" if is_file else "directory",
             last_modified=cls.to_iso_8601(path.stat().st_mtime_ns),
             extension=path.suffix,
             mtime_ns=path.stat().st_mtime_ns,
             ctime_ns=path.stat().st_ctime_ns,
             atime_ns=path.stat().st_atime_ns,
-            _path=path if ENABLE_PATH_HANDLE else None,
+            _path=path if config.enable_path_handle else None,
         )
 
     def __repr__(self):
         return f"{self.__class__.__name__}(path={self.path!r}, type={self.type!r})"
 
     @staticmethod
-    def dict_factory(x):
+    def _dict_factory(x):
         exclude_fields = ("_path",)
         return {k: v for (k, v) in x if ((v is not None) and (k not in exclude_fields))}
 
     def asdict(self):
-        return asdict(self, dict_factory=self.dict_factory)
+        return asdict(self, dict_factory=self._dict_factory)
 
 
 # Define type aliases
@@ -77,14 +84,18 @@ def _snapshot_to_cls(
     """Generate a snapshot of a file or directory at local `path`."""
     root = Path(path)
     if root.is_file():
-        files = [FileMetadata.from_path(root)]
+        files = [FileMetadata.from_path(root, root.parent)]
     elif root.is_dir():
         files = [FileMetadata.from_path(p, root) for p in root.glob("**", flags=flags)]
     else:
-        raise ValueError(f"path {path} is not a file or directory")
+        raise FileNotFoundError(f"path {path} is not a file or directory")
     return files
 
 
 def create_snapshot(path: str) -> Snapshot:
+    """
+    Generate a snapshot of a file or directory at local `path`.
+    Converts the list of dataclasses to a Snapshot.
+    """
     files = _snapshot_to_cls(path)
     return [f.asdict() for f in files]

@@ -1,23 +1,25 @@
+import sys
+import json
 import yaml
-import cerberus
 from typing import List, Dict, Any, Optional, Union, Tuple
-from .manifest import Manifest, Rule
-from .snapshot import Snapshot, create_snapshot, PathLike
-from .result import ValidationResult
-from .query import DEFAULT_QUERY
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
+from .manifest import Manifest, Rule
+from .snapshot import Snapshot, create_snapshot, PathLike
+from .result import ValidationResult
+from .registry import find_manifest
+from .error import DJFileValidatorError
 
 ErrorReport = List[Dict[str, Any]]
 
 
 def validate(
     target: Union[Snapshot, PathLike],
-    manifest: Union[PathLike, Manifest],
+    manifest: Union[Manifest, PathLike],
     verbose=False,
     raise_err=False,
-    format='table',
+    format="table",
 ) -> Tuple[bool, ErrorReport]:
     """
     Validate a target against a manifest.
@@ -32,6 +34,8 @@ def validate(
         Print verbose output.
     raise_err : bool
         Raise an error if validation fails.
+    format : str
+        Format for error report. One of "table", "yaml", or "json".
 
     Returns
     -------
@@ -41,16 +45,16 @@ def validate(
     # Infer how to fetch manifest
     if isinstance(manifest, Manifest):
         mani = manifest
-    elif isinstance(manifest, str):
-        mani = Manifest.from_yaml(manifest)
     else:
-        raise ValueError("manifest must be a path or Manifest object.")
+        mani = Manifest.from_yaml(find_manifest(manifest))
 
     # Infer how to create snapshot
     if isinstance(target, str):
         target = create_snapshot(target)
 
-    return validate_snapshot(target, mani, verbose=verbose, raise_err=raise_err, format=format)
+    return validate_snapshot(
+        target, mani, verbose=verbose, raise_err=raise_err, format=format
+    )
 
 
 def table_from_report(report: ErrorReport) -> Table:
@@ -98,6 +102,8 @@ def validate_snapshot(
         Print verbose output.
     raise_err : bool
         Raise an error if validation fails.
+    format : str
+        Format for error report. One of "table", "yaml", or "json".
 
     Returns
     -------
@@ -125,15 +131,15 @@ def validate_snapshot(
                 }
             )
     if verbose and not success:
-        rprint("Validation failed with the following errors:")
+        rprint("Validation failed with the following errors:", file=sys.stderr)
         if format == "table":
             table = table_from_report(error_report)
             console = Console()
             console.print(table)
         elif format == "yaml":
             rprint(yaml.dump(error_report))
-        elif format == "plain":
-            rprint(error_report)
+        elif format == "json":
+            rprint(json.dumps(error_report, indent=2))
         else:
             raise ValueError(f"Unsupported format: {format}")
     if raise_err and not success:

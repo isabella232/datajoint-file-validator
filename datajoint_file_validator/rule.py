@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
-import hashlib
 from typing import Dict, List, Any, Optional
 from .constraint import Constraint, CONSTRAINT_MAP
 from .result import ValidationResult
 from .snapshot import Snapshot, PathLike, FileMetadata
-from .query import Query, GlobQuery, DEFAULT_QUERY
+from .query import Query, GlobQuery, CompositeQuery
 from .config import config
-from .error import DJFileValidatorError
+from .error import InvalidRuleError, InvalidQueryError
+from .hash_utils import generate_id
 
 
 @dataclass
@@ -20,20 +20,18 @@ class Rule:
 
     def __post_init__(self):
         if not self.id:
-            self.id = self._generate_id()
-
-    def _generate_id(self) -> str:
-        return hashlib.sha1(hex(hash(self)).encode("utf-8")).hexdigest()[:7]
+            self.id = generate_id(self)
 
     def __hash__(self):
-        return hash((self.query, tuple(self.constraints)))
+        return hash((self.id, self.query, tuple(self.constraints)))
 
     def validate(self, snapshot: Snapshot) -> Dict[str, ValidationResult]:
         filtered_snapshot: Snapshot = self.query.filter(snapshot)
-        if self.query.path == DEFAULT_QUERY and config.debug:
-            assert filtered_snapshot == snapshot
         results = list(
-            map(lambda constraint: constraint.validate(filtered_snapshot), self.constraints)
+            map(
+                lambda constraint: constraint.validate(filtered_snapshot),
+                self.constraints,
+            )
         )
         return {
             constraint.name: result
@@ -42,33 +40,39 @@ class Rule:
 
     @staticmethod
     def compile_query(raw: Any) -> "Query":
-        assert isinstance(raw, str)
+        if isinstance(raw, dict):
+            try:
+                return CompositeQuery.from_dict(raw)
+            except InvalidQueryError as e:
+                raise InvalidRuleError(f"Error parsing query: {e}") from e
+        elif not isinstance(raw, str):
+            raise InvalidRuleError(f"Query must be a string, not '{type(raw)}'")
         return GlobQuery(path=raw)
 
     @staticmethod
-    def compile_constraint(name: str, val: Any) -> "Constraint":
-        if name not in CONSTRAINT_MAP:
-            raise DJFileValidatorError(f"Unknown constraint: {name}")
+    def compile_constraint(
+        name: str, val: Any, constraint_map=CONSTRAINT_MAP
+    ) -> "Constraint":
+        if name not in constraint_map:
+            raise InvalidRuleError(f"Unknown constraint: '{name}'")
         try:
-            return CONSTRAINT_MAP[name](val)
-        except DJFileValidatorError as e:
-            raise DJFileValidatorError(f"Error parsing constraint {name}: {e}")
+            return constraint_map[name](val)
+        except Exception as e:
+            raise InvalidRuleError(f"Error parsing constraint '{name}': {e}") from e
 
     @classmethod
-    def from_dict(cls, d: Dict, check_syntax=False) -> "Rule":
+    def from_dict(cls, d: Dict) -> "Rule":
         """Load a rule from a dictionary."""
-        if check_syntax:
-            assert cls.check_valid(d)
-        id = d.pop("id", None)
+        rest = {k: v for k, v in d.items() if k not in ("id", "description", "query")}
         try:
             self_ = cls(
-                id=id,
-                description=d.pop("description", None),
-                query=cls.compile_query(d.pop("query", DEFAULT_QUERY)),
+                id=d.get("id"),
+                description=d.get("description"),
+                query=cls.compile_query(d.get("query", config.default_query)),
                 constraints=[
-                    cls.compile_constraint(name, val) for name, val in d.items()
+                    cls.compile_constraint(name, val) for name, val in rest.items()
                 ],
             )
-        except DJFileValidatorError as e:
-            raise DJFileValidatorError(f"Error parsing rule '{id}': {e}")
+        except InvalidRuleError as e:
+            raise InvalidRuleError(f"Error parsing rule '{id}': {e}") from e
         return self_

@@ -1,0 +1,32 @@
+name: Build GitHub Pages Documentation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**.md"
+      - "mkdocs.yml"
+  workflow_dispatch:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Install Python dependencies
+        run: |
+          pipx install poetry
+          poetry config virtualenvs.create false
+          poetry install --with docs --sync
+      - name: Setup git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Publish docs
+        run: poetry run mkdocs gh-deploy
