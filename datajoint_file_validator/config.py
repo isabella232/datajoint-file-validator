@@ -9,7 +9,7 @@ class Config(BaseSettings):
     ENV_PATH = ".env"
 
     allow_eval: bool = True
-    debug: bool = True
+    debug: bool = False
     enable_path_handle: bool = True
     default_query: str = "**"
     manifest_schema_parts: Path = next(
