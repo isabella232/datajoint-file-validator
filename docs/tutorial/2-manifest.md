@@ -11,7 +11,6 @@ Or, you might be a lab manager who wants to implement data sharing best practice
 It is recommended that you complete [tutorial part 1](1-validate.md) before continuing, so that you understand how to validate a fileset using the File Validator.
 
 For this section, we'll recreate the `my_fileset` fileset that we created in the previous section.
-If you don't have a `my_fileset` directory, you can create one using the shell commands:
 
 <!-- termynal -->
 
@@ -78,11 +77,13 @@ Assuming we are in the same directory as the `my_type.yaml` manifest, this manif
 
 ```console
 $ datajoint-file-validator manifest list --query 'my_type'
-┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓
-┃ ID      ┃ Version ┃ Description ┃ Path         ┃
-┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩
-│ my_type │ 0.1.0   │             │ my_type.yaml │
-└─────────┴─────────┴─────────────┴──────────────┘
+┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓
+┃ ID      ┃ Version ┃ Description                                       ┃ Path         ┃
+┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩
+│ my_type │ 0.1.0   │ An example fileset type for the DataJoint File    │ my_type.yaml │
+│         │         │ Validator tutorial.                               │              │
+│         │         │                                                   │              │
+└─────────┴─────────┴───────────────────────────────────────────────────┴──────────────┘
 ```
 
 ## 1.3. Add a Rule to the Manifest
@@ -96,7 +97,7 @@ Append a `rules` section so that your manifest looks like this:
 --8<-- "snippets/my_type.yaml::15"
 ```
 
-Like the manifest, this rule has an `id` (which _should_ be unique), and human-readable `description`.
+Like the manifest, this rule has an `id` (which _should_ be unique within the manifest file), and a human-readable `description`.
 Both of these fields are optional, but recommended, especially if you are writing a manifest that will be used by others.
 On line 15, we define the `count_min` field, which contains the logic that checks if our rule is valid.
 Formally, we call this field a **constraint**, and it is one of several types of constraints that we can use.
@@ -204,13 +205,12 @@ With the `type: file` component, `my_subject/` is excluded from the query, and o
 ## 1.6. Regex Constraint
 
 So far, we've only used the `count_min` and `count_max` constraints.
-We can also use the `regex` constraint to check if files match a regular expression.
+We can also use the `regex` constraint to check if file paths match a regular expression.
 For example, we can create a new rule that checks that all files in the `my_subdirectory` directory end with the `.csv`  or `.txt` extension:
 
 ```{.yaml linenums="38"}
 --8<-- "snippets/my_type.yaml:38:45"
 ```
-
 
 For details on how to write regular expressions, see online resources such as [regexr.com](https://regexr.com/).
 
@@ -236,7 +236,7 @@ When we validate, we see the `STDERR` output from the `print` statement:
 
 ```console
 $ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
-Found .txt file: {'abs_path': '/home/eho/repos/dj/datajoint-file-validator/docs/snippets/my_fileset/observations.txt',
+Found .txt file: {'abs_path': '/path/to/my_fileset/observations.txt',
  'atime_ns': 1704917387733281020,
  'ctime_ns': 1704917387125281156,
  'extension': '.txt',
@@ -252,6 +252,53 @@ Found .txt file: {'abs_path': '/home/eho/repos/dj/datajoint-file-validator/docs/
 
 For details on the fields available in each `file` dictionary, see the [dataclass attributes of the `FileMetadata` class](../../api/snapshot/#datajoint_file_validator.snapshot.FileMetadata).
 
+!!! note "Tip: Debugging with `eval`"
+
+    The `eval` constraint can be useful for debugging new rules.
+    For example, we can use it to ensure that the `query` field works as expected:
+
+    ```{.yaml linenums="60"}
+    - id: new_rule_with_query
+      query:
+        type: file
+        path: 'my_subdirectory/subject*.csv'
+      eval: |
+        def debug_query(files: List[Dict[str, Any]]) -> bool:
+            print(f"Our query returned files:\n\n{pformat(files)}", file=sys.stderr)
+            return True
+    ```
+
+    When we validate, we see all the files that match our query:
+
+    ```console
+    $ datajoint-file-validator validate $MY_FILESET_PATH my_type.yaml
+    Our query returned files:
+
+    [{'abs_path': '/path/to/my_fileset/my_subdirectory/subject2.csv',
+      'atime_ns': 1705600299673026466,
+      'ctime_ns': 1705600299673026466,
+      'extension': '.csv',
+      'last_modified': '2024-01-18T10:51:39.673027+00:00',
+      'mtime_ns': 1705600299673026466,
+      'name': 'subject2.csv',
+      'path': 'my_subdirectory/subject2.csv',
+      'rel_path': 'my_subdirectory/subject2.csv',
+      'size': 0,
+      'type': 'file'},
+     {'abs_path': '/path/to/my_fileset/my_subdirectory/subject1.csv',
+      'atime_ns': 1705600299673026466,
+      'ctime_ns': 1705600299673026466,
+      'extension': '.csv',
+      'last_modified': '2024-01-18T10:51:39.673027+00:00',
+      'mtime_ns': 1705600299673026466,
+      'name': 'subject1.csv',
+      'path': 'my_subdirectory/subject1.csv',
+      'rel_path': 'my_subdirectory/subject1.csv',
+      'size': 0,
+      'type': 'file'}]
+    ✔ Validation successful!
+    ```
+
 ### 1.7.1. Best Practices
 
 With the `eval` constraint, manifest authors have flexibility to write almost any rule they can think of.
@@ -259,8 +306,8 @@ But with great power comes great responsibility, so we recommend that you adhere
 
 - Use a built-in constraint if possible. Built-in constraints validate faster, and emit more informative error messages when validation fails.
 - Avoid running complex or computationally intensive logic in `eval` functions. Fileset validation should be quick and easy to run. Instead, move complex logic to a separate script and use `datajoint-file-validator` as a dependency.
-- Ensure that the code you write in `eval` is safe to run. Avoid fetching data from the internet or running code from lesser-known third party libraries.
-- If the function `print`s anything, ensure that it writes to `sys.stderr`, not the default `sts.stdout` buffer. You can do this by passing `file=sys.stderr` to the `print` function. This ensures that users can redirect [validation reports from `STDOUT` to file](1-validate.md#15-validate-the-fileset-using-the-cli) without corrupting the YAML or JSON formatted report.
+- Ensure that the code you write in `eval` is safe to run. Avoid fetching data from the internet or installing software in the `eval` function.
+- If the function `print`s anything, ensure that it writes to `sys.stderr`, not the default `sts.stdout` buffer. You can achieve this by passing `file=sys.stderr` to the `print` function. This ensures that users can redirect [validation reports from `STDOUT` to file](1-validate.md#15-validate-the-fileset-using-the-cli) without corrupting the YAML or JSON formatted report.
 
 ## 1.8. Conclusion
 

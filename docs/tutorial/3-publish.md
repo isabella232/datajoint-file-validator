@@ -11,7 +11,7 @@ Currently, the only supported way to publish a manifest is to add it to the stan
 
 ### 3.1.1. Fork the Repository
 
-First, create a fork of the DataJoint File Validator GitHub repository: [`https://github.com/ethho/datajoint-file-validator.git`](https://github.com/ethho/datajoint-file-validator.git):
+First, create a fork of the DataJoint File Validator GitHub repository [`https://github.com/ethho/datajoint-file-validator.git`](https://github.com/ethho/datajoint-file-validator.git):
 
 ![Fork the repository](../images/fork_repo.png)
 
@@ -26,7 +26,7 @@ $ export GITHUB_USERNAME="<your GitHub username>"
 $ git clone https://github.com/${GITHUB_USERNAME}/datajoint-file-validator.git
 ---> 100%
 $ cd datajoint-file-validator
-$ git switch -c main
+$ git checkout main
 ```
 
 ### 3.1.3. Push Your Manifest File to Your Fork
@@ -88,4 +88,7 @@ Finally, create a pull request against the `main` branch of the main repository 
 
 1. [Click here to create a pull request for a new manifest](https://github.com/ethho/datajoint-file-validator/compare/main?template=new_manifest.md&labels=new-manifest,manifest&title=New+Manifest&assignees=ethho&is_cross_repo=1)
 2. Click "compare across forks" and select your fork and `main` branch (or whichever branch you pushed to)
-3. Click "Create a Pull Request"
+3. Click "Create a Pull Request" and fill out the pull request template.
+4. Once your Pull Request is submitted, [automated tests](https://github.com/ethho/datajoint-file-validator/actions/workflows/test.yaml) will check that your manifest file is valid and has a unique ID.
+5. If your tests do not pass, you can make changes to your manifest file and push fixes to your fork. See the [Developer Documentation](../contribute.md#run-tests) if you want to test your manifest file locally.
+6. If the tests pass, the repository maintainers will review your manifest and merge it into the main repository.
