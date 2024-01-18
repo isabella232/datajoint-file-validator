@@ -19,7 +19,7 @@ def working_directory(path: pathlib.Path):
         os.chdir(prev_cwd)
 
 
-def _read_yaml(path: PathLike) -> Any:
+def _read_yaml(path: pathlib.Path) -> Any:
     """Read a YAML file from `path`."""
     with path.open("r") as f:
         contents = yaml.safe_load(f)
@@ -37,12 +37,5 @@ def read_yaml(path: PathLike) -> Any:
     """
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
-    try:
-        return _read_yaml(path)
-    except FileNotFoundError as e:
-        # Try resolving an include relative to the parent directory.
-        try:
-            with working_directory(path.parent):
-                return _read_yaml(path.relative_to(path.parent))
-        except FileNotFoundError as e2:
-            raise e2 from e
+    with working_directory(path.parent):
+        return _read_yaml(path.relative_to(path.parent))
